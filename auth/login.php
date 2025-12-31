@@ -8,6 +8,21 @@
     <link href="../src/css/global.css" rel="stylesheet">
 </head>
 <body>
+    <?php if (isset($_GET['error']) && $_GET['error'] == '1'): ?>
+        <div id="error-message" style="position: fixed; top: 20px; right: 20px; padding: 15px 20px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; border-radius: 5px; opacity: 0; transition: opacity 1s; font-size: 16px; z-index: 1000;">Invalid username or password.</div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var msg = document.getElementById("error-message");
+                msg.style.opacity = "1";
+                setTimeout(function() {
+                    msg.style.opacity = "0";
+                    setTimeout(function() {
+                        msg.style.display = "none";
+                    }, 1000);
+                }, 3000);
+            });
+        </script>
+    <?php endif; ?>
     <nav class="navbar">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
@@ -37,29 +52,31 @@
                         <p>Please login to your account</p>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name="username" 
-                               placeholder="Enter your username">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" 
-                               placeholder="Enter your password">
-                    </div>
-
-                    <div class="mb-3 d-flex justify-content-between align-items-center">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                            <label class="form-check-label" for="remember">
-                                Remember me
-                            </label>
+                    <form action="../back-end/read/readLogin.php" method="POST">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="username" name="username"
+                                   placeholder="Enter your username" required>
                         </div>
-                        <a href="#" class="forgot-link">Forgot password?</a>
-                    </div>
 
-                    <button type="button" class="btn btn-primary btn-login w-100">Login</button>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password"
+                                   placeholder="Enter your password" required>
+                        </div>
+
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
+                                <label class="form-check-label" for="remember">
+                                    Remember me
+                                </label>
+                            </div>
+                            <a href="#" class="forgot-link">Forgot password?</a>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-login w-100">Login</button>
+                    </form>
 
                     <div class="signup-link">
                         Don't have an account? <a href="../public/signup.php">Sign up</a>
