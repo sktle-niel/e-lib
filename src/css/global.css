@@ -1,0 +1,221 @@
+body {
+  background: #f5f5f5;
+  min-height: 100vh;
+}
+.navbar {
+  background: white;
+  padding: 15px 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #333;
+}
+.logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.main-container {
+  min-height: calc(100vh - 70px);
+  display: flex;
+  align-items: center;
+  padding: 40px 0;
+}
+.left-section {
+  padding: 60px;
+}
+.left-section .welcome-text {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+.left-section .welcome-text span {
+  color: #218838;
+  font-weight: 600;
+}
+.left-section h1 {
+  color: #2c3e50;
+  font-weight: 700;
+  font-size: 3.5rem;
+  line-height: 1.2;
+  margin-bottom: 30px;
+}
+.left-section p {
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+.left-section ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 30px;
+}
+.left-section ul li {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 12px;
+  padding-left: 30px;
+  position: relative;
+}
+.left-section ul li:before {
+  content: "✓";
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1.2rem;
+  position: absolute;
+  left: 0;
+}
+.btn-contact {
+  background: #28a745;
+  border: none;
+  padding: 12px 30px;
+  color: white;
+  font-weight: 600;
+  border-radius: 5px;
+  transition: background 0.3s;
+}
+.btn-contact:hover {
+  background: #218838;
+  color: #fff;
+}
+.right-section {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+.login-container {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  width: 100%;
+  max-width: 500px;
+}
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+.login-header h3 {
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.login-header p {
+  color: #666;
+  font-size: 14px;
+}
+.btn-login {
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+  border: none;
+  padding: 12px;
+  font-weight: 600;
+  transition: transform 0.2s;
+  color: white;
+}
+.btn-login:hover {
+  background: linear-gradient(135deg, #0e8074 0%, #2dd468 100%);
+  transform: translateY(-2px);
+}
+.form-control:focus {
+  border-color: #11998e;
+  box-shadow: 0 0 0 0.2rem rgba(17, 153, 142, 0.25);
+}
+.signup-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+}
+.signup-link a {
+  color: #11998e;
+  text-decoration: none;
+  font-weight: 600;
+}
+.signup-link a:hover {
+  text-decoration: underline;
+}
+.forgot-link {
+  color: #11998e;
+  text-decoration: none;
+}
+.forgot-link:hover {
+  text-decoration: underline;
+}
+@media (max-width: 768px) {
+  .left-section {
+    padding: 30px;
+    text-align: center;
+  }
+  .left-section h1 {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .navbar {
+    padding: 10px 15px;
+  }
+  .navbar-brand {
+    gap: 5px;
+    font-size: 14px;
+  }
+  .logo {
+    width: 30px;
+    height: 30px;
+  }
+  .main-container {
+    flex-direction: column;
+    padding: 20px 0;
+  }
+  .left-section {
+    padding: 20px;
+    text-align: center;
+  }
+  .left-section h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  .left-section p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+  .left-section ul li {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    padding-left: 25px;
+  }
+  .left-section ul li:before {
+    font-size: 1rem;
+  }
+  .btn-contact {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  .right-section {
+    padding: 20px;
+  }
+  .login-container {
+    padding: 30px 20px;
+    max-width: 100%;
+  }
+  .login-header h3 {
+    font-size: 1.5rem;
+  }
+  .login-header p {
+    font-size: 13px;
+  }
+  .btn-login {
+    padding: 10px;
+    font-size: 14px;
+  }
+  .signup-link {
+    font-size: 13px;
+  }
+}
