@@ -58,35 +58,6 @@ body {
   font-weight: 600;
 }
 
-.admin-section {
-  position: absolute;
-  bottom: 20px;
-  left: 24px;
-  right: 24px;
-}
-
-.admin-profile {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  margin-bottom: 12px;
-}
-
-.admin-avatar {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: var(--text-light);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #11998e;
-}
-
 .logout-btn {
   width: 100%;
   background: rgba(255, 255, 255, 0.2);
