@@ -1,5 +1,5 @@
+<?php session_start(); ?>
 <!-- Sidebar -->
-
 <link rel="stylesheet" href="../../src/css/sidebar.css">
 <div class="sidebar d-flex flex-column" id="sidebar">
     <div class="logo d-flex align-items-center">
@@ -32,12 +32,12 @@
 
     <div class="collapse show mt-3" id="sidebarContent">
         <div class="d-flex flex-column h-100">
-            <div class="admin-section mt-auto">
-                <div class="admin-profile">
-                    <div class="admin-avatar">S</div>
+            <div class="profile-section mt-auto">
+                <div class="profile-profile">
+                    <div class="profile-avatar"><?php echo strtoupper(substr($_SESSION['firstname'], 0, 1)); ?></div>
                     <div>
-                        <div class="fw-bold">STUDENT</div>
-                        <small class="opacity-75">student@libro.com</small>
+                        <div class="fw-bold" style="text-transform: uppercase;"><?php echo $_SESSION['user_type']; ?></div>
+                        <small class="opacity-75"><?php echo $_SESSION['firstname']; ?></small>
                     </div>
                 </div>
                 <button class="btn logout-btn">
