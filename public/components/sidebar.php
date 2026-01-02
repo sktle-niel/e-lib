@@ -1,4 +1,3 @@
-<?php session_start(); ?>
 <!-- Sidebar -->
 <link rel="stylesheet" href="../../src/css/sidebar.css">
 <div class="sidebar d-flex flex-column" id="sidebar">
@@ -40,7 +39,7 @@
                         <small class="opacity-75"><?php echo $_SESSION['firstname']; ?></small>
                     </div>
                 </div>
-                <button class="btn logout-btn">
+                <button class="btn logout-btn" id="logoutBtn">
                     <i class="bi bi-box-arrow-right me-2"></i>Logout
                 </button>
             </div>
@@ -67,6 +66,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (mainContent) {
             mainContent.style.marginLeft = '80px';
         }
+    });
+
+    // Logout functionality
+    const logoutBtn = document.getElementById('logoutBtn');
+    logoutBtn.addEventListener('click', function() {
+        window.location.href = '../auth/logout.php';
     });
 });
 </script>
