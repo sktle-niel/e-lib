@@ -1,3 +1,6 @@
+<?php
+include '../auth/sessionCheck.php';
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,6 +15,7 @@
     $currentPage = isset($_GET['page']) ? $_GET['page'] : 'dashboard';
     include 'components/sidebar.php';
 
+    define('MAIN_PAGE', true);
     switch ($currentPage) {
         case 'dashboard':
             include 'links/dashboard.php';

@@ -1,4 +1,7 @@
 <?php
+if (!defined('MAIN_PAGE')) {
+    include '../../auth/sessionCheck.php';
+}
 include '../back-end/read/profileData.php';
 ?>
 

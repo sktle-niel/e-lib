@@ -1,5 +1,7 @@
 <?php
-$currentPage = 'Dashboard';
+if (!defined('MAIN_PAGE')) {
+    include '../../auth/sessionCheck.php';
+}
 
 $stats = [
     ['title' => 'Available Books', 'value' => '1200', 'subtitle' => 'Books available for download', 'icon' => 'bi-check-circle', 'iconClass' => 'icon-blue'],
