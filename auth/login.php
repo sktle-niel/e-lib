@@ -52,7 +52,7 @@
                         <p>Please login to your account</p>
                     </div>
 
-                    <form action="../back-end/read/readLogin.php" method="POST">
+                    <form action="../../back-end/read/readLogin.php" method="POST">
                         <div class="mb-3">
                             <label for="username" class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" name="username"
@@ -79,7 +79,7 @@
                     </form>
 
                     <div class="signup-link">
-                        Don't have an account? <a href="../public/signup.php">Sign up</a>
+                        Don't have an account? <a href="../public/student/signup.php">Sign up</a>
                     </div>
                 </div>
             </div>

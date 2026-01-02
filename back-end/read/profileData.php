@@ -1,7 +1,7 @@
 <?php
 $currentPage = 'Profile';
 
-include '../config/connection.php';
+include '../../config/connection.php';
 
 $user_id = $_SESSION['user_id'];
 $stmt = $conn->prepare("SELECT id, profile_picture, firstname, lastname, username, password, program, user_type, created_at FROM users WHERE id = ?");
