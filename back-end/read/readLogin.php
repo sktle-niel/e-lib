@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['user_type'] = $user['user_type'];
             $_SESSION['firstname'] = $user['firstname'];
             $_SESSION['lastname'] = $user['lastname'];
-            header("Location: ../../public/main.php");
+            header("Location: ../../public/student/main.php");
             exit;
         }
     }

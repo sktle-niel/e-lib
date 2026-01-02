@@ -7,7 +7,7 @@
         </button>
         <span class="logo-content">
             <i class="bi bi-book-fill"></i>
-            <span class="ms-2 logo-text">Libro</span>
+            <span class="ms-2 logo-text">PTCI</span>
         </span>
     </div>
 
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Logout functionality
     const logoutBtn = document.getElementById('logoutBtn');
     logoutBtn.addEventListener('click', function() {
-        window.location.href = '../auth/logout.php';
+        window.location.href = '../../auth/logout.php';
     });
 });
 </script>
