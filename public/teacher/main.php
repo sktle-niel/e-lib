@@ -6,7 +6,7 @@ include '../../auth/sessionCheck.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Libro - Student Portal</title>
+    <title>PTCI - Teacher Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
@@ -20,20 +20,11 @@ include '../../auth/sessionCheck.php';
         case 'dashboard':
             include 'links/dashboard.php';
             break;
-        case 'recent':
-            include 'links/recent.php';
+        case 'upload_modules':
+            include 'links/uploadModules.php';
             break;
-        case 'modules':
-            include 'links/modules.php';
-            break;
-        case 'books':
-            include 'links/books.php';
-            break;
-        case 'downloads':
-            include 'links/downloads.php';
-            break;
-        case 'borrowed':
-            include 'links/borrowed.php';
+        case 'upload_books':
+            include 'links/uploadBooks.php';
             break;
         case 'profile':
             include 'links/profile.php';

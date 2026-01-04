@@ -4,27 +4,17 @@ if (!defined('MAIN_PAGE')) {
 }
 
 $stats = [
-    ['title' => 'Available Books', 'value' => '1200', 'subtitle' => 'Books available for download', 'icon' => 'bi-check-circle', 'iconClass' => 'icon-blue'],
-    ['title' => 'Your Downloads', 'value' => '15420', 'subtitle' => 'Books downloaded since launch', 'icon' => 'bi-download', 'iconClass' => 'icon-green'],
-    ['title' => 'New Additions', 'value' => '45', 'subtitle' => 'New books added this week', 'icon' => 'bi-plus-circle', 'iconClass' => 'icon-red'],
-    ['title' => 'Your Profile', 'value' => '1250', 'subtitle' => 'Books downloaded this month', 'icon' => 'bi-person', 'iconClass' => 'icon-orange']
+    ['title' => 'Modules Uploaded', 'value' => '5', 'subtitle' => 'Modules you have uploaded', 'icon' => 'bi-check-circle', 'iconClass' => 'icon-blue'],
+    ['title' => 'Books Uploaded', 'value' => '12', 'subtitle' => 'Books you have uploaded', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
+    ['title' => 'Total Downloads', 'value' => '3200', 'subtitle' => 'Downloads of your content', 'icon' => 'bi-download', 'iconClass' => 'icon-red'],
+    ['title' => 'Your Profile', 'value' => '1250', 'subtitle' => 'Profile views this month', 'icon' => 'bi-person', 'iconClass' => 'icon-orange']
 ];
 
-$recentBooks = [
+$uploadedBooks = [
     ['title' => 'Introduction to Algorithms', 'author' => 'Cormen et al.', 'cover' => 'https://via.placeholder.com/150x200/11998e/ffffff?text=Algo', 'available' => true],
     ['title' => 'Computer Networks', 'author' => 'Andrew Tanenbaum', 'cover' => 'https://via.placeholder.com/150x200/38ef7d/000000?text=Networks', 'available' => true],
     ['title' => 'Database System Concepts', 'author' => 'Silberschatz et al.', 'cover' => 'https://via.placeholder.com/150x200/f093fb/000000?text=DB', 'available' => false],
     ['title' => 'Operating Systems', 'author' => 'William Stallings', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=OS', 'available' => true]
-];
-
-$borrowedBooks = [
-    ['title' => 'Data Structures and Algorithms', 'dueDate' => '2024-01-15', 'status' => 'On Time'],
-    ['title' => 'Software Engineering', 'dueDate' => '2024-01-10', 'status' => 'Due Soon']
-];
-
-$downloads = [
-    ['title' => 'Machine Learning Basics', 'downloadDate' => '2024-01-05', 'size' => '2.5 MB'],
-    ['title' => 'Web Development Guide', 'downloadDate' => '2024-01-03', 'size' => '1.8 MB']
 ];
 ?>
 
@@ -65,15 +55,15 @@ $downloads = [
 
     <!-- Content Grid -->
     <div class="row g-4">
-        <!-- Recent Books -->
-        <div class="col-lg-8">
+        <!-- Uploaded Books -->
+        <div class="col-lg-12">
             <div class="card card-custom">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="card-title fw-bold mb-0">Recent Books</h5>
+                        <h5 class="card-title fw-bold mb-0">Uploaded Books</h5>
                     </div>
                     <div class="row g-3">
-                        <?php foreach($recentBooks as $book): ?>
+                        <?php foreach($uploadedBooks as $book): ?>
                         <div class="col-md-3">
                             <div class="card h-100 border-0 shadow-sm">
                                 <img src="<?php echo $book['cover']; ?>" class="card-img-top" alt="<?php echo $book['title']; ?>" style="height: 200px; object-fit: cover;">
@@ -95,27 +85,6 @@ $downloads = [
                         </div>
                         <?php endforeach; ?>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Downloads -->
-        <div class="col-lg-4">
-            <div class="card card-custom">
-                <div class="card-body">
-                    <h5 class="card-title fw-bold mb-3">Recent Downloads</h5>
-                    <?php foreach($downloads as $download): ?>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <h6 class="mb-1"><?php echo $download['title']; ?></h6>
-                            <small class="text-muted"><?php echo $download['downloadDate']; ?> • <?php echo $download['size']; ?></small>
-                        </div>
-                        <button class="btn btn-sm btn-outline-secondary">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </div>
-                    <?php endforeach; ?>
-
                 </div>
             </div>
         </div>

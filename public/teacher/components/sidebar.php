@@ -15,17 +15,11 @@
         <a href="?page=dashboard" class="nav-item <?php echo $currentPage == 'dashboard' ? 'active' : ''; ?>">
             <i class="bi bi-speedometer2"></i> <span class="nav-text">Dashboard</span>
         </a>
-        <a href="?page=recent" class="nav-item <?php echo $currentPage == 'recent' ? 'active' : ''; ?>">
-            <i class="bi bi-book-half"></i> <span class="nav-text">Recent</span>
+        <a href="?page=upload_modules" class="nav-item <?php echo $currentPage == 'upload_modules' ? 'active' : ''; ?>">
+            <i class="bi bi-upload"></i> <span class="nav-text">Upload Modules</span>
         </a>
-        <a href="?page=modules" class="nav-item <?php echo $currentPage == 'modules' ? 'active' : ''; ?>">
-            <i class="bi bi-journal"></i> <span class="nav-text">Modules</span>
-        </a>
-        <a href="?page=books" class="nav-item <?php echo $currentPage == 'books' ? 'active' : ''; ?>">
-            <i class="bi bi-book"></i> <span class="nav-text">Books</span>
-        </a>
-        <a href="?page=downloads" class="nav-item <?php echo $currentPage == 'downloads' ? 'active' : ''; ?>">
-            <i class="bi bi-download"></i> <span class="nav-text">Downloads</span>
+        <a href="?page=upload_books" class="nav-item <?php echo $currentPage == 'upload_books' ? 'active' : ''; ?>">
+            <i class="bi bi-upload"></i> <span class="nav-text">Upload Books</span>
         </a>
         <a href="?page=profile" class="nav-item <?php echo $currentPage == 'profile' ? 'active' : ''; ?>">
             <i class="bi bi-person"></i> <span class="nav-text">Profile</span>
