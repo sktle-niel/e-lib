@@ -1,4 +1,4 @@
-- [x] Update 'public/components/sidebar.php' to display user_type and full name from session variables
-- [x] Change profile avatar to first letter of firstname
-- [x] Add session_start() at the top of sidebar.php if not present
-- [x] Test the changes by logging in and verifying sidebar display
+- [x] Add 'cover' field to $modules array with placeholder URLs
+- [x] Update PHP card display to include <img> tag above card-body
+- [x] Update JavaScript AJAX innerHTML to include <img> tag
+- [x] Fix button consistency in JS (change Unenroll to Download, remove disabled since no available field)
