@@ -79,7 +79,7 @@
                     </form>
 
                     <div class="signup-link">
-                        Don't have an account? <a href="../public/student/signup.php">Sign up</a>
+                        Don't have an account? <a href="../public/signup.php">Sign up</a>
                     </div>
                 </div>
             </div>
