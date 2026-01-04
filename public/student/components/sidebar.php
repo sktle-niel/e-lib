@@ -18,6 +18,9 @@
         <a href="?page=recent" class="nav-item <?php echo $currentPage == 'recent' ? 'active' : ''; ?>">
             <i class="bi bi-book-half"></i> <span class="nav-text">Recent</span>
         </a>
+        <a href="?page=modules" class="nav-item <?php echo $currentPage == 'modules' ? 'active' : ''; ?>">
+            <i class="bi bi-journal"></i> <span class="nav-text">Modules</span>
+        </a>
         <a href="?page=books" class="nav-item <?php echo $currentPage == 'books' ? 'active' : ''; ?>">
             <i class="bi bi-book"></i> <span class="nav-text">Books</span>
         </a>

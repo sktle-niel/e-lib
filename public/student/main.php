@@ -20,6 +20,12 @@ include '../../auth/sessionCheck.php';
         case 'dashboard':
             include 'links/dashboard.php';
             break;
+        case 'recent':
+            include 'links/recent.php';
+            break;
+        case 'modules':
+            include 'links/modules.php';
+            break;
         case 'books':
             include 'links/books.php';
             break;
