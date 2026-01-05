@@ -2,59 +2,18 @@
 if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
+include '../../back-end/read/readModules.php';
+
 $currentPage = 'Upload Modules';
 
-$allModules = [
-    ['title' => 'Introduction to Programming', 'subject' => 'Computer Science', 'cover' => 'https://via.placeholder.com/150x200/11998e/ffffff?text=IntroProg', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Data Structures and Algorithms', 'subject' => 'Computer Science', 'cover' => 'https://via.placeholder.com/150x200/38ef7d/000000?text=DSA', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Database Management Systems', 'subject' => 'Information Systems', 'cover' => 'https://via.placeholder.com/150x200/f093fb/000000?text=DBMS', 'available' => false, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Web Development Fundamentals', 'subject' => 'Computer Science', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=WebDev', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Software Engineering Principles', 'subject' => 'Computer Science', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=SE', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Network Administration', 'subject' => 'Information Technology', 'cover' => 'https://via.placeholder.com/150x200/dc3545/ffffff?text=NetAdmin', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Information Systems Analysis', 'subject' => 'Information Systems', 'cover' => 'https://via.placeholder.com/150x200/ffc107/000000?text=ISA', 'available' => false, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Mobile Application Development', 'subject' => 'Computer Science', 'cover' => 'https://via.placeholder.com/150x200/17a2b8/ffffff?text=Mobile', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Cybersecurity Basics', 'subject' => 'Information Technology', 'cover' => 'https://via.placeholder.com/150x200/6f42c1/ffffff?text=Cyber', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Business Process Management', 'subject' => 'Information Systems', 'cover' => 'https://via.placeholder.com/150x200/e83e8c/ffffff?text=BPM', 'available' => true, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Artificial Intelligence Concepts', 'subject' => 'Computer Science', 'cover' => 'https://via.placeholder.com/150x200/20c997/000000?text=AI', 'available' => false, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Cloud Computing Technologies', 'subject' => 'Information Technology', 'cover' => 'https://via.placeholder.com/150x200/fd7e14/ffffff?text=Cloud', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Data Analytics', 'subject' => 'Information Systems', 'cover' => 'https://via.placeholder.com/150x200/6c757d/ffffff?text=Analytics', 'available' => true, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Internet of Things', 'subject' => 'Computer Science', 'cover' => 'https://via.placeholder.com/150x200/007bff/ffffff?text=IoT', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Digital Marketing', 'subject' => 'Business', 'cover' => 'https://via.placeholder.com/150x200/6610f2/ffffff?text=DigitalMkt', 'available' => false, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Project Management', 'subject' => 'Business', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=PM', 'available' => true, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Computer Graphics', 'subject' => 'Computer Science', 'cover' => 'https://via.placeholder.com/150x200/6f42c1/ffffff?text=CG', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'E-commerce Systems', 'subject' => 'Information Systems', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=Ecom', 'available' => true, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Machine Learning', 'subject' => 'Computer Science', 'cover' => 'https://via.placeholder.com/150x200/dc3545/ffffff?text=ML', 'available' => false, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Network Security', 'subject' => 'Information Technology', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=NetSec', 'available' => true, 'course' => 'BSIT', 'year' => 2023]
-];
-
-// Filter modules based on search query, course, and year
-$searchQuery = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : '';
+// Get search and filter parameters
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 $courseFilter = isset($_GET['course']) ? $_GET['course'] : '';
 $yearFilter = isset($_GET['year']) ? (int)$_GET['year'] : '';
-$filteredModules = $allModules;
 
-if ($searchQuery || $courseFilter || $yearFilter) {
-    $filteredModules = array_filter($allModules, function($module) use ($searchQuery, $courseFilter, $yearFilter) {
-        $matchesSearch = !$searchQuery || strpos(strtolower($module['title']), $searchQuery) !== false || strpos(strtolower($module['subject']), $searchQuery) !== false;
-        $matchesCourse = !$courseFilter || $module['course'] === $courseFilter;
-        $matchesYear = !$yearFilter || $module['year'] === $yearFilter;
-        return $matchesSearch && $matchesCourse && $matchesYear;
-    });
-}
-
-// Handle AJAX requests for pagination
-if (isset($_GET['ajax'])) {
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $perPage = 12; // 3 rows * 4 cards
-    $offset = ($page - 1) * $perPage;
-    $modulesToShow = array_slice($filteredModules, $offset, $perPage);
-    echo json_encode($modulesToShow);
-    exit;
-}
-
-// For initial load, show first 12 modules
-$initialModules = array_slice($filteredModules, 0, 12);
-$totalModules = count($filteredModules);
+// Get initial modules for display
+$initialModules = getAllModules($searchQuery, $courseFilter, $yearFilter, 12, 0);
+$totalModules = getModulesCount($searchQuery, $courseFilter, $yearFilter);
 $hasMore = $totalModules > 12;
 ?>
 
@@ -109,7 +68,7 @@ $hasMore = $totalModules > 12;
     <div class="mb-4">
         <form method="GET" action="" class="d-flex">
             <input type="hidden" name="page" value="upload_modules">
-            <input type="text" name="search" class="form-control me-2" style="max-width: 300px;" placeholder="Search modules by title or subject..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+            <input type="text" name="search" class="form-control me-2" style="max-width: 300px;" placeholder="Search modules by title..." value="<?php echo htmlspecialchars($searchQuery); ?>">
             <select name="course" class="form-select me-2" style="max-width: 150px;">
                 <option value="">All Courses</option>
                 <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
@@ -142,7 +101,7 @@ $hasMore = $totalModules > 12;
                 <img src="<?php echo $module['cover']; ?>" class="card-img-top" alt="<?php echo $module['title']; ?>" style="height: 200px; object-fit: cover;">
                 <div class="card-body p-3">
                     <h6 class="card-title fw-bold mb-1"><?php echo $module['title']; ?></h6>
-                    <p class="card-text text-muted small mb-2"><?php echo $module['subject']; ?></p>
+                    <p class="card-text text-muted small mb-2"><?php echo $module['course']; ?> - <?php echo date('M d, Y', strtotime($module['uploadedDate'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
                             <button class="btn btn-sm btn-outline-primary me-1" title="View">
@@ -244,7 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         '<img src="' + module.cover + '" class="card-img-top" alt="' + module.title + '" style="height: 200px; object-fit: cover;">' +
                         '<div class="card-body p-3">' +
                             '<h6 class="card-title fw-bold mb-1">' + module.title + '</h6>' +
-                            '<p class="card-text text-muted small mb-2">' + module.subject + '</p>' +
+                            '<p class="card-text text-muted small mb-2">' + module.course + ' - ' + new Date(module.uploadedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + '</p>' +
                             '<div class="d-flex justify-content-end">' +
                                 '<div>' +
                                     '<button class="btn btn-sm btn-outline-primary me-1" title="View">' +
