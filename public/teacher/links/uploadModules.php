@@ -75,10 +75,12 @@ $hasMore = $totalModules > 12;
     <div class="mb-4">
         <form id="uploadModuleForm" enctype="multipart/form-data" class="row g-3">
             <div class="col-md-4">
-                <input type="text" name="title" class="form-control" placeholder="Enter module title..." required>
+                <label for="title" class="form-label">Module Title</label>
+                <input type="text" name="title" id="title" class="form-control" placeholder="Enter module title..." required>
             </div>
             <div class="col-md-3">
-                <select name="course" class="form-select" required>
+                <label for="course" class="form-label">Course</label>
+                <select name="course" id="course" class="form-select" required>
                     <option value="">Select Course</option>
                     <option value="BSIT">BSIT</option>
                     <option value="BSIS">BSIS</option>
@@ -89,9 +91,11 @@ $hasMore = $totalModules > 12;
                 </select>
             </div>
             <div class="col-md-3">
-                <input type="file" name="module_file" class="form-control" accept=".pdf" required>
+                <label for="module_file" class="form-label">Module File</label>
+                <input type="file" name="module_file" id="module_file" class="form-control" accept=".pdf" required>
             </div>
             <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
                 <button type="submit" class="btn btn-success w-100">
                     <i class="bi bi-upload me-2"></i>Upload
                 </button>
