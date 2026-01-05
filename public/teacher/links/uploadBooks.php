@@ -75,10 +75,12 @@ $hasMore = $totalBooks > 12;
     <div class="mb-4">
         <form method="POST" action="" enctype="multipart/form-data" class="row g-3">
             <div class="col-md-2">
-                <input type="text" name="book_title" class="form-control" placeholder="Enter book title..." required>
+                <label for="book_title" class="form-label">Book Title</label>
+                <input type="text" name="book_title" id="book_title" class="form-control" placeholder="Enter book title..." required>
             </div>
             <div class="col-md-2">
-                <select name="book_course" class="form-select" required>
+                <label for="book_course" class="form-label">Course</label>
+                <select name="book_course" id="book_course" class="form-select" required>
                     <option value="">Select Course</option>
                     <option value="BSIT">BSIT</option>
                     <option value="BSIS">BSIS</option>
@@ -89,13 +91,20 @@ $hasMore = $totalBooks > 12;
                 </select>
             </div>
             <div class="col-md-2">
-                <input type="text" name="author" class="form-control" placeholder="Enter author..." required>
+                <label for="author" class="form-label">Author</label>
+                <input type="text" name="author" id="author" class="form-control" placeholder="Enter author..." required>
             </div>
             <div class="col-md-2">
-                <input type="date" name="date" class="form-control" required>
+                <label for="publish_date" class="form-label">Publish Date</label>
+                <input type="date" name="publish_date" id="publish_date" class="form-control" placeholder="Publish date..." required>
             </div>
             <div class="col-md-2">
-                <input type="file" name="book_file" class="form-control" accept=".pdf" required>
+                <label for="date" class="form-label">Upload Date</label>
+                <input type="date" name="date" id="date" class="form-control" required>
+            </div>
+            <div class="col-md-2">
+                <label for="book_file" class="form-label">Book File</label>
+                <input type="file" name="book_file" id="book_file" class="form-control" accept=".pdf" required>
             </div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-success w-100">
