@@ -1,7 +1,7 @@
 <?php
 include '../../config/connection.php';
 
-function getAllBooks($search = '', $course = '', $year = '', $limit = null, $offset = 0) {
+function getAllBooks($search = '', $course = '', $year = '', $publishYear = '', $limit = null, $offset = 0) {
     global $conn;
 
     $sql = "SELECT id, title, author, course, publish_date, file_path, cover, created_at FROM books WHERE 1=1";
@@ -22,8 +22,14 @@ function getAllBooks($search = '', $course = '', $year = '', $limit = null, $off
     }
 
     if (!empty($year)) {
-        $sql .= " AND YEAR(publish_date) = ?";
+        $sql .= " AND YEAR(created_at) = ?";
         $params[] = $year;
+        $types .= 'i';
+    }
+
+    if (!empty($publishYear)) {
+        $sql .= " AND YEAR(publish_date) = ?";
+        $params[] = $publishYear;
         $types .= 'i';
     }
 
@@ -103,11 +109,12 @@ if (isset($_GET['ajax'])) {
     $search = isset($_GET['search']) ? trim($_GET['search']) : '';
     $course = isset($_GET['course']) ? $_GET['course'] : '';
     $year = isset($_GET['year']) ? (int)$_GET['year'] : '';
+    $publishYear = isset($_GET['publish_year']) ? (int)$_GET['publish_year'] : '';
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $perPage = 12;
     $offset = ($page - 1) * $perPage;
 
-    $books = getAllBooks($search, $course, $year, $perPage, $offset);
+    $books = getAllBooks($search, $course, $year, $publishYear, $perPage, $offset);
     header('Content-Type: application/json');
     echo json_encode($books);
     exit;

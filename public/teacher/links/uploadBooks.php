@@ -11,13 +11,14 @@ include '../../back-end/read/readBooks.php';
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 $courseFilter = isset($_GET['course']) ? $_GET['course'] : '';
 $yearFilter = isset($_GET['year']) ? (int)$_GET['year'] : '';
+$publishYearFilter = isset($_GET['publish_year']) ? (int)$_GET['publish_year'] : '';
 
 // Get total count for pagination
-$totalBooks = getBooksCount($searchQuery, $courseFilter, $yearFilter);
+$totalBooks = getBooksCount($searchQuery, $courseFilter, $yearFilter, $publishYearFilter);
 $hasMore = $totalBooks > 12;
 
 // For initial load, show first 12 books
-$initialBooks = getAllBooks($searchQuery, $courseFilter, $yearFilter, 12, 0);
+$initialBooks = getAllBooks($searchQuery, $courseFilter, $yearFilter, $publishYearFilter, 12, 0);
 ?>
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
@@ -77,30 +78,50 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $yearFilter, 12, 0);
 
     <!-- Search Form -->
     <div class="mb-4">
-        <form method="GET" action="" class="d-flex">
+        <form method="GET" action="" class="row g-3">
             <input type="hidden" name="page" value="upload_books">
-            <input type="text" name="search" class="form-control me-2" style="max-width: 300px;" placeholder="Search books by title or author..." value="<?php echo htmlspecialchars($searchQuery); ?>">
-            <select name="course" class="form-select me-2" style="max-width: 150px;">
-                <option value="">All Courses</option>
-                <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
-                <option value="BSIS" <?php echo $courseFilter === 'BSIS' ? 'selected' : ''; ?>>BSIS</option>
-                <option value="ACT" <?php echo $courseFilter === 'ACT' ? 'selected' : ''; ?>>ACT</option>
-                <option value="SHS" <?php echo $courseFilter === 'SHS' ? 'selected' : ''; ?>>SHS</option>
-                <option value="BSHM" <?php echo $courseFilter === 'BSHM' ? 'selected' : ''; ?>>BSHM</option>
-                <option value="BSOA" <?php echo $courseFilter === 'BSOA' ? 'selected' : ''; ?>>BSOA</option>
-            </select>
-            <select name="year" class="form-select me-2" style="max-width: 120px;">
-                <option value="">All Years</option>
-                <?php for ($y = 2000; $y <= 2026; $y++): ?>
-                    <option value="<?php echo $y; ?>" <?php echo $yearFilter === $y ? 'selected' : ''; ?>><?php echo $y; ?></option>
-                <?php endfor; ?>
-            </select>
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-search"></i> Search
-            </button>
-            <?php if ($searchQuery || $courseFilter || $yearFilter): ?>
-                <a href="?page=upload_books" class="btn btn-outline-secondary ms-2">Clear</a>
-            <?php endif; ?>
+            <div class="col-md-3">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" name="search" id="search" class="form-control" placeholder="Search books by title or author..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+            </div>
+            <div class="col-md-2">
+                <label for="course" class="form-label">Course</label>
+                <select name="course" id="course" class="form-select">
+                    <option value="">All Courses</option>
+                    <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
+                    <option value="BSIS" <?php echo $courseFilter === 'BSIS' ? 'selected' : ''; ?>>BSIS</option>
+                    <option value="ACT" <?php echo $courseFilter === 'ACT' ? 'selected' : ''; ?>>ACT</option>
+                    <option value="SHS" <?php echo $courseFilter === 'SHS' ? 'selected' : ''; ?>>SHS</option>
+                    <option value="BSHM" <?php echo $courseFilter === 'BSHM' ? 'selected' : ''; ?>>BSHM</option>
+                    <option value="BSOA" <?php echo $courseFilter === 'BSOA' ? 'selected' : ''; ?>>BSOA</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="year" class="form-label">Upload Year</label>
+                <select name="year" id="year" class="form-select">
+                    <option value="">All Years</option>
+                    <?php for ($y = 2000; $y <= 2026; $y++): ?>
+                        <option value="<?php echo $y; ?>" <?php echo $yearFilter === $y ? 'selected' : ''; ?>><?php echo $y; ?></option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="publish_year" class="form-label">Publish Year</label>
+                <select name="publish_year" id="publish_year" class="form-select">
+                    <option value="">All Years</option>
+                    <?php for ($y = 2000; $y <= 2026; $y++): ?>
+                        <option value="<?php echo $y; ?>" <?php echo $publishYearFilter === $y ? 'selected' : ''; ?>><?php echo $y; ?></option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                <?php if ($searchQuery || $courseFilter || $yearFilter || $publishYearFilter): ?>
+                    <a href="?page=upload_books" class="btn btn-outline-secondary">Clear</a>
+                <?php endif; ?>
+            </div>
         </form>
     </div>
 
@@ -157,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let searchQuery = '<?php echo addslashes($searchQuery); ?>';
     let courseFilter = '<?php echo addslashes($courseFilter); ?>';
     let yearFilter = '<?php echo $yearFilter; ?>';
+    let publishYearFilter = '<?php echo $publishYearFilter; ?>';
 
     // Handle form submission
     const uploadForm = document.getElementById('uploadBookForm');
@@ -206,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('loading').style.display = 'block';
 
         currentPage++;
-        const url = `?page=books&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&year=${yearFilter}`;
+        const url = `?page=books&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&year=${yearFilter}&publish_year=${publishYearFilter}`;
 
         fetch(url)
             .then(response => response.json())
