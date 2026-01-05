@@ -1,0 +1,13 @@
+{
+  "name": "e-library",
+  "description": "E-library project",
+  "type": "project",
+  "require": {
+    "spatie/pdf-to-image": "^3.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  }
+}
