@@ -4,75 +4,31 @@ if (!defined('MAIN_PAGE')) {
 }
 $currentPage = 'Books';
 
-$allBooks = [
-    ['title' => 'Introduction to Algorithms', 'author' => 'Cormen et al.', 'cover' => 'https://via.placeholder.com/150x200/11998e/ffffff?text=Algo', 'available' => true, 'course' => 'BSIT', 'year' => 2009],
-    ['title' => 'Computer Networks', 'author' => 'Andrew Tanenbaum', 'cover' => 'https://via.placeholder.com/150x200/38ef7d/000000?text=Networks', 'available' => true, 'course' => 'BSIT', 'year' => 2011],
-    ['title' => 'Database System Concepts', 'author' => 'Silberschatz et al.', 'cover' => 'https://via.placeholder.com/150x200/f093fb/000000?text=DB', 'available' => false, 'course' => 'BSIS', 'year' => 2010],
-    ['title' => 'Operating Systems', 'author' => 'William Stallings', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=OS', 'available' => true, 'course' => 'BSIT', 'year' => 2012],
-    ['title' => 'Artificial Intelligence', 'author' => 'Stuart Russell', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=AI', 'available' => true, 'course' => 'BSIT', 'year' => 2010],
-    ['title' => 'Machine Learning', 'author' => 'Tom Mitchell', 'cover' => 'https://via.placeholder.com/150x200/dc3545/ffffff?text=ML', 'available' => true, 'course' => 'BSIT', 'year' => 1997],
-    ['title' => 'Data Structures', 'author' => 'Mark Allen Weiss', 'cover' => 'https://via.placeholder.com/150x200/ffc107/000000?text=DS', 'available' => false, 'course' => 'BSIT', 'year' => 2006],
-    ['title' => 'Software Engineering', 'author' => 'Ian Sommerville', 'cover' => 'https://via.placeholder.com/150x200/17a2b8/ffffff?text=SE', 'available' => true, 'course' => 'BSIT', 'year' => 2015],
-    ['title' => 'Web Development', 'author' => 'Jon Duckett', 'cover' => 'https://via.placeholder.com/150x200/6f42c1/ffffff?text=Web', 'available' => true, 'course' => 'BSIT', 'year' => 2014],
-    ['title' => 'Cybersecurity', 'author' => 'William Stallings', 'cover' => 'https://via.placeholder.com/150x200/e83e8c/ffffff?text=Cyber', 'available' => true, 'course' => 'BSIT', 'year' => 2017],
-    ['title' => 'Cloud Computing', 'author' => 'Thomas Erl', 'cover' => 'https://via.placeholder.com/150x200/20c997/000000?text=Cloud', 'available' => false, 'course' => 'BSIS', 'year' => 2013],
-    ['title' => 'Big Data', 'author' => 'Viktor Mayer-Schönberger', 'cover' => 'https://via.placeholder.com/150x200/fd7e14/ffffff?text=BigData', 'available' => true, 'course' => 'BSIS', 'year' => 2013],
-    ['title' => 'Blockchain Technology', 'author' => 'Melanie Swan', 'cover' => 'https://via.placeholder.com/150x200/6c757d/ffffff?text=Blockchain', 'available' => true, 'course' => 'BSIT', 'year' => 2015],
-    ['title' => 'Internet of Things', 'author' => 'Adrian McEwen', 'cover' => 'https://via.placeholder.com/150x200/007bff/ffffff?text=IoT', 'available' => true, 'course' => 'BSIT', 'year' => 2014],
-    ['title' => 'Quantum Computing', 'author' => 'Nielsen & Chuang', 'cover' => 'https://via.placeholder.com/150x200/6610f2/ffffff?text=Quantum', 'available' => false, 'course' => 'BSIT', 'year' => 2010],
-    ['title' => 'DevOps Handbook', 'author' => 'Gene Kim', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=DevOps', 'available' => true, 'course' => 'BSIT', 'year' => 2016],
-    ['title' => 'Computer Graphics', 'author' => 'Donald Hearn', 'cover' => 'https://via.placeholder.com/150x200/6f42c1/ffffff?text=CG', 'available' => true, 'course' => 'BSIT', 'year' => 2018],
-    ['title' => 'Mobile App Development', 'author' => 'David Mark', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=Mobile', 'available' => true, 'course' => 'BSIT', 'year' => 2019],
-    ['title' => 'Data Mining', 'author' => 'Jiawei Han', 'cover' => 'https://via.placeholder.com/150x200/dc3545/ffffff?text=DM', 'available' => false, 'course' => 'BSIS', 'year' => 2011],
-    ['title' => 'Network Security', 'author' => 'Charlie Kaufman', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=NetSec', 'available' => true, 'course' => 'BSIT', 'year' => 2013],
-    ['title' => 'Human-Computer Interaction', 'author' => 'Alan Dix', 'cover' => 'https://via.placeholder.com/150x200/17a2b8/ffffff?text=HCI', 'available' => true, 'course' => 'BSIT', 'year' => 2004],
-    ['title' => 'Compiler Design', 'author' => 'Alfred Aho', 'cover' => 'https://via.placeholder.com/150x200/6610f2/ffffff?text=Compiler', 'available' => true, 'course' => 'BSIT', 'year' => 2007],
-    ['title' => 'Discrete Mathematics', 'author' => 'Kenneth Rosen', 'cover' => 'https://via.placeholder.com/150x200/20c997/000000?text=Discrete', 'available' => true, 'course' => 'BSIT', 'year' => 2019],
-    ['title' => 'Information Systems', 'author' => 'Steven Alter', 'cover' => 'https://via.placeholder.com/150x200/fd7e14/ffffff?text=IS', 'available' => false, 'course' => 'BSIS', 'year' => 2014],
-    ['title' => 'Game Development', 'author' => 'Ian Parberry', 'cover' => 'https://via.placeholder.com/150x200/6c757d/ffffff?text=Game', 'available' => true, 'course' => 'BSIT', 'year' => 2005],
-    ['title' => 'Embedded Systems', 'author' => 'Edward Lee', 'cover' => 'https://via.placeholder.com/150x200/007bff/ffffff?text=Embedded', 'available' => true, 'course' => 'BSIT', 'year' => 2017],
-    ['title' => 'Digital Signal Processing', 'author' => 'Alan Oppenheim', 'cover' => 'https://via.placeholder.com/150x200/e83e8c/ffffff?text=DSP', 'available' => true, 'course' => 'BSIT', 'year' => 1999],
-    ['title' => 'Business Intelligence', 'author' => 'Efraim Turban', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=BI', 'available' => true, 'course' => 'BSIS', 'year' => 2011],
-    ['title' => 'Software Testing', 'author' => 'Paul C. Jorgensen', 'cover' => 'https://via.placeholder.com/150x200/dc3545/ffffff?text=Testing', 'available' => false, 'course' => 'BSIT', 'year' => 2013],
-    ['title' => 'Cryptography', 'author' => 'Jonathan Katz', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=Crypto', 'available' => true, 'course' => 'BSIT', 'year' => 2014],
-    ['title' => 'Parallel Computing', 'author' => 'Michael Quinn', 'cover' => 'https://via.placeholder.com/150x200/17a2b8/ffffff?text=Parallel', 'available' => true, 'course' => 'BSIT', 'year' => 2004],
-    ['title' => 'Computer Vision', 'author' => 'Richard Szeliski', 'cover' => 'https://via.placeholder.com/150x200/6610f2/ffffff?text=Vision', 'available' => true, 'course' => 'BSIT', 'year' => 2010],
-    ['title' => 'Natural Language Processing', 'author' => 'Christopher Manning', 'cover' => 'https://via.placeholder.com/150x200/20c997/000000?text=NLP', 'available' => true, 'course' => 'BSIT', 'year' => 2020],
-    ['title' => 'Robotics', 'author' => 'Mathew N.O. Sadiku', 'cover' => 'https://via.placeholder.com/150x200/fd7e14/ffffff?text=Robotics', 'available' => false, 'course' => 'BSIT', 'year' => 2018],
-    ['title' => 'Bioinformatics', 'author' => 'Arthur Lesk', 'cover' => 'https://via.placeholder.com/150x200/6c757d/ffffff?text=Bioinfo', 'available' => true, 'course' => 'BSIT', 'year' => 2014],
-    ['title' => 'E-commerce', 'author' => 'Gary Schneider', 'cover' => 'https://via.placeholder.com/150x200/007bff/ffffff?text=Ecom', 'available' => true, 'course' => 'BSIS', 'year' => 2017],
-    ['title' => 'Database Administration', 'author' => 'Peter Rob', 'cover' => 'https://via.placeholder.com/150x200/e83e8c/ffffff?text=DBA', 'available' => true, 'course' => 'BSIS', 'year' => 2008]
-];
+include '../../back-end/read/readBooks.php';
 
-// Filter books based on search query, course, and year
-$searchQuery = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : '';
+// Get search and filter parameters
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 $courseFilter = isset($_GET['course']) ? $_GET['course'] : '';
-$yearFilter = isset($_GET['year']) ? (int)$_GET['year'] : '';
-$filteredBooks = $allBooks;
+$publishYearFilter = isset($_GET['publish_year']) ? (int)$_GET['publish_year'] : '';
+$uploadYearFilter = isset($_GET['upload_year']) ? (int)$_GET['upload_year'] : '';
 
-if ($searchQuery || $courseFilter || $yearFilter) {
-    $filteredBooks = array_filter($allBooks, function($book) use ($searchQuery, $courseFilter, $yearFilter) {
-        $matchesSearch = !$searchQuery || strpos(strtolower($book['title']), $searchQuery) !== false || strpos(strtolower($book['author']), $searchQuery) !== false;
-        $matchesCourse = !$courseFilter || $book['course'] === $courseFilter;
-        $matchesYear = !$yearFilter || $book['year'] === $yearFilter;
-        return $matchesSearch && $matchesCourse && $matchesYear;
-    });
-}
+// Get total count for pagination
+$totalBooks = getBooksCount($searchQuery, $courseFilter, $publishYearFilter, $uploadYearFilter);
+$hasMore = $totalBooks > 12;
 
 // Handle AJAX requests for pagination
 if (isset($_GET['ajax'])) {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $perPage = 12; // 3 rows * 4 cards
+    $perPage = 12;
     $offset = ($page - 1) * $perPage;
-    $booksToShow = array_slice($filteredBooks, $offset, $perPage);
-    echo json_encode($booksToShow);
+    $books = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $uploadYearFilter, $perPage, $offset);
+    header('Content-Type: application/json');
+    echo json_encode($books);
     exit;
 }
 
 // For initial load, show first 12 books
-$initialBooks = array_slice($filteredBooks, 0, 12);
-$totalBooks = count($filteredBooks);
-$hasMore = $totalBooks > 12;
+$initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $uploadYearFilter, 12, 0);
 ?>
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
@@ -90,30 +46,50 @@ $hasMore = $totalBooks > 12;
 
     <!-- Search Form -->
     <div class="mb-4">
-        <form method="GET" action="" class="d-flex">
+        <form method="GET" action="" class="row g-3">
             <input type="hidden" name="page" value="books">
-            <input type="text" name="search" class="form-control me-2" style="max-width: 300px;" placeholder="Search books by title or author..." value="<?php echo htmlspecialchars($searchQuery); ?>">
-            <select name="course" class="form-select me-2" style="max-width: 150px;">
-                <option value="">All Courses</option>
-                <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
-                <option value="BSIS" <?php echo $courseFilter === 'BSIS' ? 'selected' : ''; ?>>BSIS</option>
-                <option value="ACT" <?php echo $courseFilter === 'ACT' ? 'selected' : ''; ?>>ACT</option>
-                <option value="SHS" <?php echo $courseFilter === 'SHS' ? 'selected' : ''; ?>>SHS</option>
-                <option value="BSHM" <?php echo $courseFilter === 'BSHM' ? 'selected' : ''; ?>>BSHM</option>
-                <option value="BSOA" <?php echo $courseFilter === 'BSOA' ? 'selected' : ''; ?>>BSOA</option>
-            </select>
-            <select name="year" class="form-select me-2" style="max-width: 120px;">
-                <option value="">All Years</option>
-                <?php for ($y = 2000; $y <= 2026; $y++): ?>
-                    <option value="<?php echo $y; ?>" <?php echo $yearFilter === $y ? 'selected' : ''; ?>><?php echo $y; ?></option>
-                <?php endfor; ?>
-            </select>
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-search"></i> Search
-            </button>
-            <?php if ($searchQuery || $courseFilter || $yearFilter): ?>
-                <a href="?page=books" class="btn btn-outline-secondary ms-2">Clear</a>
-            <?php endif; ?>
+            <div class="col-md-3">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" name="search" id="search" class="form-control" placeholder="Search books by title or author..." value="<?php echo htmlspecialchars($searchQuery); ?>">
+            </div>
+            <div class="col-md-2">
+                <label for="course" class="form-label">Course</label>
+                <select name="course" id="course" class="form-select">
+                    <option value="">All Courses</option>
+                    <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
+                    <option value="BSIS" <?php echo $courseFilter === 'BSIS' ? 'selected' : ''; ?>>BSIS</option>
+                    <option value="ACT" <?php echo $courseFilter === 'ACT' ? 'selected' : ''; ?>>ACT</option>
+                    <option value="SHS" <?php echo $courseFilter === 'SHS' ? 'selected' : ''; ?>>SHS</option>
+                    <option value="BSHM" <?php echo $courseFilter === 'BSHM' ? 'selected' : ''; ?>>BSHM</option>
+                    <option value="BSOA" <?php echo $courseFilter === 'BSOA' ? 'selected' : ''; ?>>BSOA</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="publish_year" class="form-label">Publish Year</label>
+                <select name="publish_year" id="publish_year" class="form-select">
+                    <option value="">All Years</option>
+                    <?php for ($y = 2000; $y <= 2026; $y++): ?>
+                        <option value="<?php echo $y; ?>" <?php echo $publishYearFilter === $y ? 'selected' : ''; ?>><?php echo $y; ?></option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label for="upload_year" class="form-label">Upload Year</label>
+                <select name="upload_year" id="upload_year" class="form-select">
+                    <option value="">All Years</option>
+                    <?php for ($y = 2000; $y <= 2026; $y++): ?>
+                        <option value="<?php echo $y; ?>" <?php echo $uploadYearFilter === $y ? 'selected' : ''; ?>><?php echo $y; ?></option>
+                    <?php endfor; ?>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="bi bi-search"></i> Search
+                </button>
+                <?php if ($searchQuery || $courseFilter || $publishYearFilter || $uploadYearFilter): ?>
+                    <a href="?page=books" class="btn btn-outline-secondary">Clear</a>
+                <?php endif; ?>
+            </div>
         </form>
     </div>
 
@@ -125,7 +101,8 @@ $hasMore = $totalBooks > 12;
                 <img src="<?php echo $book['cover']; ?>" class="card-img-top" alt="<?php echo $book['title']; ?>" style="height: 200px; object-fit: cover;">
                 <div class="card-body p-3">
                     <h6 class="card-title fw-bold mb-1"><?php echo $book['title']; ?></h6>
-                    <p class="card-text text-muted small mb-2"><?php echo $book['author']; ?></p>
+                    <p class="card-text text-muted small mb-2"><?php echo $book['course']; ?> - <?php echo date('M d, Y', strtotime($book['created_at'])); ?></p>
+                    <p class="card-text text-muted small mb-2">Published: <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
                             <button class="btn btn-sm btn-outline-primary me-1" title="View">
@@ -198,7 +175,8 @@ document.addEventListener('DOMContentLoaded', function() {
                             <img src="${book.cover}" class="card-img-top" alt="${book.title}" style="height: 200px; object-fit: cover;">
                             <div class="card-body p-3">
                                 <h6 class="card-title fw-bold mb-1">${book.title}</h6>
-                                <p class="card-text text-muted small mb-2">${book.author}</p>
+                                <p class="card-text text-muted small mb-2">${book.course} - ${new Date(book.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                                <p class="card-text text-muted small mb-2">Published: ${new Date(book.publish_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
                                         <button class="btn btn-sm btn-outline-primary me-1" title="View">

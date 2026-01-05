@@ -1,7 +1,7 @@
 <?php
 include '../../config/connection.php';
 
-function getAllBooks($search = '', $course = '', $year = '', $publishYear = '', $limit = null, $offset = 0) {
+function getAllBooks($search = '', $course = '', $publishYear = '', $uploadYear = '', $limit = null, $offset = 0) {
     global $conn;
 
     $sql = "SELECT id, title, author, course, publish_date, file_path, cover, created_at FROM books WHERE 1=1";
@@ -21,15 +21,15 @@ function getAllBooks($search = '', $course = '', $year = '', $publishYear = '', 
         $types .= 's';
     }
 
-    if (!empty($year)) {
-        $sql .= " AND YEAR(created_at) = ?";
-        $params[] = $year;
-        $types .= 'i';
-    }
-
     if (!empty($publishYear)) {
         $sql .= " AND YEAR(publish_date) = ?";
         $params[] = $publishYear;
+        $types .= 'i';
+    }
+
+    if (!empty($uploadYear)) {
+        $sql .= " AND YEAR(created_at) = ?";
+        $params[] = $uploadYear;
         $types .= 'i';
     }
 
@@ -67,7 +67,7 @@ function getAllBooks($search = '', $course = '', $year = '', $publishYear = '', 
     return $books;
 }
 
-function getBooksCount($search = '', $course = '', $year = '') {
+function getBooksCount($search = '', $course = '', $publishYear = '', $uploadYear = '') {
     global $conn;
 
     $sql = "SELECT COUNT(*) as count FROM books WHERE 1=1";
@@ -87,9 +87,15 @@ function getBooksCount($search = '', $course = '', $year = '') {
         $types .= 's';
     }
 
-    if (!empty($year)) {
+    if (!empty($publishYear)) {
         $sql .= " AND YEAR(publish_date) = ?";
-        $params[] = $year;
+        $params[] = $publishYear;
+        $types .= 'i';
+    }
+
+    if (!empty($uploadYear)) {
+        $sql .= " AND YEAR(created_at) = ?";
+        $params[] = $uploadYear;
         $types .= 'i';
     }
 
@@ -108,13 +114,13 @@ function getBooksCount($search = '', $course = '', $year = '') {
 if (isset($_GET['ajax'])) {
     $search = isset($_GET['search']) ? trim($_GET['search']) : '';
     $course = isset($_GET['course']) ? $_GET['course'] : '';
-    $year = isset($_GET['year']) ? (int)$_GET['year'] : '';
     $publishYear = isset($_GET['publish_year']) ? (int)$_GET['publish_year'] : '';
+    $uploadYear = isset($_GET['upload_year']) ? (int)$_GET['upload_year'] : '';
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $perPage = 12;
     $offset = ($page - 1) * $perPage;
 
-    $books = getAllBooks($search, $course, $year, $publishYear, $perPage, $offset);
+    $books = getAllBooks($search, $course, $publishYear, $uploadYear, $perPage, $offset);
     header('Content-Type: application/json');
     echo json_encode($books);
     exit;

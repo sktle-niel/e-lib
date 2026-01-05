@@ -14,11 +14,11 @@ $yearFilter = isset($_GET['year']) ? (int)$_GET['year'] : '';
 $publishYearFilter = isset($_GET['publish_year']) ? (int)$_GET['publish_year'] : '';
 
 // Get total count for pagination
-$totalBooks = getBooksCount($searchQuery, $courseFilter, $yearFilter, $publishYearFilter);
+$totalBooks = getBooksCount($searchQuery, $courseFilter, $publishYearFilter, $yearFilter);
 $hasMore = $totalBooks > 12;
 
 // For initial load, show first 12 books
-$initialBooks = getAllBooks($searchQuery, $courseFilter, $yearFilter, $publishYearFilter, 12, 0);
+$initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $yearFilter, 12, 0);
 ?>
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('loading').style.display = 'block';
 
         currentPage++;
-        const url = `?page=books&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&year=${yearFilter}&publish_year=${publishYearFilter}`;
+        const url = `?page=upload_books&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&publish_year=${publishYearFilter}&upload_year=${yearFilter}`;
 
         fetch(url)
             .then(response => response.json())
