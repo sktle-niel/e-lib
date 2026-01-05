@@ -4,58 +4,20 @@ if (!defined('MAIN_PAGE')) {
 }
 $currentPage = 'Upload Books';
 
-$allBooks = [
-    ['title' => 'Introduction to Programming', 'author' => 'John Doe', 'cover' => 'https://via.placeholder.com/150x200/11998e/ffffff?text=IntroProg', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Data Structures and Algorithms', 'author' => 'Jane Smith', 'cover' => 'https://via.placeholder.com/150x200/38ef7d/000000?text=DSA', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Database Management Systems', 'author' => 'Alice Johnson', 'cover' => 'https://via.placeholder.com/150x200/f093fb/000000?text=DBMS', 'available' => false, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Web Development Fundamentals', 'author' => 'Bob Wilson', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=WebDev', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Software Engineering Principles', 'author' => 'Charlie Brown', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=SE', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Network Administration', 'author' => 'Diana Prince', 'cover' => 'https://via.placeholder.com/150x200/dc3545/ffffff?text=NetAdmin', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Information Systems Analysis', 'author' => 'Eve Adams', 'cover' => 'https://via.placeholder.com/150x200/ffc107/000000?text=ISA', 'available' => false, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Mobile Application Development', 'author' => 'Frank Miller', 'cover' => 'https://via.placeholder.com/150x200/17a2b8/ffffff?text=Mobile', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Cybersecurity Basics', 'author' => 'Grace Lee', 'cover' => 'https://via.placeholder.com/150x200/6f42c1/ffffff?text=Cyber', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Business Process Management', 'author' => 'Henry Ford', 'cover' => 'https://via.placeholder.com/150x200/e83e8c/ffffff?text=BPM', 'available' => true, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Artificial Intelligence Concepts', 'author' => 'Ivy Chen', 'cover' => 'https://via.placeholder.com/150x200/20c997/000000?text=AI', 'available' => false, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Cloud Computing Technologies', 'author' => 'Jack Ryan', 'cover' => 'https://via.placeholder.com/150x200/fd7e14/ffffff?text=Cloud', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Data Analytics', 'author' => 'Kate Moss', 'cover' => 'https://via.placeholder.com/150x200/6c757d/ffffff?text=Analytics', 'available' => true, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Internet of Things', 'author' => 'Liam Neeson', 'cover' => 'https://via.placeholder.com/150x200/007bff/ffffff?text=IoT', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Digital Marketing', 'author' => 'Mia Khalifa', 'cover' => 'https://via.placeholder.com/150x200/6610f2/ffffff?text=DigitalMkt', 'available' => false, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Project Management', 'author' => 'Noah Centineo', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=PM', 'available' => true, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Computer Graphics', 'author' => 'Olivia Wilde', 'cover' => 'https://via.placeholder.com/150x200/6f42c1/ffffff?text=CG', 'available' => true, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'E-commerce Systems', 'author' => 'Peter Parker', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=Ecom', 'available' => true, 'course' => 'BSIS', 'year' => 2023],
-    ['title' => 'Machine Learning', 'author' => 'Quinn Fabray', 'cover' => 'https://via.placeholder.com/150x200/dc3545/ffffff?text=ML', 'available' => false, 'course' => 'BSIT', 'year' => 2023],
-    ['title' => 'Network Security', 'author' => 'Rachel Green', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=NetSec', 'available' => true, 'course' => 'BSIT', 'year' => 2023]
-];
+include '../../back-end/create/uploadBooks.php';
+include '../../back-end/read/readBooks.php';
 
-// Filter books based on search query, course, and year
-$searchQuery = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : '';
+// Get filter parameters
+$searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 $courseFilter = isset($_GET['course']) ? $_GET['course'] : '';
 $yearFilter = isset($_GET['year']) ? (int)$_GET['year'] : '';
-$filteredBooks = $allBooks;
 
-if ($searchQuery || $courseFilter || $yearFilter) {
-    $filteredBooks = array_filter($allBooks, function($book) use ($searchQuery, $courseFilter, $yearFilter) {
-        $matchesSearch = !$searchQuery || strpos(strtolower($book['title']), $searchQuery) !== false || strpos(strtolower($book['author']), $searchQuery) !== false;
-        $matchesCourse = !$courseFilter || $book['course'] === $courseFilter;
-        $matchesYear = !$yearFilter || $book['year'] === $yearFilter;
-        return $matchesSearch && $matchesCourse && $matchesYear;
-    });
-}
-
-// Handle AJAX requests for pagination
-if (isset($_GET['ajax'])) {
-    $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-    $perPage = 12; // 3 rows * 4 cards
-    $offset = ($page - 1) * $perPage;
-    $booksToShow = array_slice($filteredBooks, $offset, $perPage);
-    echo json_encode($booksToShow);
-    exit;
-}
+// Get total count for pagination
+$totalBooks = getBooksCount($searchQuery, $courseFilter, $yearFilter);
+$hasMore = $totalBooks > 12;
 
 // For initial load, show first 12 books
-$initialBooks = array_slice($filteredBooks, 0, 12);
-$totalBooks = count($filteredBooks);
-$hasMore = $totalBooks > 12;
+$initialBooks = getAllBooks($searchQuery, $courseFilter, $yearFilter, 12, 0);
 ?>
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
@@ -73,7 +35,7 @@ $hasMore = $totalBooks > 12;
 
     <!-- Upload Book Form -->
     <div class="mb-4">
-        <form method="POST" action="" enctype="multipart/form-data" class="row g-3">
+        <form id="uploadBookForm" method="POST" action="" enctype="multipart/form-data" class="row g-3">
             <div class="col-md-2">
                 <label for="book_title" class="form-label">Book Title</label>
                 <input type="text" name="book_title" id="book_title" class="form-control" placeholder="Enter book title..." required>
@@ -99,14 +61,11 @@ $hasMore = $totalBooks > 12;
                 <input type="date" name="publish_date" id="publish_date" class="form-control" placeholder="Publish date..." required>
             </div>
             <div class="col-md-2">
-                <label for="date" class="form-label">Upload Date</label>
-                <input type="date" name="date" id="date" class="form-control" required>
-            </div>
-            <div class="col-md-2">
                 <label for="book_file" class="form-label">Book File</label>
                 <input type="file" name="book_file" id="book_file" class="form-control" accept=".pdf" required>
             </div>
             <div class="col-md-2">
+                <label class="form-label">&nbsp;</label>
                 <button type="submit" class="btn btn-success w-100">
                     <i class="bi bi-upload me-2"></i>Upload
                 </button>
@@ -197,6 +156,48 @@ document.addEventListener('DOMContentLoaded', function() {
     let searchQuery = '<?php echo addslashes($searchQuery); ?>';
     let courseFilter = '<?php echo addslashes($courseFilter); ?>';
     let yearFilter = '<?php echo $yearFilter; ?>';
+
+    // Handle form submission
+    const uploadForm = document.getElementById('uploadBookForm');
+    if (uploadForm) {
+        uploadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Uploading...';
+
+            fetch('../../back-end/create/uploadBooks.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Book uploaded successfully!');
+                    // Reset form
+                    uploadForm.reset();
+                    // Optionally reload the page or update the books list
+                    location.reload();
+                } else {
+                    alert('Upload failed: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during upload.');
+            })
+            .finally(() => {
+                // Re-enable button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            });
+        });
+    }
 
     function loadMoreBooks() {
         if (!hasMore) return;
