@@ -7,6 +7,7 @@ $currentPage = 'Upload Books';
 include '../../back-end/create/uploadBooks.php';
 include '../../back-end/read/readBooks.php';
 include '../../back-end/update/editBooks.php';
+include '../../back-end/delete/removeBook.php';
 
 // Get filter parameters
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -86,8 +87,8 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
                 <input type="text" name="search" id="search" class="form-control" placeholder="Search books by title or author..." value="<?php echo htmlspecialchars($searchQuery); ?>">
             </div>
             <div class="col-md-2">
-                <label for="course" class="form-label">Course</label>
-                <select name="course" id="course" class="form-select">
+                <label for="courseFilter" class="form-label">Course</label>
+                <select name="course" id="courseFilter" class="form-select">
                     <option value="">All Courses</option>
                     <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
                     <option value="BSIS" <?php echo $courseFilter === 'BSIS' ? 'selected' : ''; ?>>BSIS</option>
@@ -131,11 +132,11 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
         <?php foreach($initialBooks as $book): ?>
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="card h-100 border-0 shadow-sm" data-book-id="<?php echo $book['id']; ?>">
-                <img src="<?php echo $book['cover']; ?>" class="card-img-top" alt="<?php echo $book['title']; ?>" style="height: 200px; object-fit: cover;">
+                <img src="<?php echo htmlspecialchars($book['cover']); ?>" class="card-img-top" alt="<?php echo htmlspecialchars($book['title']); ?>" style="height: 200px; object-fit: cover;">
                 <div class="card-body p-3">
-                    <h6 class="card-title fw-bold mb-1"><?php echo $book['title']; ?></h6>
-                    <p class="card-text text-muted small mb-2"><?php echo $book['course']; ?> - <?php echo date('M d, Y', strtotime($book['created_at'])); ?></p>
-                    <p class="card-text text-muted small mb-2">Author: <?php echo $book['author']; ?> | Published: <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
+                    <h6 class="card-title fw-bold mb-1"><?php echo htmlspecialchars($book['title']); ?></h6>
+                    <p class="card-text text-muted small mb-2"><?php echo htmlspecialchars($book['course']); ?> - <?php echo date('M d, Y', strtotime($book['created_at'])); ?></p>
+                    <p class="card-text text-muted small mb-2">Author: <?php echo htmlspecialchars($book['author']); ?> | Published: <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
                             <button class="btn btn-sm btn-outline-primary me-1" title="View">
@@ -222,7 +223,7 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    let currentPage = 1;
+    let currentOffset = 12; // Start after initial 12 books
     let hasMore = <?php echo $hasMore ? 'true' : 'false'; ?>;
     let searchQuery = '<?php echo addslashes($searchQuery); ?>';
     let courseFilter = '<?php echo addslashes($courseFilter); ?>';
@@ -251,9 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 if (data.success) {
                     alert('Book uploaded successfully!');
-                    // Reset form
                     uploadForm.reset();
-                    // Optionally reload the page or update the books list
                     location.reload();
                 } else {
                     alert('Upload failed: ' + data.message);
@@ -264,7 +263,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 alert('An error occurred during upload.');
             })
             .finally(() => {
-                // Re-enable button
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = originalText;
             });
@@ -275,32 +273,40 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!hasMore) return;
 
         document.getElementById('loading').style.display = 'block';
+        document.getElementById('load-more-container').style.display = 'none';
 
-        currentPage++;
-        const url = `?page=upload_books&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&publish_year=${publishYearFilter}&upload_year=${yearFilter}`;
+        const url = `../../back-end/read/loadMoreBooks.php?offset=${currentOffset}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&publish_year=${publishYearFilter}&year=${yearFilter}`;
 
         fetch(url)
             .then(response => response.json())
-            .then(books => {
+            .then(data => {
                 document.getElementById('loading').style.display = 'none';
 
-                if (books.length === 0) {
+                if (!data.success || data.books.length === 0) {
                     hasMore = false;
                     document.getElementById('no-more').style.display = 'block';
                     return;
                 }
 
                 const container = document.getElementById('books-container');
-                books.forEach(book => {
+                
+                // Escape HTML to prevent XSS
+                const escapeHtml = (text) => {
+                    const div = document.createElement('div');
+                    div.textContent = text;
+                    return div.innerHTML;
+                };
+                
+                data.books.forEach(book => {
                     const col = document.createElement('div');
                     col.className = 'col-lg-3 col-md-4 col-sm-6';
                     col.innerHTML = `
-                        <div class="card h-100 border-0 shadow-sm" data-book-id="${book.id}">
-                            <img src="${book.cover}" class="card-img-top" alt="${book.title}" style="height: 200px; object-fit: cover;">
+                        <div class="card h-100 border-0 shadow-sm" data-book-id="${escapeHtml(book.id)}">
+                            <img src="${escapeHtml(book.cover)}" class="card-img-top" alt="${escapeHtml(book.title)}" style="height: 200px; object-fit: cover;">
                             <div class="card-body p-3">
-                                <h6 class="card-title fw-bold mb-1">${book.title}</h6>
-                                <p class="card-text text-muted small mb-2">${book.course} - ${new Date(book.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-                                <p class="card-text text-muted small mb-2">Author: ${book.author} | Published: ${new Date(book.publish_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                                <h6 class="card-title fw-bold mb-1">${escapeHtml(book.title)}</h6>
+                                <p class="card-text text-muted small mb-2">${escapeHtml(book.course)} - ${new Date(book.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                                <p class="card-text text-muted small mb-2">Author: ${escapeHtml(book.author)} | Published: ${new Date(book.publish_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
                                         <button class="btn btn-sm btn-outline-primary me-1" title="View">
@@ -320,16 +326,21 @@ document.addEventListener('DOMContentLoaded', function() {
                     container.appendChild(col);
                 });
 
+                currentOffset += data.books.length;
+
                 // Check if there are more books
-                if (books.length < 12) {
+                if (data.books.length < 12 || !data.hasMore) {
                     hasMore = false;
-                    document.getElementById('load-more-container').style.display = 'none';
                     document.getElementById('no-more').style.display = 'block';
+                } else {
+                    document.getElementById('load-more-container').style.display = 'block';
                 }
             })
             .catch(error => {
                 console.error('Error loading more books:', error);
                 document.getElementById('loading').style.display = 'none';
+                document.getElementById('load-more-container').style.display = 'block';
+                alert('An error occurred while loading more books.');
             });
     }
 
@@ -340,8 +351,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Load More button clicked');
             loadMoreBooks();
         });
-    } else {
-        console.log('Load More button not found');
     }
 
     // Handle edit button clicks
@@ -352,8 +361,8 @@ document.addEventListener('DOMContentLoaded', function() {
             const title = card.querySelector('.card-title').textContent;
             const course = card.querySelector('.card-text').textContent.split(' - ')[0];
             const secondLine = card.querySelectorAll('.card-text')[1].textContent;
-            const author = secondLine.split(' | ')[0].replace('Author: ', '');
-            const publishDateStr = secondLine.split(' | ')[1].replace('Published: ', '');
+            const author = secondLine.split(' | ')[0].replace('Author: ', '').trim();
+            const publishDateStr = secondLine.split(' | ')[1].replace('Published: ', '').trim();
             const bookId = card.dataset.bookId;
 
             // Convert publish date from 'M d, Y' to 'YYYY-MM-DD'
@@ -399,6 +408,39 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
             alert('An error occurred while updating the book.');
         });
+    });
+
+    // Handle delete button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-outline-danger')) {
+            e.preventDefault();
+            const card = e.target.closest('.card');
+            const bookId = card.dataset.bookId;
+            const title = card.querySelector('.card-title').textContent;
+
+            if (confirm('Are you sure you want to delete the book "' + title + '"? This action cannot be undone.')) {
+                fetch('../../back-end/delete/removeBook.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'book_id=' + encodeURIComponent(bookId)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Book deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the book.');
+                });
+            }
+        }
     });
 });
 </script>

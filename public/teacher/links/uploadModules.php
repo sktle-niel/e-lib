@@ -4,6 +4,7 @@ if (!defined('MAIN_PAGE')) {
 }
 include '../../back-end/read/readModules.php';
 include '../../back-end/update/editModule.php';
+include '../../back-end/delete/removeModule.php';
 
 $currentPage = 'Upload Modules';
 
@@ -74,8 +75,8 @@ $hasMore = $totalModules > 12;
                 <input type="text" name="search" id="search" class="form-control" placeholder="Search modules by title..." value="<?php echo htmlspecialchars($searchQuery); ?>">
             </div>
             <div class="col-md-3">
-                <label for="course" class="form-label">Course</label>
-                <select name="course" id="course" class="form-select">
+                <label for="courseFilter" class="form-label">Course</label>
+                <select name="course" id="courseFilter" class="form-select">
                     <option value="">All Courses</option>
                     <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
                     <option value="BSIS" <?php echo $courseFilter === 'BSIS' ? 'selected' : ''; ?>>BSIS</option>
@@ -110,10 +111,10 @@ $hasMore = $totalModules > 12;
         <?php foreach($initialModules as $module): ?>
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="card h-100 border-0 shadow-sm" data-module-id="<?php echo $module['id']; ?>">
-                <img src="<?php echo $module['cover']; ?>" class="card-img-top" alt="<?php echo $module['title']; ?>" style="height: 200px; object-fit: cover;">
+                <img src="<?php echo $module['cover']; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($module['title']); ?>" style="height: 200px; object-fit: cover;">
                 <div class="card-body p-3">
-                    <h6 class="card-title fw-bold mb-1"><?php echo $module['title']; ?></h6>
-                    <p class="card-text text-muted small mb-2"><?php echo $module['course']; ?> - <?php echo date('M d, Y', strtotime($module['uploadedDate'])); ?></p>
+                    <h6 class="card-title fw-bold mb-1"><?php echo htmlspecialchars($module['title']); ?></h6>
+                    <p class="card-text text-muted small mb-2"><?php echo htmlspecialchars($module['course']); ?> - <?php echo date('M d, Y', strtotime($module['uploadedDate'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
                             <button class="btn btn-sm btn-outline-primary me-1" title="View">
@@ -207,9 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.success) {
                 alert('Module uploaded successfully!');
-                // Reset form
                 uploadForm.reset();
-                // Optionally reload the page or update the modules list
                 location.reload();
             } else {
                 alert('Error: ' + data.message);
@@ -222,7 +221,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Load more modules functionality
-    let currentPage = 1;
+    let currentOffset = 12; // Start after initial 12 modules
     let hasMore = <?php echo $hasMore ? 'true' : 'false'; ?>;
     let searchQuery = '<?php echo addslashes($searchQuery); ?>';
     let courseFilter = '<?php echo addslashes($courseFilter); ?>';
@@ -232,58 +231,73 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!hasMore) return;
 
         document.getElementById('loading').style.display = 'block';
+        document.getElementById('load-more-container').style.display = 'none';
 
-        currentPage++;
-        const url = `?page=upload_modules&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&year=${yearFilter}`;
+        const url = `../../back-end/read/loadMoreModules.php?offset=${currentOffset}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&year=${yearFilter}`;
 
         fetch(url)
             .then(response => response.json())
-            .then(modules => {
+            .then(data => {
                 document.getElementById('loading').style.display = 'none';
 
-                if (modules.length === 0) {
+                if (!data.success || data.modules.length === 0) {
                     hasMore = false;
                     document.getElementById('no-more').style.display = 'block';
                     return;
                 }
 
                 const container = document.getElementById('modules-container');
-                modules.forEach(module => {
+                data.modules.forEach(module => {
                     const col = document.createElement('div');
                     col.className = 'col-lg-3 col-md-4 col-sm-6';
-                    col.innerHTML = '<div class="card h-100 border-0 shadow-sm" data-module-id="' + module.id + '">' +
-                        '<img src="' + module.cover + '" class="card-img-top" alt="' + module.title + '" style="height: 200px; object-fit: cover;">' +
-                        '<div class="card-body p-3">' +
-                            '<h6 class="card-title fw-bold mb-1">' + module.title + '</h6>' +
-                            '<p class="card-text text-muted small mb-2">' + module.course + ' - ' + new Date(module.uploadedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) + '</p>' +
-                            '<div class="d-flex justify-content-end">' +
-                                '<div>' +
-                                    '<button class="btn btn-sm btn-outline-primary me-1" title="View">' +
-                                        '<i class="bi bi-eye"></i>' +
-                                    '</button>' +
-                                    '<button class="btn btn-sm btn-outline-warning me-1" title="Edit">' +
-                                        '<i class="bi bi-pencil"></i>' +
-                                    '</button>' +
-                                    '<button class="btn btn-sm btn-outline-danger me-1" title="Delete">' +
-                                        '<i class="bi bi-trash"></i>' +
-                                    '</button>' +
-                                '</div>' +
-                            '</div>' +
-                        '</div>' +
-                    '</div>';
+                    
+                    // Escape HTML to prevent XSS
+                    const escapeHtml = (text) => {
+                        const div = document.createElement('div');
+                        div.textContent = text;
+                        return div.innerHTML;
+                    };
+                    
+                    col.innerHTML = `
+                        <div class="card h-100 border-0 shadow-sm" data-module-id="${escapeHtml(module.id)}">
+                            <img src="${escapeHtml(module.cover)}" class="card-img-top" alt="${escapeHtml(module.title)}" style="height: 200px; object-fit: cover;">
+                            <div class="card-body p-3">
+                                <h6 class="card-title fw-bold mb-1">${escapeHtml(module.title)}</h6>
+                                <p class="card-text text-muted small mb-2">${escapeHtml(module.course)} - ${new Date(module.uploadedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                                <div class="d-flex justify-content-end">
+                                    <div>
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-warning me-1" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger me-1" title="Delete">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
                     container.appendChild(col);
                 });
 
+                currentOffset += data.modules.length;
+
                 // Check if there are more modules
-                if (modules.length < 12) {
+                if (data.modules.length < 12 || !data.hasMore) {
                     hasMore = false;
-                    document.getElementById('load-more-container').style.display = 'none';
                     document.getElementById('no-more').style.display = 'block';
+                } else {
+                    document.getElementById('load-more-container').style.display = 'block';
                 }
             })
             .catch(error => {
                 console.error('Error loading more modules:', error);
                 document.getElementById('loading').style.display = 'none';
+                document.getElementById('load-more-container').style.display = 'block';
+                alert('An error occurred while loading more modules.');
             });
     }
 
@@ -294,8 +308,6 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Load More button clicked');
             loadMoreModules();
         });
-    } else {
-        console.log('Load More button not found');
     }
 
     // Handle edit button clicks
@@ -305,7 +317,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const card = e.target.closest('.card');
             const title = card.querySelector('.card-title').textContent;
             const course = card.querySelector('.card-text').textContent.split(' - ')[0];
-            const moduleId = card.dataset.moduleId; // Assuming module ID is stored in data attribute
+            const moduleId = card.dataset.moduleId;
 
             // Populate modal
             document.getElementById('editModuleId').value = moduleId;
@@ -340,6 +352,39 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
             alert('An error occurred while updating the module.');
         });
+    });
+
+    // Handle delete button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-outline-danger')) {
+            e.preventDefault();
+            const card = e.target.closest('.card');
+            const moduleId = card.dataset.moduleId;
+            const title = card.querySelector('.card-title').textContent;
+
+            if (confirm('Are you sure you want to delete the module "' + title + '"? This action cannot be undone.')) {
+                fetch('../../back-end/delete/removeModule.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'module_id=' + encodeURIComponent(moduleId)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Module deleted successfully!');
+                        location.reload();
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the module.');
+                });
+            }
+        }
     });
 });
 </script>
