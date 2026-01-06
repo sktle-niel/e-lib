@@ -3,6 +3,7 @@ if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
 include '../../back-end/read/readModules.php';
+include '../../back-end/update/editModule.php';
 
 $currentPage = 'Upload Modules';
 
@@ -108,7 +109,7 @@ $hasMore = $totalModules > 12;
     <div id="modules-container" class="row g-3">
         <?php foreach($initialModules as $module): ?>
         <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="card h-100 border-0 shadow-sm">
+            <div class="card h-100 border-0 shadow-sm" data-module-id="<?php echo $module['id']; ?>">
                 <img src="<?php echo $module['cover']; ?>" class="card-img-top" alt="<?php echo $module['title']; ?>" style="height: 200px; object-fit: cover;">
                 <div class="card-body p-3">
                     <h6 class="card-title fw-bold mb-1"><?php echo $module['title']; ?></h6>
@@ -149,6 +150,43 @@ $hasMore = $totalModules > 12;
     <!-- No more modules message -->
     <div id="no-more" class="text-center mt-4" style="display: none;">
         <p class="text-muted">No more modules to load.</p>
+    </div>
+</div>
+
+<!-- Edit Module Modal -->
+<div class="modal fade" id="editModuleModal" tabindex="-1" aria-labelledby="editModuleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModuleModalLabel">Edit Module</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editModuleForm">
+                    <input type="hidden" id="editModuleId" name="module_id">
+                    <div class="mb-3">
+                        <label for="editTitle" class="form-label">Module Title</label>
+                        <input type="text" name="title" id="editTitle" class="form-control" placeholder="Enter module title..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCourse" class="form-label">Course</label>
+                        <select name="course" id="editCourse" class="form-select" required>
+                            <option value="">Select Course</option>
+                            <option value="BSIT">BSIT</option>
+                            <option value="BSIS">BSIS</option>
+                            <option value="ACT">ACT</option>
+                            <option value="SHS">SHS</option>
+                            <option value="BSHM">BSHM</option>
+                            <option value="BSOA">BSOA</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditBtn">Save Changes</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -213,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 modules.forEach(module => {
                     const col = document.createElement('div');
                     col.className = 'col-lg-3 col-md-4 col-sm-6';
-                    col.innerHTML = '<div class="card h-100 border-0 shadow-sm">' +
+                    col.innerHTML = '<div class="card h-100 border-0 shadow-sm" data-module-id="' + module.id + '">' +
                         '<img src="' + module.cover + '" class="card-img-top" alt="' + module.title + '" style="height: 200px; object-fit: cover;">' +
                         '<div class="card-body p-3">' +
                             '<h6 class="card-title fw-bold mb-1">' + module.title + '</h6>' +
@@ -259,5 +297,49 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log('Load More button not found');
     }
+
+    // Handle edit button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-outline-warning')) {
+            e.preventDefault();
+            const card = e.target.closest('.card');
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-text').textContent.split(' - ')[0];
+            const moduleId = card.dataset.moduleId; // Assuming module ID is stored in data attribute
+
+            // Populate modal
+            document.getElementById('editModuleId').value = moduleId;
+            document.getElementById('editTitle').value = title;
+            document.getElementById('editCourse').value = course;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('editModuleModal'));
+            modal.show();
+        }
+    });
+
+    // Handle save edit button
+    document.getElementById('saveEditBtn').addEventListener('click', function() {
+        const form = document.getElementById('editModuleForm');
+        const formData = new FormData(form);
+
+        fetch('../../back-end/update/editModule.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Module updated successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the module.');
+        });
+    });
 });
 </script>
