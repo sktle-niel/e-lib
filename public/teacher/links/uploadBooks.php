@@ -6,6 +6,7 @@ $currentPage = 'Upload Books';
 
 include '../../back-end/create/uploadBooks.php';
 include '../../back-end/read/readBooks.php';
+include '../../back-end/update/editBooks.php';
 
 // Get filter parameters
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -129,12 +130,12 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
     <div id="books-container" class="row g-3">
         <?php foreach($initialBooks as $book): ?>
         <div class="col-lg-3 col-md-4 col-sm-6">
-            <div class="card h-100 border-0 shadow-sm">
+            <div class="card h-100 border-0 shadow-sm" data-book-id="<?php echo $book['id']; ?>">
                 <img src="<?php echo $book['cover']; ?>" class="card-img-top" alt="<?php echo $book['title']; ?>" style="height: 200px; object-fit: cover;">
                 <div class="card-body p-3">
                     <h6 class="card-title fw-bold mb-1"><?php echo $book['title']; ?></h6>
                     <p class="card-text text-muted small mb-2"><?php echo $book['course']; ?> - <?php echo date('M d, Y', strtotime($book['created_at'])); ?></p>
-                    <p class="card-text text-muted small mb-2">Published: <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
+                    <p class="card-text text-muted small mb-2">Author: <?php echo $book['author']; ?> | Published: <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
                             <button class="btn btn-sm btn-outline-primary me-1" title="View">
@@ -171,6 +172,51 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
     <!-- No more books message -->
     <div id="no-more" class="text-center mt-4" style="display: none;">
         <p class="text-muted">No more books to load.</p>
+    </div>
+</div>
+
+<!-- Edit Book Modal -->
+<div class="modal fade" id="editBookModal" tabindex="-1" aria-labelledby="editBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editBookModalLabel">Edit Book</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editBookForm">
+                    <input type="hidden" id="editBookId" name="book_id">
+                    <div class="mb-3">
+                        <label for="editBookTitle" class="form-label">Book Title</label>
+                        <input type="text" name="book_title" id="editBookTitle" class="form-control" placeholder="Enter book title..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editBookCourse" class="form-label">Course</label>
+                        <select name="book_course" id="editBookCourse" class="form-select" required>
+                            <option value="">Select Course</option>
+                            <option value="BSIT">BSIT</option>
+                            <option value="BSIS">BSIS</option>
+                            <option value="ACT">ACT</option>
+                            <option value="SHS">SHS</option>
+                            <option value="BSHM">BSHM</option>
+                            <option value="BSOA">BSOA</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editAuthor" class="form-label">Author</label>
+                        <input type="text" name="author" id="editAuthor" class="form-control" placeholder="Enter author..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editPublishDate" class="form-label">Publish Date</label>
+                        <input type="date" name="publish_date" id="editPublishDate" class="form-control" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveEditBookBtn">Save Changes</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -249,12 +295,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const col = document.createElement('div');
                     col.className = 'col-lg-3 col-md-4 col-sm-6';
                     col.innerHTML = `
-                        <div class="card h-100 border-0 shadow-sm">
+                        <div class="card h-100 border-0 shadow-sm" data-book-id="${book.id}">
                             <img src="${book.cover}" class="card-img-top" alt="${book.title}" style="height: 200px; object-fit: cover;">
                             <div class="card-body p-3">
                                 <h6 class="card-title fw-bold mb-1">${book.title}</h6>
                                 <p class="card-text text-muted small mb-2">${book.course} - ${new Date(book.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-                                <p class="card-text text-muted small mb-2">Published: ${new Date(book.publish_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                                <p class="card-text text-muted small mb-2">Author: ${book.author} | Published: ${new Date(book.publish_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
                                         <button class="btn btn-sm btn-outline-primary me-1" title="View">
@@ -297,5 +343,62 @@ document.addEventListener('DOMContentLoaded', function() {
     } else {
         console.log('Load More button not found');
     }
+
+    // Handle edit button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.btn-outline-warning')) {
+            e.preventDefault();
+            const card = e.target.closest('.card');
+            const title = card.querySelector('.card-title').textContent;
+            const course = card.querySelector('.card-text').textContent.split(' - ')[0];
+            const secondLine = card.querySelectorAll('.card-text')[1].textContent;
+            const author = secondLine.split(' | ')[0].replace('Author: ', '');
+            const publishDateStr = secondLine.split(' | ')[1].replace('Published: ', '');
+            const bookId = card.dataset.bookId;
+
+            // Convert publish date from 'M d, Y' to 'YYYY-MM-DD'
+            const dateParts = publishDateStr.split(' ');
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const month = (monthNames.indexOf(dateParts[0]) + 1).toString().padStart(2, '0');
+            const day = dateParts[1].replace(',', '').padStart(2, '0');
+            const year = dateParts[2];
+            const publishDate = `${year}-${month}-${day}`;
+
+            // Populate modal
+            document.getElementById('editBookId').value = bookId;
+            document.getElementById('editBookTitle').value = title;
+            document.getElementById('editBookCourse').value = course;
+            document.getElementById('editAuthor').value = author;
+            document.getElementById('editPublishDate').value = publishDate;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('editBookModal'));
+            modal.show();
+        }
+    });
+
+    // Handle save edit button
+    document.getElementById('saveEditBookBtn').addEventListener('click', function() {
+        const form = document.getElementById('editBookForm');
+        const formData = new FormData(form);
+
+        fetch('../../back-end/update/editBooks.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Book updated successfully!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the book.');
+        });
+    });
 });
 </script>
