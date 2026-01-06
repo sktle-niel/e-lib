@@ -140,8 +140,11 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
                             <button class="btn btn-sm btn-outline-primary me-1" title="View">
                                 <i class="bi bi-eye"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-success me-1" title="Download" <?php echo !$book['available'] ? 'disabled' : ''; ?>>
-                                <i class="bi bi-download"></i>
+                            <button class="btn btn-sm btn-outline-warning me-1" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger me-1" title="Delete">
+                                <i class="bi bi-trash"></i>
                             </button>
                         </div>
                     </div>
@@ -257,8 +260,11 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <button class="btn btn-sm btn-outline-primary me-1" title="View">
                                             <i class="bi bi-eye"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-success me-1" title="Download" ${!book.available ? 'disabled' : ''}>
-                                            <i class="bi bi-download"></i>
+                                        <button class="btn btn-sm btn-outline-warning me-1" title="Edit">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger me-1" title="Delete">
+                                            <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
                                 </div>
