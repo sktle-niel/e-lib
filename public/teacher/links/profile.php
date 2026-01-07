@@ -3,6 +3,9 @@ if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
 include '../../back-end/read/profileData.php';
+
+// Parse current programs for pre-selection
+$currentPrograms = !empty($program) ? explode(',', $program) : [];
 ?>
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
@@ -25,7 +28,7 @@ include '../../back-end/read/profileData.php';
     <div class="row">
         <!-- Profile Picture Section -->
         <div class="col-lg-4 mb-4">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body text-center p-4">
                     <h5 class="card-title mb-3">Profile Picture</h5>
                     <div class="mb-3">
@@ -35,128 +38,35 @@ include '../../back-end/read/profileData.php';
                         <input type="file" class="form-control" id="profilePicture" accept="image/*">
                         <small class="form-text text-muted">Choose a new profile picture (JPG, PNG, GIF)</small>
                     </div>
-                    <button type="button" class="btn btn-primary">
+                    <button type="button" class="btn btn-primary" id="uploadPictureBtn">
                         <i class="bi bi-upload me-2"></i>Upload Picture
                     </button>
+                </div>
+            </div>
+
+            <!-- Profile Information Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">Profile Information</h5>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Username:</label>
+                        <p class="mb-0"><?php echo htmlspecialchars($username); ?></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Full Name:</label>
+                        <p class="mb-0"><?php echo htmlspecialchars($firstname . ' ' . $lastname); ?></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">User Type:</label>
+                        <p class="mb-0"><?php echo htmlspecialchars(ucfirst($user_type)); ?></p>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label fw-bold">Member Since:</label>
+                        <p class="mb-0"><?php echo date('F j, Y', strtotime($created_at)); ?></p>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const uploadBtn = document.querySelector('.btn-primary');
-    uploadBtn.addEventListener('click', function() {
-        const fileInput = document.getElementById('profilePicture');
-        const file = fileInput.files[0];
-        if (!file) {
-            alert('Please select a file');
-            return;
-        }
-        const formData = new FormData();
-        formData.append('profilePicture', file);
-        fetch('../../back-end/create/attachProfile.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const msg = document.getElementById('success-message');
-                msg.style.display = 'block';
-                msg.style.opacity = '1';
-                setTimeout(function() {
-                    msg.style.opacity = '0';
-                    setTimeout(function() {
-                        msg.style.display = 'none';
-                        location.reload();
-                    }, 1000);
-                }, 3000);
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-
-    // Password visibility toggles
-    const toggleCurrentPassword = document.getElementById('toggleCurrentPassword');
-    const currentPasswordInput = document.getElementById('currentPassword');
-    toggleCurrentPassword.addEventListener('click', function() {
-        const type = currentPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        currentPasswordInput.setAttribute('type', type);
-        this.querySelector('i').classList.toggle('bi-eye');
-        this.querySelector('i').classList.toggle('bi-eye-slash');
-    });
-
-    const toggleNewPassword = document.getElementById('toggleNewPassword');
-    const newPasswordInput = document.getElementById('newPassword');
-    toggleNewPassword.addEventListener('click', function() {
-        const type = newPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        newPasswordInput.setAttribute('type', type);
-        this.querySelector('i').classList.toggle('bi-eye');
-        this.querySelector('i').classList.toggle('bi-eye-slash');
-    });
-
-    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-    const confirmPasswordInput = document.getElementById('confirmPassword');
-    toggleConfirmPassword.addEventListener('click', function() {
-        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        confirmPasswordInput.setAttribute('type', type);
-        this.querySelector('i').classList.toggle('bi-eye');
-        this.querySelector('i').classList.toggle('bi-eye-slash');
-    });
-
-    // Change password
-    const changePasswordBtn = document.getElementById('changePasswordBtn');
-    changePasswordBtn.addEventListener('click', function() {
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            alert('Please fill in all fields');
-            return;
-        }
-
-        if (newPassword !== confirmPassword) {
-            alert('New password and confirm password do not match');
-            return;
-        }
-
-        const formData = new FormData();
-        formData.append('currentPassword', currentPassword);
-        formData.append('newPassword', newPassword);
-        formData.append('confirmPassword', confirmPassword);
-
-        fetch('../../back-end/update/changePassword.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const msg = document.getElementById('success-message');
-                msg.style.display = 'block';
-                msg.style.opacity = '1';
-                setTimeout(function() {
-                    msg.style.opacity = '0';
-                    setTimeout(function() {
-                        msg.style.display = 'none';
-                        location.reload();
-                    }, 1000);
-                }, 3000);
-                // Clear the form
-                document.getElementById('currentPassword').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('confirmPassword').value = '';
-            } else {
-                alert(data.message);
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-});
-</script>
 
         <!-- Account Settings -->
         <div class="col-lg-8">
@@ -167,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <!-- Change Name -->
                     <div class="mb-4">
                         <h6 class="mb-3">Change Name</h6>
-                        <form>
+                        <form id="updateNameForm">
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="firstName" class="form-label">First Name</label>
@@ -178,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <input type="text" class="form-control" id="lastName" placeholder="Enter last name" value="<?php echo htmlspecialchars($lastname); ?>">
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">
+                            <button type="button" class="btn btn-primary" id="updateNameBtn">
                                 <i class="bi bi-check-circle me-2"></i>Update Name
                             </button>
                         </form>
@@ -186,15 +96,37 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     <hr class="my-4">
 
+                    <!-- Choose Program -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Choose a Program</h6>
+                        <div class="mb-3">
+                            <label for="programSelect" class="form-label">Program</label>
+                            <select class="form-select" id="programSelect" multiple>
+                                <option value="BSIT" <?php echo in_array('BSIT', $currentPrograms) ? 'selected' : ''; ?>>BSIT - Bachelor of Science in Information Technology</option>
+                                <option value="BSIS" <?php echo in_array('BSIS', $currentPrograms) ? 'selected' : ''; ?>>BSIS - Bachelor of Science in Information Systems</option>
+                                <option value="ACT" <?php echo in_array('ACT', $currentPrograms) ? 'selected' : ''; ?>>ACT - Associate in Computer Technology</option>
+                                <option value="BSHM" <?php echo in_array('BSHM', $currentPrograms) ? 'selected' : ''; ?>>BSHM - Bachelor of Science in Hospitality Management</option>
+                                <option value="BSOA" <?php echo in_array('BSOA', $currentPrograms) ? 'selected' : ''; ?>>BSOA - Bachelor of Science in Office Administration</option>
+                                <option value="SHS" <?php echo in_array('SHS', $currentPrograms) ? 'selected' : ''; ?>>SHS - Senior High School</option>
+                            </select>
+                            <small class="form-text text-muted">Hold Ctrl (or Cmd on Mac) to select multiple programs</small>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="updateProgramBtn">
+                            <i class="bi bi-check-circle me-2"></i>Update Program
+                        </button>
+                    </div>
+
+                    <hr class="my-4">
+
                     <!-- Change Password -->
                     <div class="mb-4">
                         <h6 class="mb-3">Change Password</h6>
-                        <form>
+                        <form id="changePasswordForm">
                             <div class="mb-3">
                                 <label for="currentPassword" class="form-label">Current Password</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="currentPassword" placeholder="Enter current password">
-                                    <span class="input-group-text" id="toggleCurrentPassword">
+                                    <span class="input-group-text" id="toggleCurrentPassword" style="cursor: pointer;">
                                         <i class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
@@ -203,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <label for="newPassword" class="form-label">New Password</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="newPassword" placeholder="Enter new password">
-                                    <span class="input-group-text" id="toggleNewPassword">
+                                    <span class="input-group-text" id="toggleNewPassword" style="cursor: pointer;">
                                         <i class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
@@ -212,7 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <label for="confirmPassword" class="form-label">Confirm New Password</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="confirmPassword" placeholder="Confirm new password">
-                                    <span class="input-group-text" id="toggleConfirmPassword">
+                                    <span class="input-group-text" id="toggleConfirmPassword" style="cursor: pointer;">
                                         <i class="bi bi-eye-slash"></i>
                                     </span>
                                 </div>
@@ -227,3 +159,188 @@ document.addEventListener('DOMContentLoaded', function() {
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Upload profile picture
+    const uploadBtn = document.getElementById('uploadPictureBtn');
+    if (uploadBtn) {
+        uploadBtn.addEventListener('click', function() {
+            const fileInput = document.getElementById('profilePicture');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file');
+                return;
+            }
+            const formData = new FormData();
+            formData.append('profilePicture', file);
+            fetch('../../back-end/create/attachProfile.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage();
+                } else {
+                    alert(data.message || 'Failed to upload profile picture');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while uploading the profile picture');
+            });
+        });
+    }
+
+    // Password visibility toggles
+    const toggleCurrentPassword = document.getElementById('toggleCurrentPassword');
+    const currentPasswordInput = document.getElementById('currentPassword');
+    if (toggleCurrentPassword && currentPasswordInput) {
+        toggleCurrentPassword.addEventListener('click', function() {
+            const type = currentPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            currentPasswordInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('bi-eye');
+            this.querySelector('i').classList.toggle('bi-eye-slash');
+        });
+    }
+
+    const toggleNewPassword = document.getElementById('toggleNewPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+    if (toggleNewPassword && newPasswordInput) {
+        toggleNewPassword.addEventListener('click', function() {
+            const type = newPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            newPasswordInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('bi-eye');
+            this.querySelector('i').classList.toggle('bi-eye-slash');
+        });
+    }
+
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    if (toggleConfirmPassword && confirmPasswordInput) {
+        toggleConfirmPassword.addEventListener('click', function() {
+            const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            confirmPasswordInput.setAttribute('type', type);
+            this.querySelector('i').classList.toggle('bi-eye');
+            this.querySelector('i').classList.toggle('bi-eye-slash');
+        });
+    }
+
+    // Update program
+    const updateProgramBtn = document.getElementById('updateProgramBtn');
+    if (updateProgramBtn) {
+        updateProgramBtn.addEventListener('click', function() {
+            const programSelect = document.getElementById('programSelect');
+            const selectedPrograms = Array.from(programSelect.selectedOptions).map(option => option.value);
+
+            console.log('Selected programs:', selectedPrograms); // Debug log
+
+            if (selectedPrograms.length === 0) {
+                alert('Please select at least one program');
+                return;
+            }
+
+            const formData = new FormData();
+            selectedPrograms.forEach(program => formData.append('programs[]', program));
+
+            // Debug: Log FormData contents
+            console.log('FormData contents:');
+            for (let pair of formData.entries()) {
+                console.log(pair[0] + ': ' + pair[1]);
+            }
+
+            fetch('../../back-end/update/updateProgram.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                console.log('Response status:', response.status); // Debug log
+                if (!response.ok) {
+                    throw new Error('HTTP error! status: ' + response.status);
+                }
+                return response.text(); // Get as text first to see what's returned
+            })
+            .then(text => {
+                console.log('Response text:', text); // Debug log
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        showSuccessMessage();
+                    } else {
+                        alert(data.message || 'Failed to update program');
+                    }
+                } catch (e) {
+                    console.error('JSON parse error:', e);
+                    console.error('Response was:', text);
+                    alert('Server returned invalid response: ' + text.substring(0, 100));
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                alert('An error occurred while updating the program: ' + error.message);
+            });
+        });
+    }
+
+    // Change password
+    const changePasswordBtn = document.getElementById('changePasswordBtn');
+    if (changePasswordBtn) {
+        changePasswordBtn.addEventListener('click', function() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('Please fill in all fields');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                alert('New password and confirm password do not match');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('currentPassword', currentPassword);
+            formData.append('newPassword', newPassword);
+            formData.append('confirmPassword', confirmPassword);
+
+            fetch('../../back-end/update/changePassword.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage();
+                    // Clear the form
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    alert(data.message || 'Failed to change password');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while changing the password');
+            });
+        });
+    }
+
+    // Success message function
+    function showSuccessMessage() {
+        const msg = document.getElementById('success-message');
+        msg.style.display = 'block';
+        msg.style.opacity = '1';
+        setTimeout(function() {
+            msg.style.opacity = '0';
+            setTimeout(function() {
+                msg.style.display = 'none';
+                location.reload();
+            }, 1000);
+        }, 3000);
+    }
+});
+</script>
