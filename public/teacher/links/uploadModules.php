@@ -35,11 +35,11 @@ $hasMore = $totalModules > 12;
     <!-- Upload Module Form -->
     <div class="mb-4">
         <form id="uploadModuleForm" enctype="multipart/form-data" class="row g-3">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label for="title" class="form-label">Module Title</label>
                 <input type="text" name="title" id="title" class="form-control" placeholder="Enter module title..." required>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label for="course" class="form-label">Course</label>
                 <select name="course" id="course" class="form-select" required>
                     <option value="">Select Course</option>
@@ -52,6 +52,11 @@ $hasMore = $totalModules > 12;
                 </select>
             </div>
             <div class="col-md-3">
+                <label for="cover_image" class="form-label">Cover Image</label>
+                <input type="file" name="cover_image" id="cover_image" class="form-control" accept="image/*" required>
+                <small class="text-muted">JPG, PNG, or GIF (Max 5MB)</small>
+            </div>
+            <div class="col-md-2">
                 <label for="module_file" class="form-label">Module File</label>
                 <input type="file" name="module_file" id="module_file" class="form-control" accept=".pdf" required>
             </div>
@@ -163,8 +168,17 @@ $hasMore = $totalModules > 12;
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editModuleForm">
+                <form id="editModuleForm" enctype="multipart/form-data">
                     <input type="hidden" id="editModuleId" name="module_id">
+                    
+                    <!-- Current Cover Preview -->
+                    <div class="mb-3 text-center">
+                        <label class="form-label">Current Cover</label>
+                        <div>
+                            <img id="currentCoverPreview" src="" alt="Current Cover" class="img-thumbnail" style="max-height: 150px; max-width: 100%;">
+                        </div>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="editTitle" class="form-label">Module Title</label>
                         <input type="text" name="title" id="editTitle" class="form-control" placeholder="Enter module title..." required>
@@ -181,6 +195,19 @@ $hasMore = $totalModules > 12;
                             <option value="BSOA">BSOA</option>
                         </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="editCoverImage" class="form-label">New Cover Image (Optional)</label>
+                        <input type="file" name="cover_image" id="editCoverImage" class="form-control" accept="image/*">
+                        <small class="text-muted">Leave empty to keep current cover. JPG, PNG, or GIF (Max 5MB)</small>
+                    </div>
+                    
+                    <!-- New Cover Preview -->
+                    <div id="newCoverPreviewContainer" class="mb-3 text-center" style="display: none;">
+                        <label class="form-label">New Cover Preview</label>
+                        <div>
+                            <img id="newCoverPreview" src="" alt="New Cover" class="img-thumbnail" style="max-height: 150px; max-width: 100%;">
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -193,6 +220,27 @@ $hasMore = $totalModules > 12;
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Cover image preview and validation
+    const coverImageInput = document.getElementById('cover_image');
+    coverImageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Cover image must be less than 5MB');
+                this.value = '';
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select a valid image file (JPG, PNG, or GIF)');
+                this.value = '';
+                return;
+            }
+        }
+    });
+
     // Handle module upload form
     const uploadForm = document.getElementById('uploadModuleForm');
     uploadForm.addEventListener('submit', function(e) {
@@ -310,6 +358,42 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Edit cover image preview
+    const editCoverImageInput = document.getElementById('editCoverImage');
+    const newCoverPreviewContainer = document.getElementById('newCoverPreviewContainer');
+    const newCoverPreview = document.getElementById('newCoverPreview');
+    
+    editCoverImageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Cover image must be less than 5MB');
+                this.value = '';
+                newCoverPreviewContainer.style.display = 'none';
+                return;
+            }
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select a valid image file (JPG, PNG, or GIF)');
+                this.value = '';
+                newCoverPreviewContainer.style.display = 'none';
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                newCoverPreview.src = e.target.result;
+                newCoverPreviewContainer.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            newCoverPreviewContainer.style.display = 'none';
+        }
+    });
+
     // Handle edit button clicks
     document.addEventListener('click', function(e) {
         if (e.target.closest('.btn-outline-warning')) {
@@ -318,11 +402,17 @@ document.addEventListener('DOMContentLoaded', function() {
             const title = card.querySelector('.card-title').textContent;
             const course = card.querySelector('.card-text').textContent.split(' - ')[0];
             const moduleId = card.dataset.moduleId;
+            const coverImage = card.querySelector('.card-img-top').src;
 
             // Populate modal
             document.getElementById('editModuleId').value = moduleId;
             document.getElementById('editTitle').value = title;
             document.getElementById('editCourse').value = course;
+            document.getElementById('currentCoverPreview').src = coverImage;
+            
+            // Reset cover image input and hide new preview
+            document.getElementById('editCoverImage').value = '';
+            newCoverPreviewContainer.style.display = 'none';
 
             // Show modal
             const modal = new bootstrap.Modal(document.getElementById('editModuleModal'));
