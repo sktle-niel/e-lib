@@ -4,7 +4,7 @@ if (!defined('MAIN_PAGE')) {
 }
 $currentPage = 'Modules';
 
-include '../../back-end/read/readModules.php';
+include '../../back-end/read/studentModules.php';
 
 // Get search and filter parameters
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
