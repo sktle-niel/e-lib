@@ -1,3 +1,7 @@
+<?php
+include '../../back-end/read/sidebarProfile.php';
+?>
+
 <!-- Sidebar -->
 <link rel="stylesheet" href="../../src/css/sidebar.css">
 <div class="sidebar d-flex flex-column" id="sidebar">
@@ -36,7 +40,13 @@
         <div class="d-flex flex-column h-100">
             <div class="profile-section mt-auto">
                 <div class="profile-profile">
-                    <div class="profile-avatar"><?php echo strtoupper(substr($_SESSION['firstname'], 0, 1)); ?></div>
+                    <div class="profile-avatar">
+                        <?php if ($profilePicture): ?>
+                            <img src="../../src/profile/<?php echo htmlspecialchars($profilePicture); ?>" alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                        <?php else: ?>
+                            <?php echo strtoupper(substr($_SESSION['firstname'], 0, 1)); ?>
+                        <?php endif; ?>
+                    </div>
                     <div>
                         <div class="fw-bold" style="text-transform: uppercase;"><?php echo $_SESSION['user_type']; ?></div>
                         <small class="opacity-75"><?php echo $_SESSION['firstname']; ?></small>
