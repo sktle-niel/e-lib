@@ -1,4 +1,16 @@
 <?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    $result = ['success' => false, 'message' => 'User not logged in'];
+    header('Content-Type: application/json');
+    echo json_encode($result);
+    exit;
+}
+
 include '../../config/connection.php';
 
 function uploadBook($title, $course, $author, $publishDate, $file, $coverImage) {
@@ -86,8 +98,9 @@ function uploadBook($title, $course, $author, $publishDate, $file, $coverImage) 
     }
 
     // Insert into database
-    $stmt = $conn->prepare("INSERT INTO books (id, title, author, publish_date, course, file_path, cover, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
-    $stmt->bind_param("issssss", $bookId, $title, $author, $publishDate, $course, $uploadPath, $coverWebPath);
+    $userId = $_SESSION['user_id'];
+    $stmt = $conn->prepare("INSERT INTO books (id, title, author, publish_date, course, file_path, cover, user_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())");
+    $stmt->bind_param("issssssi", $bookId, $title, $author, $publishDate, $course, $uploadPath, $coverWebPath, $userId);
 
     if ($stmt->execute()) {
         return ['success' => true, 'message' => 'Book uploaded successfully'];
