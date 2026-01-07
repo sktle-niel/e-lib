@@ -101,7 +101,6 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $up
                 <img src="<?php echo $book['cover']; ?>" class="card-img-top" alt="<?php echo $book['title']; ?>" style="height: 200px; object-fit: cover;">
                 <div class="card-body p-3">
                     <h6 class="card-title fw-bold mb-1"><?php echo $book['title']; ?></h6>
-                    <p class="card-text text-muted small mb-2"><?php echo $book['course']; ?> - <?php echo date('M d, Y', strtotime($book['created_at'])); ?></p>
                     <p class="card-text text-muted small mb-2"><?php echo $book['author']; ?> | <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
