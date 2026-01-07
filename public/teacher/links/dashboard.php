@@ -5,14 +5,19 @@ if (!defined('MAIN_PAGE')) {
 include '../../back-end/read/profileData.php';
 include '../../back-end/read/readModules.php';
 include '../../back-end/read/readBooks.php';
+include '../../back-end/read/readStudents.php';
 
 $modulesCount = getModulesCount();
 $booksCount = getBooksCount();
 
+// Get teacher's programs and student counts
+$programs = explode(',', $program);
+$studentCounts = getStudentCounts($programs);
+
 $stats = [
     ['title' => 'Modules Uploaded', 'value' => $modulesCount, 'subtitle' => 'Modules you have uploaded', 'icon' => 'bi-check-circle', 'iconClass' => 'icon-blue'],
     ['title' => 'Books Uploaded', 'value' => $booksCount, 'subtitle' => 'Books you have uploaded', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
-    ['title' => 'Total Downloads', 'value' => '3200', 'subtitle' => 'Downloads of your content', 'icon' => 'bi-download', 'iconClass' => 'icon-red'],
+    ['title' => 'Students Count', 'value' => '<div style="position:relative;"><div id="student-counts" style="display:inline;"></div><i id="next-programs" class="bi bi-chevron-right" style="cursor:pointer; display:none; position:absolute; right:0; top:50%; transform:translateY(-50%);"></i></div>', 'subtitle' => 'Students in your programs', 'icon' => 'bi-people', 'iconClass' => 'icon-red'],
     ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => ucfirst($user_type), 'icon' => 'bi-person', 'iconClass' => 'icon-orange']
 ];
 
@@ -26,14 +31,53 @@ $uploadedBooks = [
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
 
+<style>
+#next-programs {
+    position: absolute;
+    right: -60px !important;
+    top: 50%;
+    transform: translateY(-50%) !important;
+    cursor: pointer;
+}
+</style>
+
 <!-- Main Content -->
 <div class="main-content">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h1 class="page-title"><?php echo $currentPage; ?></h1>
-        </div>
     </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const studentCounts = <?php echo json_encode($studentCounts); ?>;
+    const programs = Object.keys(studentCounts);
+    let currentIndex = 0;
+    const displayDiv = document.getElementById('student-counts');
+    const nextButton = document.getElementById('next-programs');
+
+    function displayPrograms() {
+        const endIndex = Math.min(currentIndex + 2, programs.length);
+        const displayedPrograms = programs.slice(currentIndex, endIndex);
+        const formatted = displayedPrograms.map(prog => `${prog} ${studentCounts[prog]}`).join(', ');
+        displayDiv.textContent = formatted;
+
+        nextButton.style.display = 'inline-block';
+    }
+
+    nextButton.addEventListener('click', function() {
+        currentIndex += 2;
+        if (currentIndex >= programs.length) {
+            currentIndex = 0;
+        }
+        displayPrograms();
+    });
+
+    displayPrograms();
+});
+</script>
 
     <!-- Stats Cards -->
     <div class="row g-4 mb-4">
