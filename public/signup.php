@@ -24,10 +24,10 @@
 </head>
 <body>
     <?php if (isset($_GET['success']) && $_GET['success'] == '1'): ?>
-        <?php include 'status/successMessage.php'; ?>
+        <?php include 'student/status/successMessage.php'; ?>
     <?php endif; ?>
     <?php if (isset($_GET['error'])): ?>
-        <?php include 'status/errorMessage.php'; ?>
+        <?php include 'student/status/errorMessage.php'; ?>
     <?php endif; ?>
     <nav class="navbar">
         <div class="container-fluid">
