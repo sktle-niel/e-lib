@@ -1,7 +1,8 @@
 <?php
+session_start();
 include '../../config/connection.php';
 
-function uploadModule($title, $course, $moduleFile, $coverImage) {
+function uploadModule($title, $course, $moduleFile, $coverImage, $userId) {
     global $conn;
     
     // Validate inputs
@@ -84,10 +85,10 @@ function uploadModule($title, $course, $moduleFile, $coverImage) {
     }
     $checkStmt->close();
     
-    // Insert into database
+    // Insert into database with user_id
     $uploadedDate = date('Y-m-d');
-    $stmt = $conn->prepare("INSERT INTO modules (id, title, uploadedDate, course, cover, file_path) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("isssss", $moduleId, $title, $uploadedDate, $course, $coverUploadPath, $moduleUploadPath);
+    $stmt = $conn->prepare("INSERT INTO modules (id, user_id, title, uploadedDate, course, cover, file_path) VALUES (?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("iisssss", $moduleId, $userId, $title, $uploadedDate, $course, $coverUploadPath, $moduleUploadPath);
     
     if ($stmt->execute()) {
         $stmt->close();
@@ -103,12 +104,20 @@ function uploadModule($title, $course, $moduleFile, $coverImage) {
 
 // Handle POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Check if user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => 'User not logged in']);
+        exit;
+    }
+    
+    $userId = $_SESSION['user_id'];
     $title = $_POST['title'] ?? '';
     $course = $_POST['course'] ?? '';
     $moduleFile = $_FILES['module_file'] ?? [];
     $coverImage = $_FILES['cover_image'] ?? [];
     
-    $result = uploadModule($title, $course, $moduleFile, $coverImage);
+    $result = uploadModule($title, $course, $moduleFile, $coverImage, $userId);
     
     header('Content-Type: application/json');
     echo json_encode($result);

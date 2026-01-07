@@ -1,36 +1,43 @@
 <?php
 include '../../config/connection.php';
 
-function updateModule($module_id, $title, $course, $coverImage = null) {
+function editModule($moduleId, $title, $course, $coverImage = null) {
     global $conn;
     
+    // Check if user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        return ['success' => false, 'message' => 'User not logged in'];
+    }
+    
+    $userId = $_SESSION['user_id'];
+    
     // Validate inputs
-    if (empty($title) || empty($course)) {
-        return ['success' => false, 'message' => 'Title and course are required'];
+    if (empty($moduleId) || empty($title) || empty($course)) {
+        return ['success' => false, 'message' => 'Module ID, title, and course are required'];
     }
     
-    // Get current module data
-    $stmt = $conn->prepare("SELECT cover FROM modules WHERE id = ?");
-    $stmt->bind_param('i', $module_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    // Check if module exists and belongs to the user
+    $checkStmt = $conn->prepare("SELECT id, cover FROM modules WHERE id = ? AND user_id = ?");
+    $checkStmt->bind_param("ii", $moduleId, $userId);
+    $checkStmt->execute();
+    $checkResult = $checkStmt->get_result();
     
-    if ($result->num_rows === 0) {
-        return ['success' => false, 'message' => 'Module not found'];
+    if ($checkResult->num_rows === 0) {
+        $checkStmt->close();
+        return ['success' => false, 'message' => 'Module not found or you do not have permission to edit it'];
     }
     
-    $currentModule = $result->fetch_assoc();
-    $oldCoverPath = $currentModule['cover'];
-    $stmt->close();
+    $moduleData = $checkResult->fetch_assoc();
+    $oldCoverPath = $moduleData['cover'];
+    $checkStmt->close();
     
-    $newCoverPath = $oldCoverPath; // Keep existing cover by default
+    $coverUploadPath = $oldCoverPath; // Keep old cover by default
     
-    // If a new cover image is uploaded
-    if ($coverImage && !empty($coverImage['name']) && $coverImage['error'] === UPLOAD_ERR_OK) {
-        // Validate cover image type
+    // If a new cover image is provided
+    if ($coverImage && !empty($coverImage['name'])) {
+        // Check cover image type (only images allowed)
         $allowedImageTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
         $coverFileType = strtolower($coverImage['type']);
-        
         if (!in_array($coverFileType, $allowedImageTypes)) {
             return ['success' => false, 'message' => 'Only JPG, PNG, or GIF images are allowed for cover'];
         }
@@ -41,40 +48,39 @@ function updateModule($module_id, $title, $course, $coverImage = null) {
             return ['success' => false, 'message' => 'Cover image size must be less than 5MB'];
         }
         
-        // Generate unique filename for new cover
+        // Generate unique filename for cover image
         $coverExtension = pathinfo($coverImage['name'], PATHINFO_EXTENSION);
         $uniqueCoverName = uniqid('cover_') . '.' . $coverExtension;
         $coverUploadDir = '../../uploads/covers/';
-        $newCoverPath = $coverUploadDir . $uniqueCoverName;
+        $coverUploadPath = $coverUploadDir . $uniqueCoverName;
         
-        // Create directory if it doesn't exist
+        // Create upload directory if it doesn't exist
         if (!is_dir($coverUploadDir)) {
             mkdir($coverUploadDir, 0755, true);
         }
         
         // Move uploaded cover image
-        if (!move_uploaded_file($coverImage['tmp_name'], $newCoverPath)) {
+        if (!move_uploaded_file($coverImage['tmp_name'], $coverUploadPath)) {
             return ['success' => false, 'message' => 'Failed to upload new cover image'];
         }
         
-        // Delete old cover image if it exists and is different from new one
-        if (!empty($oldCoverPath) && file_exists($oldCoverPath) && $oldCoverPath !== $newCoverPath) {
+        // Delete old cover image if upload was successful
+        if (file_exists($oldCoverPath)) {
             unlink($oldCoverPath);
         }
     }
     
     // Update module in database
-    $sql = "UPDATE modules SET title = ?, course = ?, cover = ? WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param('sssi', $title, $course, $newCoverPath, $module_id);
+    $stmt = $conn->prepare("UPDATE modules SET title = ?, course = ?, cover = ? WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("sssii", $title, $course, $coverUploadPath, $moduleId, $userId);
     
     if ($stmt->execute()) {
         $stmt->close();
         return ['success' => true, 'message' => 'Module updated successfully'];
     } else {
         // If database update fails and new cover was uploaded, delete it
-        if ($newCoverPath !== $oldCoverPath && file_exists($newCoverPath)) {
-            unlink($newCoverPath);
+        if ($coverUploadPath !== $oldCoverPath && file_exists($coverUploadPath)) {
+            unlink($coverUploadPath);
         }
         $stmt->close();
         return ['success' => false, 'message' => 'Failed to update module: ' . $conn->error];
@@ -83,17 +89,12 @@ function updateModule($module_id, $title, $course, $coverImage = null) {
 
 // Handle POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $module_id = isset($_POST['module_id']) ? (int)$_POST['module_id'] : 0;
-    $title = isset($_POST['title']) ? trim($_POST['title']) : '';
-    $course = isset($_POST['course']) ? $_POST['course'] : '';
-    $coverImage = isset($_FILES['cover_image']) ? $_FILES['cover_image'] : null;
+    $moduleId = $_POST['module_id'] ?? '';
+    $title = $_POST['title'] ?? '';
+    $course = $_POST['course'] ?? '';
+    $coverImage = $_FILES['cover_image'] ?? null;
     
-    if ($module_id <= 0 || empty($title) || empty($course)) {
-        echo json_encode(['success' => false, 'message' => 'Invalid input data']);
-        exit;
-    }
-    
-    $result = updateModule($module_id, $title, $course, $coverImage);
+    $result = editModule($moduleId, $title, $course, $coverImage);
     
     header('Content-Type: application/json');
     echo json_encode($result);

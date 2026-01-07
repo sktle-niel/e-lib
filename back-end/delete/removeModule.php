@@ -1,48 +1,64 @@
 <?php
 include '../../config/connection.php';
 
-function deleteModule($module_id) {
+function removeModule($moduleId) {
     global $conn;
-
-    // First, get the file path
-    $stmt = $conn->prepare("SELECT cover FROM modules WHERE id = ?");
-    $stmt->bind_param('i', $module_id);
+    
+    // Check if user is logged in
+    if (!isset($_SESSION['user_id'])) {
+        return ['success' => false, 'message' => 'User not logged in'];
+    }
+    
+    $userId = $_SESSION['user_id'];
+    
+    // Validate input
+    if (empty($moduleId)) {
+        return ['success' => false, 'message' => 'Module ID is required'];
+    }
+    
+    // Get module details and verify ownership
+    $stmt = $conn->prepare("SELECT cover, file_path FROM modules WHERE id = ? AND user_id = ?");
+    $stmt->bind_param("ii", $moduleId, $userId);
     $stmt->execute();
     $result = $stmt->get_result();
-
+    
     if ($result->num_rows === 0) {
-        return ['success' => false, 'message' => 'Module not found'];
+        $stmt->close();
+        return ['success' => false, 'message' => 'Module not found or you do not have permission to delete it'];
     }
-
-    $row = $result->fetch_assoc();
-    $filePath = $row['cover'];
-
-    // Delete the file from filesystem if it exists
-    if (file_exists($filePath)) {
-        unlink($filePath);
-    }
-
-    // Delete from database
-    $stmt = $conn->prepare("DELETE FROM modules WHERE id = ?");
-    $stmt->bind_param('i', $module_id);
-
-    if ($stmt->execute()) {
+    
+    $module = $result->fetch_assoc();
+    $coverPath = $module['cover'];
+    $filePath = $module['file_path'];
+    $stmt->close();
+    
+    // Delete module from database
+    $deleteStmt = $conn->prepare("DELETE FROM modules WHERE id = ? AND user_id = ?");
+    $deleteStmt->bind_param("ii", $moduleId, $userId);
+    
+    if ($deleteStmt->execute()) {
+        // Delete physical files
+        if (file_exists($coverPath)) {
+            unlink($coverPath);
+        }
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+        
+        $deleteStmt->close();
         return ['success' => true, 'message' => 'Module deleted successfully'];
     } else {
-        return ['success' => false, 'message' => 'Failed to delete module from database'];
+        $deleteStmt->close();
+        return ['success' => false, 'message' => 'Failed to delete module: ' . $conn->error];
     }
 }
 
 // Handle POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $module_id = isset($_POST['module_id']) ? (int)$_POST['module_id'] : 0;
-
-    if ($module_id <= 0) {
-        echo json_encode(['success' => false, 'message' => 'Invalid module ID']);
-        exit;
-    }
-
-    $result = deleteModule($module_id);
+    $moduleId = $_POST['module_id'] ?? '';
+    
+    $result = removeModule($moduleId);
+    
     header('Content-Type: application/json');
     echo json_encode($result);
     exit;
