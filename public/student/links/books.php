@@ -4,7 +4,7 @@ if (!defined('MAIN_PAGE')) {
 }
 $currentPage = 'Books';
 
-include '../../back-end/read/readBooks.php';
+include '../../back-end/read/studentBooks.php';
 
 // Get search and filter parameters
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -102,7 +102,7 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $up
                 <div class="card-body p-3">
                     <h6 class="card-title fw-bold mb-1"><?php echo $book['title']; ?></h6>
                     <p class="card-text text-muted small mb-2"><?php echo $book['course']; ?> - <?php echo date('M d, Y', strtotime($book['created_at'])); ?></p>
-                    <p class="card-text text-muted small mb-2">Published: <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
+                    <p class="card-text text-muted small mb-2"><?php echo $book['author']; ?> | <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
                             <button class="btn btn-sm btn-outline-primary me-1" title="View">
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="card-body p-3">
                                 <h6 class="card-title fw-bold mb-1">${book.title}</h6>
                                 <p class="card-text text-muted small mb-2">${book.course} - ${new Date(book.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-                                <p class="card-text text-muted small mb-2">Published: ${new Date(book.publish_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                                <p class="card-text text-muted small mb-2">${book.author} | ${new Date(book.publish_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
                                         <button class="btn btn-sm btn-outline-primary me-1" title="View">
