@@ -2,12 +2,18 @@
 if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
+include '../../back-end/read/profileData.php';
+include '../../back-end/read/readModules.php';
+include '../../back-end/read/readBooks.php';
+
+$modulesCount = getModulesCount();
+$booksCount = getBooksCount();
 
 $stats = [
-    ['title' => 'Modules Uploaded', 'value' => '5', 'subtitle' => 'Modules you have uploaded', 'icon' => 'bi-check-circle', 'iconClass' => 'icon-blue'],
-    ['title' => 'Books Uploaded', 'value' => '12', 'subtitle' => 'Books you have uploaded', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
+    ['title' => 'Modules Uploaded', 'value' => $modulesCount, 'subtitle' => 'Modules you have uploaded', 'icon' => 'bi-check-circle', 'iconClass' => 'icon-blue'],
+    ['title' => 'Books Uploaded', 'value' => $booksCount, 'subtitle' => 'Books you have uploaded', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
     ['title' => 'Total Downloads', 'value' => '3200', 'subtitle' => 'Downloads of your content', 'icon' => 'bi-download', 'iconClass' => 'icon-red'],
-    ['title' => 'Your Profile', 'value' => '1250', 'subtitle' => 'Profile views this month', 'icon' => 'bi-person', 'iconClass' => 'icon-orange']
+    ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => ucfirst($user_type), 'icon' => 'bi-person', 'iconClass' => 'icon-orange']
 ];
 
 $uploadedBooks = [

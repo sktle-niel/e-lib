@@ -2,12 +2,13 @@
 if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
+include '../../back-end/read/profileData.php';
 
 $stats = [
     ['title' => 'Available Books', 'value' => '1200', 'subtitle' => 'Books available for download', 'icon' => 'bi-check-circle', 'iconClass' => 'icon-blue'],
     ['title' => 'Your Downloads', 'value' => '15420', 'subtitle' => 'Books downloaded since launch', 'icon' => 'bi-download', 'iconClass' => 'icon-green'],
     ['title' => 'New Additions', 'value' => '45', 'subtitle' => 'New books added this week', 'icon' => 'bi-plus-circle', 'iconClass' => 'icon-red'],
-    ['title' => 'Your Profile', 'value' => '1250', 'subtitle' => 'Books downloaded this month', 'icon' => 'bi-person', 'iconClass' => 'icon-orange']
+    ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => 'Books downloaded this month', 'icon' => 'bi-person', 'iconClass' => 'icon-orange']
 ];
 
 $recentBooks = [

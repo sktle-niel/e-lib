@@ -1,4 +1,7 @@
-- [x] Add 'cover' field to $modules array with placeholder URLs
-- [x] Update PHP card display to include <img> tag above card-body
-- [x] Update JavaScript AJAX innerHTML to include <img> tag
-- [x] Fix button consistency in JS (change Unenroll to Download, remove disabled since no available field)
+# TODO: Update Dashboard Counts
+
+## Tasks
+
+- [x] Include readModules.php and readBooks.php in dashboard.php
+- [x] Call getModulesCount() and getBooksCount() to fetch dynamic counts
+- [x] Update the $stats array to use the fetched counts instead of hardcoded values
