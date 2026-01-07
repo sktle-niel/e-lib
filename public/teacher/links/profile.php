@@ -57,6 +57,10 @@ $currentPrograms = !empty($program) ? explode(',', $program) : [];
                         <p class="mb-0"><?php echo htmlspecialchars($firstname . ' ' . $lastname); ?></p>
                     </div>
                     <div class="mb-3">
+                        <label class="form-label fw-bold">Program:</label>
+                        <p class="mb-0"><?php echo !empty($program) ? htmlspecialchars($program) : 'Not set'; ?></p>
+                    </div>
+                    <div class="mb-3">
                         <label class="form-label fw-bold">User Type:</label>
                         <p class="mb-0"><?php echo htmlspecialchars(ucfirst($user_type)); ?></p>
                     </div>
@@ -189,6 +193,41 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 alert('An error occurred while uploading the profile picture');
+            });
+        });
+    }
+
+    // Update name
+    const updateNameBtn = document.getElementById('updateNameBtn');
+    if (updateNameBtn) {
+        updateNameBtn.addEventListener('click', function() {
+            const firstName = document.getElementById('firstName').value.trim();
+            const lastName = document.getElementById('lastName').value.trim();
+
+            if (!firstName || !lastName) {
+                alert('Please fill in both first name and last name');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('firstName', firstName);
+            formData.append('lastName', lastName);
+
+            fetch('../../back-end/update/updateName.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage();
+                } else {
+                    alert(data.message || 'Failed to update name');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the name');
             });
         });
     }
