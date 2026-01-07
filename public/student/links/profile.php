@@ -25,7 +25,7 @@ include '../../back-end/read/profileData.php';
     <div class="row">
         <!-- Profile Picture Section -->
         <div class="col-lg-4 mb-4">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm mb-4">
                 <div class="card-body text-center p-4">
                     <h5 class="card-title mb-3">Profile Picture</h5>
                     <div class="mb-3">
@@ -38,9 +38,36 @@ include '../../back-end/read/profileData.php';
                     <button type="button" class="btn btn-primary">
                         <i class="bi bi-upload me-2"></i>Upload Picture
                     </button>
+                </div>
+            </div>
+
+            <!-- Profile Information Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-3">Profile Information</h5>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Username:</label>
+                        <p class="mb-0"><?php echo htmlspecialchars($username); ?></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Full Name:</label>
+                        <p class="mb-0"><?php echo htmlspecialchars($firstname . ' ' . $lastname); ?></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">User Type:</label>
+                        <p class="mb-0"><?php echo htmlspecialchars(ucfirst($user_type)); ?></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Program:</label>
+                        <p class="mb-0"><?php echo htmlspecialchars($program); ?></p>
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label fw-bold">Member Since:</label>
+                        <p class="mb-0"><?php echo date('F j, Y', strtotime($created_at)); ?></p>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
