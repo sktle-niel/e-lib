@@ -25,6 +25,32 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
 
+<style>
+/* Optional: Style for the file input to match your design */
+.form-control[type="file"] {
+    padding: 0.375rem 0.75rem;
+}
+
+.form-control[type="file"]::file-selector-button {
+    padding: 0.375rem 0.75rem;
+    margin-right: 0.75rem;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    cursor: pointer;
+}
+
+.form-control[type="file"]::file-selector-button:hover {
+    background-color: #e9ecef;
+}
+
+.file-info {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+</style>
+
 <!-- Main Content -->
 <div class="main-content">
     <!-- Header -->
@@ -64,13 +90,17 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
                 <input type="date" name="publish_date" id="publish_date" class="form-control" placeholder="Publish date..." required>
             </div>
             <div class="col-md-2">
+                <label for="cover_image" class="form-label">Cover Image</label>
+                <input type="file" name="cover_image" id="cover_image" class="form-control" accept=".jpg,.jpeg,.png,.gif" required>
+                <div class="file-info">JPG, PNG, or GIF (Max 5MB)</div>
+            </div>
+            <div class="col-md-2">
                 <label for="book_file" class="form-label">Book File</label>
                 <input type="file" name="book_file" id="book_file" class="form-control" accept=".pdf" required>
             </div>
-            <div class="col-md-2">
-                <label class="form-label">&nbsp;</label>
-                <button type="submit" class="btn btn-success w-100">
-                    <i class="bi bi-upload me-2"></i>Upload
+            <div class="col-md-12">
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-upload me-2"></i>Upload Book
                 </button>
             </div>
         </form>
@@ -180,13 +210,22 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
 <div class="modal fade" id="editBookModal" tabindex="-1" aria-labelledby="editBookModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-header">
+            <div class="modal-header border-0">
                 <h5 class="modal-title" id="editBookModalLabel">Edit Book</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="editBookForm">
+                <form id="editBookForm" enctype="multipart/form-data">
                     <input type="hidden" id="editBookId" name="book_id">
+                    
+                    <!-- Current Cover at the top -->
+                    <div class="mb-4 text-center" id="currentCoverPreview">
+                        <label class="form-label d-block fw-semibold mb-3">Current Cover</label>
+                        <div class="d-flex justify-content-center">
+                            <img id="currentCoverImg" src="" alt="Current cover" style="max-width: 250px; max-height: 200px; width: auto; height: auto; border: 1px solid #dee2e6; padding: 8px; border-radius: 8px; background: #f8f9fa;">
+                        </div>
+                    </div>
+                    
                     <div class="mb-3">
                         <label for="editBookTitle" class="form-label">Book Title</label>
                         <input type="text" name="book_title" id="editBookTitle" class="form-control" placeholder="Enter book title..." required>
@@ -211,9 +250,22 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
                         <label for="editPublishDate" class="form-label">Publish Date</label>
                         <input type="date" name="publish_date" id="editPublishDate" class="form-control" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="editCoverImage" class="form-label">New Cover Image (Optional)</label>
+                        <input type="file" name="cover_image" id="editCoverImage" class="form-control" accept=".jpg,.jpeg,.png,.gif">
+                        <small class="text-muted d-block mt-1">Leave empty to keep current cover. JPG, PNG, or GIF (Max 5MB)</small>
+                    </div>
+                    
+                    <!-- New Cover Preview -->
+                    <div class="mb-3 text-center" id="newCoverPreview" style="display: none;">
+                        <label class="form-label d-block fw-semibold mb-3">New Cover Preview</label>
+                        <div class="d-flex justify-content-center">
+                            <img id="newCoverImg" src="" alt="New cover preview" style="max-width: 250px; max-height: 200px; width: auto; height: auto; border: 1px solid #dee2e6; padding: 8px; border-radius: 8px; background: #f8f9fa;">
+                        </div>
+                    </div>
                 </form>
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer border-0">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary" id="saveEditBookBtn">Save Changes</button>
             </div>
@@ -239,6 +291,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const formData = new FormData(this);
             const submitBtn = this.querySelector('button[type="submit"]');
             const originalText = submitBtn.innerHTML;
+
+            // Validate file sizes
+            const coverImage = document.getElementById('cover_image').files[0];
+            if (coverImage && coverImage.size > 5 * 1024 * 1024) {
+                alert('Cover image must be less than 5MB');
+                return;
+            }
 
             // Disable button and show loading
             submitBtn.disabled = true;
@@ -364,6 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const author = secondLine.split(' | ')[0].replace('Author: ', '').trim();
             const publishDateStr = secondLine.split(' | ')[1].replace('Published: ', '').trim();
             const bookId = card.dataset.bookId;
+            const coverSrc = card.querySelector('.card-img-top').src;
 
             // Convert publish date from 'M d, Y' to 'YYYY-MM-DD'
             const dateParts = publishDateStr.split(' ');
@@ -379,6 +439,13 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('editBookCourse').value = course;
             document.getElementById('editAuthor').value = author;
             document.getElementById('editPublishDate').value = publishDate;
+            
+            // Show current cover
+            document.getElementById('currentCoverImg').src = coverSrc;
+            
+            // Clear file input and hide new preview
+            document.getElementById('editCoverImage').value = '';
+            document.getElementById('newCoverPreview').style.display = 'none';
 
             // Show modal
             const modal = new bootstrap.Modal(document.getElementById('editBookModal'));
@@ -386,10 +453,53 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Handle cover image preview when file is selected
+    document.getElementById('editCoverImage').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        const newCoverPreview = document.getElementById('newCoverPreview');
+        const newCoverImg = document.getElementById('newCoverImg');
+        
+        if (file) {
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+            if (!allowedTypes.includes(file.type)) {
+                alert('Please select a valid image file (JPG, PNG, or GIF)');
+                e.target.value = '';
+                newCoverPreview.style.display = 'none';
+                return;
+            }
+            
+            // Validate file size (5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Cover image must be less than 5MB');
+                e.target.value = '';
+                newCoverPreview.style.display = 'none';
+                return;
+            }
+            
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                newCoverImg.src = event.target.result;
+                newCoverPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            newCoverPreview.style.display = 'none';
+        }
+    });
+
     // Handle save edit button
     document.getElementById('saveEditBookBtn').addEventListener('click', function() {
         const form = document.getElementById('editBookForm');
         const formData = new FormData(form);
+        
+        const saveBtn = this;
+        const originalText = saveBtn.innerHTML;
+        
+        // Disable button and show loading
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Saving...';
 
         fetch('../../back-end/update/editBooks.php', {
             method: 'POST',
@@ -407,6 +517,10 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Error:', error);
             alert('An error occurred while updating the book.');
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = originalText;
         });
     });
 
