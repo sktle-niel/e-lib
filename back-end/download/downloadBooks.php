@@ -1,5 +1,7 @@
 <?php
+include '../../auth/sessionCheck.php';
 include '../../config/connection.php';
+include '../recent/downloadedBooks.php';
 
 if (!isset($_GET['id'])) {
     die('Invalid request');
@@ -19,6 +21,9 @@ if ($result->num_rows == 0) {
 $row = $result->fetch_assoc();
 $filePath = $row['file_path'];
 $title = $row['title'];
+
+// Record the download
+recordBookDownload($_SESSION['user_id'], $bookId);
 
 if (!file_exists($filePath)) {
     die('File not found on server');
