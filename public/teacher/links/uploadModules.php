@@ -122,9 +122,9 @@ $hasMore = $totalModules > 12;
                     <p class="card-text text-muted small mb-2"><?php echo htmlspecialchars($module['course']); ?> - <?php echo date('M d, Y', strtotime($module['uploadedDate'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                            <a href="../../back-end/preview/previewModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                 <i class="bi bi-eye"></i>
-                            </button>
+                            </a>
                             <button class="btn btn-sm btn-outline-warning me-1" title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </button>
@@ -314,9 +314,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <p class="card-text text-muted small mb-2">${escapeHtml(module.course)} - ${new Date(module.uploadedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
-                                        <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                                        <a href="../../back-end/preview/previewModules.php?id=${escapeHtml(module.id)}" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                             <i class="bi bi-eye"></i>
-                                        </button>
+                                        </a>
                                         <button class="btn btn-sm btn-outline-warning me-1" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </button>

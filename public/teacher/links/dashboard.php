@@ -7,6 +7,8 @@ include '../../back-end/read/readModules.php';
 include '../../back-end/read/readBooks.php';
 include '../../back-end/read/readStudents.php';
 
+$currentPage = 'Dashboard';
+
 $modulesCount = getModulesCount();
 $booksCount = getBooksCount();
 
@@ -109,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="card card-custom">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="card-title fw-bold mb-0">Recent Modules</h5>
+                        <h5 class="card-title fw-bold mb-0">Recent Uploaded Modules</h5>
                     </div>
                     <?php if (empty($recentModules)): ?>
                         <div class="text-center py-5">
@@ -134,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </p>
                                         <div class="d-flex justify-content-end">
                                             <div>
-                                                <a href="../../back-end/preview/previewModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
+                                                <a href="../../back-end/preview/previewBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                                 <a href="../../back-end/download/downloadModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-success me-1" title="Download">
@@ -157,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="card card-custom">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="card-title fw-bold mb-0">Uploaded Books</h5>
+                        <h5 class="card-title fw-bold mb-0">Recent Uploaded Books</h5>
                     </div>
                     <?php if (empty($uploadedBooks)): ?>
                         <div class="text-center py-5">
