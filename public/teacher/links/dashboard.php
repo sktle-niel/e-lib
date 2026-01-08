@@ -21,12 +21,11 @@ $stats = [
     ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => ucfirst($user_type), 'icon' => 'bi-person', 'iconClass' => 'icon-orange']
 ];
 
-$uploadedBooks = [
-    ['title' => 'Introduction to Algorithms', 'author' => 'Cormen et al.', 'cover' => 'https://via.placeholder.com/150x200/11998e/ffffff?text=Algo', 'available' => true],
-    ['title' => 'Computer Networks', 'author' => 'Andrew Tanenbaum', 'cover' => 'https://via.placeholder.com/150x200/38ef7d/000000?text=Networks', 'available' => true],
-    ['title' => 'Database System Concepts', 'author' => 'Silberschatz et al.', 'cover' => 'https://via.placeholder.com/150x200/f093fb/000000?text=DB', 'available' => false],
-    ['title' => 'Operating Systems', 'author' => 'William Stallings', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=OS', 'available' => true]
-];
+// Fetch recent modules from database (limit to 4 for dashboard display)
+$recentModules = getAllModules('', '', '', 4, 0);
+
+// Fetch real books from database (limit to 4 for dashboard display)
+$uploadedBooks = getAllBooks('', '', '', '', 4, 0);
 ?>
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
@@ -105,6 +104,54 @@ document.addEventListener('DOMContentLoaded', function() {
 
     <!-- Content Grid -->
     <div class="row g-4">
+        <!-- Recent Modules -->
+        <div class="col-lg-12 mb-4">
+            <div class="card card-custom">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="card-title fw-bold mb-0">Recent Modules</h5>
+                    </div>
+                    <?php if (empty($recentModules)): ?>
+                        <div class="text-center py-5">
+                            <i class="bi bi-file-earmark-text" style="font-size: 3rem; color: #ccc;"></i>
+                            <p class="text-muted mt-3">No modules uploaded yet.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="row g-3">
+                            <?php foreach($recentModules as $module): ?>
+                            <div class="col-md-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <img src="<?php echo htmlspecialchars($module['cover'] ?: 'https://via.placeholder.com/150x200/6c757d/ffffff?text=No+Cover'); ?>" 
+                                         class="card-img-top" 
+                                         alt="<?php echo htmlspecialchars($module['title']); ?>" 
+                                         style="height: 200px; object-fit: cover;">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title fw-bold mb-1"><?php echo htmlspecialchars($module['title']); ?></h6>
+                                        <p class="card-text text-muted small mb-1"><?php echo htmlspecialchars($module['course']); ?></p>
+                                        <p class="card-text text-muted small mb-2">
+                                            <i class="bi bi-calendar-event"></i> 
+                                            <?php echo date('M d, Y', strtotime($module['uploadedDate'])); ?>
+                                        </p>
+                                        <div class="d-flex justify-content-end">
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-success me-1" title="Download">
+                                                    <i class="bi bi-download"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+
         <!-- Uploaded Books -->
         <div class="col-lg-12">
             <div class="card card-custom">
@@ -112,29 +159,47 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="card-title fw-bold mb-0">Uploaded Books</h5>
                     </div>
-                    <div class="row g-3">
-                        <?php foreach($uploadedBooks as $book): ?>
-                        <div class="col-md-3">
-                            <div class="card h-100 border-0 shadow-sm">
-                                <img src="<?php echo $book['cover']; ?>" class="card-img-top" alt="<?php echo $book['title']; ?>" style="height: 200px; object-fit: cover;">
-                                <div class="card-body p-3">
-                                    <h6 class="card-title fw-bold mb-1"><?php echo $book['title']; ?></h6>
-                                    <p class="card-text text-muted small mb-2"><?php echo $book['author']; ?></p>
-                                    <div class="d-flex justify-content-end">
-                                        <div>
-                                            <button class="btn btn-sm btn-outline-primary me-1" title="View">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-success me-1" title="Download" <?php echo !$book['available'] ? 'disabled' : ''; ?>>
-                                                <i class="bi bi-download"></i>
-                                            </button>
+                    <?php if (empty($uploadedBooks)): ?>
+                        <div class="text-center py-5">
+                            <i class="bi bi-book" style="font-size: 3rem; color: #ccc;"></i>
+                            <p class="text-muted mt-3">No books uploaded yet.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="row g-3">
+                            <?php foreach($uploadedBooks as $book): ?>
+                            <div class="col-md-3">
+                                <div class="card h-100 border-0 shadow-sm">
+                                    <img src="<?php echo htmlspecialchars($book['cover'] ?: 'https://via.placeholder.com/150x200/6c757d/ffffff?text=No+Cover'); ?>" 
+                                         class="card-img-top" 
+                                         alt="<?php echo htmlspecialchars($book['title']); ?>" 
+                                         style="height: 200px; object-fit: cover;">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title fw-bold mb-1"><?php echo htmlspecialchars($book['title']); ?></h6>
+                                        <p class="card-text text-muted small mb-1">
+                                            <?php echo htmlspecialchars($book['course']); ?> - <?php echo date('M d, Y', strtotime($book['created_at'])); ?>
+                                        </p>
+                                        <p class="card-text text-muted small mb-2">
+                                            Author: <?php echo htmlspecialchars($book['author']); ?> | 
+                                            Published: <?php echo date('M d, Y', strtotime($book['publish_date'])); ?>
+                                        </p>
+                                        <div class="d-flex justify-content-end">
+                                            <div>
+                                                <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                                                    <i class="bi bi-eye"></i>
+                                                </button>
+                                                <button class="btn btn-sm btn-outline-success me-1" 
+                                                        title="Download" 
+                                                        <?php echo !$book['available'] ? 'disabled' : ''; ?>>
+                                                    <i class="bi bi-download"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            <?php endforeach; ?>
                         </div>
-                        <?php endforeach; ?>
-                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
