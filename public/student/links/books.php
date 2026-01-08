@@ -104,9 +104,9 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $up
                     <p class="card-text text-muted small mb-2"><?php echo $book['author']; ?> | <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                            <a href="../../back-end/preview/previewBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                 <i class="bi bi-eye"></i>
-                            </button>
+                            </a>
                             <a href="../../back-end/download/downloadBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-success me-1" title="Download" <?php echo !$book['available'] ? 'style="pointer-events: none; opacity: 0.5;"' : ''; ?>>
                                 <i class="bi bi-download"></i>
                             </a>
