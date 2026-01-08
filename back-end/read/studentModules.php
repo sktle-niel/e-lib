@@ -4,15 +4,14 @@ include '../../config/connection.php';
 function getAllModules($search = '', $course = '', $year = '', $limit = 12, $offset = 0) {
     global $conn;
     
-    $sql = "SELECT id, title, author, course, publish_date, file_path, cover, created_at FROM books";
+    $sql = "SELECT id, title, user_id, course, uploadedDate, file_path, cover FROM modules";
     $params = [];
     $types = '';
     
     if (!empty($search)) {
-        $sql .= " WHERE (title LIKE ? OR author LIKE ?)";
+        $sql .= " WHERE (title LIKE ?)";
         $params[] = '%' . $search . '%';
-        $params[] = '%' . $search . '%';
-        $types .= 'ss';
+        $types .= 's';
     }
     
     if (!empty($course)) {
@@ -22,12 +21,12 @@ function getAllModules($search = '', $course = '', $year = '', $limit = 12, $off
     }
     
     if (!empty($year)) {
-        $sql .= (!empty($search) || !empty($course) ? " AND" : " WHERE") . " YEAR(created_at) = ?";
+        $sql .= (!empty($search) || !empty($course) ? " AND" : " WHERE") . " YEAR(uploadedDate) = ?";
         $params[] = $year;
         $types .= 'i';
     }
     
-    $sql .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+    $sql .= " ORDER BY uploadedDate DESC LIMIT ? OFFSET ?";
     $params[] = $limit;
     $params[] = $offset;
     $types .= 'ii';
@@ -44,7 +43,7 @@ function getAllModules($search = '', $course = '', $year = '', $limit = 12, $off
         $modules[] = [
             'id' => $row['id'],
             'title' => $row['title'],
-            'uploadedDate' => $row['created_at'],
+            'uploadedDate' => $row['uploadedDate'],
             'course' => $row['course'],
             'cover' => $row['cover'],
             'file_path' => $row['file_path']
@@ -58,15 +57,14 @@ function getAllModules($search = '', $course = '', $year = '', $limit = 12, $off
 function getModulesCount($search = '', $course = '', $year = '') {
     global $conn;
     
-    $sql = "SELECT COUNT(*) as total FROM books";
+    $sql = "SELECT COUNT(*) as total FROM modules";
     $params = [];
     $types = '';
     
     if (!empty($search)) {
-        $sql .= " WHERE (title LIKE ? OR author LIKE ?)";
+        $sql .= " WHERE (title LIKE ?)";
         $params[] = '%' . $search . '%';
-        $params[] = '%' . $search . '%';
-        $types .= 'ss';
+        $types .= 's';
     }
     
     if (!empty($course)) {
@@ -76,7 +74,7 @@ function getModulesCount($search = '', $course = '', $year = '') {
     }
     
     if (!empty($year)) {
-        $sql .= (!empty($search) || !empty($course) ? " AND" : " WHERE") . " YEAR(created_at) = ?";
+        $sql .= (!empty($search) || !empty($course) ? " AND" : " WHERE") . " YEAR(uploadedDate) = ?";
         $params[] = $year;
         $types .= 'i';
     }
@@ -96,16 +94,12 @@ function getModulesCount($search = '', $course = '', $year = '') {
 function getModuleById($moduleId) {
     global $conn;
     
-    $stmt = $conn->prepare("SELECT id, title, author, course, publish_date, file_path, cover, created_at FROM books WHERE id = ?");
+    $stmt = $conn->prepare("SELECT id, title, user_id, course, uploadedDate, file_path, cover FROM modules WHERE id = ?");
     $stmt->bind_param("i", $moduleId);
     $stmt->execute();
     $result = $stmt->get_result();
     
     $module = $result->fetch_assoc();
-    if ($module) {
-        $module['uploadedDate'] = $module['created_at'];
-        unset($module['created_at']);
-    }
     $stmt->close();
     
     return $module;
