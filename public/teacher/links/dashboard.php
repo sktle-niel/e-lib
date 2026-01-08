@@ -134,9 +134,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </p>
                                         <div class="d-flex justify-content-end">
                                             <div>
-                                                <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                                                <a href="../../back-end/preview/previewModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                                     <i class="bi bi-eye"></i>
-                                                </button>
+                                                </a>
                                                 <a href="../../back-end/download/downloadModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-success me-1" title="Download">
                                                     <i class="bi bi-download"></i>
                                                 </a>
@@ -184,9 +184,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </p>
                                         <div class="d-flex justify-content-end">
                                             <div>
-                                                <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                                                <a href="../../back-end/preview/previewModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                                     <i class="bi bi-eye"></i>
-                                                </button>
+                                                </a>
                                                 <a href="../../back-end/download/downloadBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-success me-1"
                                                         title="Download"
                                                         <?php echo !$book['available'] ? 'style="pointer-events: none; opacity: 0.5;"' : ''; ?>>
