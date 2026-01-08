@@ -1,5 +1,7 @@
 <?php
+include '../../auth/sessionCheck.php';
 include '../../config/connection.php';
+include '../recent/downloadedModules.php';
 
 if (!isset($_GET['id'])) {
     die('Invalid request');
@@ -19,6 +21,9 @@ if ($result->num_rows == 0) {
 $row = $result->fetch_assoc();
 $filePath = $row['file_path'];
 $title = $row['title'];
+
+// Record the download
+recordModuleDownload($_SESSION['user_id'], $moduleId);
 
 if (!file_exists($filePath)) {
     die('File not found on server');
