@@ -169,9 +169,9 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
                     <p class="card-text text-muted small mb-2">Author: <?php echo htmlspecialchars($book['author']); ?> | Published: <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                            <a href="../../back-end/preview/previewBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                 <i class="bi bi-eye"></i>
-                            </button>
+                            </a>
                             <button class="btn btn-sm btn-outline-warning me-1" title="Edit">
                                 <i class="bi bi-pencil"></i>
                             </button>
@@ -368,9 +368,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <p class="card-text text-muted small mb-2">Author: ${escapeHtml(book.author)} | Published: ${new Date(book.publish_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
-                                        <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                                        <a href="../../back-end/preview/previewBooks.php?id=${escapeHtml(book.id)}" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                             <i class="bi bi-eye"></i>
-                                        </button>
+                                        </a>
                                         <button class="btn btn-sm btn-outline-warning me-1" title="Edit">
                                             <i class="bi bi-pencil"></i>
                                         </button>
