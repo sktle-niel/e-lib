@@ -97,9 +97,9 @@ $initialModules = getAllModules($searchQuery, $courseFilter, $yearFilter, 12, 0)
                             <button class="btn btn-sm btn-outline-primary me-1" title="View">
                                 <i class="bi bi-eye"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-success me-1" title="Download">
+                            <a href="../../back-end/download/downloadModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-success me-1" title="Download">
                                 <i class="bi bi-download"></i>
-                            </button>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -170,9 +170,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <button class="btn btn-sm btn-outline-primary me-1" title="View">
                                             <i class="bi bi-eye"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-success me-1" title="Download">
+                                        <a href="../../back-end/download/downloadModules.php?id=${module.id}" class="btn btn-sm btn-outline-success me-1" title="Download">
                                             <i class="bi bi-download"></i>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
