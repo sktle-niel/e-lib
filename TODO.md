@@ -1,7 +1,3 @@
-# TODO: Update Dashboard Counts
-
-## Tasks
-
-- [x] Include readModules.php and readBooks.php in dashboard.php
-- [x] Call getModulesCount() and getBooksCount() to fetch dynamic counts
-- [x] Update the $stats array to use the fetched counts instead of hardcoded values
+- [x] Fix Recent Modules section: change $book['id'] to $module['id'] and previewBooks.php to previewModules.php
+- [x] Fix Recent Books section: change $module['id'] to $book['id'] and previewModules.php to previewBooks.php
+- [x] Fix module download: change Content-Type to application/pdf and filename to title.pdf

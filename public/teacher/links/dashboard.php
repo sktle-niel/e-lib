@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </p>
                                         <div class="d-flex justify-content-end">
                                             <div>
-                                                <a href="../../back-end/preview/previewBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
+                                                <a href="../../back-end/preview/previewModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                                 <a href="../../back-end/download/downloadModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-success me-1" title="Download">
@@ -186,7 +186,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </p>
                                         <div class="d-flex justify-content-end">
                                             <div>
-                                                <a href="../../back-end/preview/previewModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
+                                                <a href="../../back-end/preview/previewBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
                                                     <i class="bi bi-eye"></i>
                                                 </a>
                                                 <a href="../../back-end/download/downloadBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-success me-1"
