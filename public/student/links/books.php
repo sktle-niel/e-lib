@@ -5,6 +5,7 @@ if (!defined('MAIN_PAGE')) {
 $currentPage = 'Books';
 
 include '../../back-end/read/studentBooks.php';
+include '../../back-end/recent/recentPreviewBooks.php';
 
 // Get search and filter parameters
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -104,9 +105,9 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $up
                     <p class="card-text text-muted small mb-2"><?php echo $book['author']; ?> | <?php echo date('M d, Y', strtotime($book['publish_date'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
-                            <a href="../../back-end/preview/previewBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-preview" data-book-id="<?php echo $book['id']; ?>" title="View">
                                 <i class="bi bi-eye"></i>
-                            </a>
+                            </button>
                             <a href="../../back-end/download/downloadBooks.php?id=<?php echo $book['id']; ?>" class="btn btn-sm btn-outline-success me-1" title="Download" <?php echo !$book['available'] ? 'style="pointer-events: none; opacity: 0.5;"' : ''; ?>>
                                 <i class="bi bi-download"></i>
                             </a>
@@ -140,11 +141,65 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $up
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Script loaded');
+    
     let currentPage = 1;
     let hasMore = <?php echo $hasMore ? 'true' : 'false'; ?>;
     let searchQuery = '<?php echo addslashes($searchQuery); ?>';
     let courseFilter = '<?php echo addslashes($courseFilter); ?>';
-    let yearFilter = '<?php echo $yearFilter; ?>';
+    let publishYearFilter = '<?php echo $publishYearFilter; ?>';
+    let uploadYearFilter = '<?php echo $uploadYearFilter; ?>';
+
+    const booksContainer = document.getElementById('books-container');
+    console.log('Books container found:', booksContainer);
+
+    // Use event delegation for preview buttons
+    booksContainer.addEventListener('click', function(e) {
+        console.log('Click detected on:', e.target);
+        
+        const previewBtn = e.target.closest('.btn-preview');
+        console.log('Preview button found:', previewBtn);
+        
+        if (previewBtn) {
+            const bookId = parseInt(previewBtn.dataset.bookId);
+            console.log('Book ID:', bookId);
+            recordPreview(bookId);
+        }
+    });
+
+    function recordPreview(book_id) {
+        console.log('recordPreview called with ID:', book_id);
+        
+        fetch('../../back-end/recent/recentPreviewBooks.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ book_id: book_id }),
+        })
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.text();
+        })
+        .then(text => {
+            console.log('Response text:', text);
+            try {
+                const data = JSON.parse(text);
+                console.log('Parsed data:', data);
+                if (data.success) {
+                    console.log('Opening preview window...');
+                    window.open(`../../back-end/preview/previewBooks.php?id=${book_id}`, '_blank');
+                } else {
+                    console.error('Preview failed:', data.error);
+                }
+            } catch (e) {
+                console.error('JSON parse error:', e, 'Text was:', text);
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+        });
+    }
 
     function loadMoreBooks() {
         if (!hasMore) return;
@@ -152,7 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('loading').style.display = 'block';
 
         currentPage++;
-        const url = `?page=books&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&year=${yearFilter}`;
+        const url = `?page=books&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&publish_year=${publishYearFilter}&upload_year=${uploadYearFilter}`;
 
         fetch(url)
             .then(response => response.json())
@@ -161,6 +216,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (books.length === 0) {
                     hasMore = false;
+                    document.getElementById('load-more-container').style.display = 'none';
                     document.getElementById('no-more').style.display = 'block';
                     return;
                 }
@@ -174,11 +230,10 @@ document.addEventListener('DOMContentLoaded', function() {
                             <img src="${book.cover}" class="card-img-top" alt="${book.title}" style="height: 200px; object-fit: cover;">
                             <div class="card-body p-3">
                                 <h6 class="card-title fw-bold mb-1">${book.title}</h6>
-                                <p class="card-text text-muted small mb-2">${book.course} - ${new Date(book.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                 <p class="card-text text-muted small mb-2">${book.author} | ${new Date(book.publish_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
-                                        <button class="btn btn-sm btn-outline-primary me-1" title="View">
+                                        <button class="btn btn-sm btn-outline-primary me-1 btn-preview" data-book-id="${book.id}" title="View">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                         <a href="../../back-end/download/downloadBooks.php?id=${book.id}" class="btn btn-sm btn-outline-success me-1" title="Download" ${!book.available ? 'style="pointer-events: none; opacity: 0.5;"' : ''}>
@@ -192,7 +247,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     container.appendChild(col);
                 });
 
-                // Check if there are more books
                 if (books.length < 12) {
                     hasMore = false;
                     document.getElementById('load-more-container').style.display = 'none';
@@ -205,15 +259,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Add event listener to Load More button
     const loadMoreBtn = document.getElementById('load-more-btn');
     if (loadMoreBtn) {
         loadMoreBtn.addEventListener('click', function() {
             console.log('Load More button clicked');
             loadMoreBooks();
         });
-    } else {
-        console.log('Load More button not found');
     }
 });
 </script>
