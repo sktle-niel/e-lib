@@ -19,8 +19,8 @@ include '../../back-end/read/sidebarProfile.php';
         <a href="?page=dashboard" class="nav-item <?php echo $currentPage == 'dashboard' ? 'active' : ''; ?>">
             <i class="bi bi-speedometer2"></i> <span class="nav-text">Dashboard</span>
         </a>
-        <a href="?page=recent" class="nav-item <?php echo $currentPage == 'recent' ? 'active' : ''; ?>">
-            <i class="bi bi-book-half"></i> <span class="nav-text">Recent</span>
+        <a href="?page=recent" class="nav-item <?php echo $currentPage == 'allFiles' ? 'active' : ''; ?>">
+            <i class="bi bi-book-half"></i> <span class="nav-text">Modules & Books</span>
         </a>
         <a href="?page=modules" class="nav-item <?php echo $currentPage == 'modules' ? 'active' : ''; ?>">
             <i class="bi bi-journal"></i> <span class="nav-text">Modules</span>
