@@ -78,7 +78,7 @@ $totalItems = count($filteredItems);
 $hasMore = $totalItems > 12;
 ?>
 
-<link rel="stylesheet" href="../../src/css/dashboard.css">
+<link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 
 <!-- Main Content -->
 <div class="main-content">
