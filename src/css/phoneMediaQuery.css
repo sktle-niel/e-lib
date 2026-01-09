@@ -494,3 +494,198 @@ body {
     flex-direction: row;
   }
 }
+
+/* filters */
+
+/* Mobile Responsive Styles for Search and Filters */
+
+/* Tablet and below (768px) */
+@media (max-width: 768px) {
+  /* Search Form Container */
+  .mb-4 form.d-flex {
+    flex-direction: column !important;
+    gap: 10px;
+  }
+
+  /* Make all form elements full width */
+  .mb-4 form.d-flex input[type="text"],
+  .mb-4 form.d-flex select,
+  .mb-4 form.d-flex button,
+  .mb-4 form.d-flex a {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* Adjust button group */
+  .mb-4 form.d-flex .btn {
+    display: block;
+    width: 100%;
+  }
+
+  /* Items Grid */
+  .col-lg-3,
+  .col-md-4 {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+
+  .card-img-top {
+    height: 180px !important;
+  }
+
+  .card-body {
+    padding: 12px !important;
+  }
+
+  .card-title {
+    font-size: 14px !important;
+  }
+
+  .card-text {
+    font-size: 11px !important;
+  }
+}
+
+/* Phone only (576px and below) */
+@media (max-width: 576px) {
+  /* Page title */
+  .page-title {
+    font-size: 20px !important;
+  }
+
+  /* Search Form */
+  .mb-4 form.d-flex {
+    flex-direction: column !important;
+    gap: 8px;
+  }
+
+  .mb-4 form.d-flex input[type="text"] {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .mb-4 form.d-flex input[type="text"]::placeholder {
+    font-size: 13px;
+  }
+
+  .mb-4 form.d-flex select {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+
+  .mb-4 form.d-flex .btn {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  /* Items Grid - Full width cards */
+  .col-lg-3,
+  .col-md-4,
+  .col-sm-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  #items-container {
+    gap: 0.75rem !important;
+  }
+
+  .card {
+    margin-bottom: 10px;
+  }
+
+  .card-img-top {
+    height: 200px !important;
+  }
+
+  .card-body {
+    padding: 12px !important;
+  }
+
+  .card-title {
+    font-size: 14px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .card-text {
+    font-size: 11px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  /* Buttons */
+  .btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .btn-sm i {
+    font-size: 13px;
+  }
+
+  /* Load More Button */
+  #load-more-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  /* Loading Spinner */
+  #loading .spinner-border {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  /* No more message */
+  #no-more p {
+    font-size: 13px;
+  }
+}
+
+/* Extra small phones (375px and below) */
+@media (max-width: 375px) {
+  .page-title {
+    font-size: 18px !important;
+  }
+
+  .mb-4 form.d-flex input[type="text"],
+  .mb-4 form.d-flex select {
+    font-size: 13px;
+    padding: 9px 10px;
+  }
+
+  .mb-4 form.d-flex input[type="text"]::placeholder {
+    font-size: 12px;
+  }
+
+  .mb-4 form.d-flex .btn {
+    font-size: 13px;
+    padding: 9px;
+  }
+
+  .card-img-top {
+    height: 180px !important;
+  }
+
+  .card-body {
+    padding: 10px !important;
+  }
+
+  .card-title {
+    font-size: 13px !important;
+  }
+
+  .card-text {
+    font-size: 10px !important;
+  }
+
+  #load-more-btn {
+    padding: 10px;
+    font-size: 13px;
+  }
+}

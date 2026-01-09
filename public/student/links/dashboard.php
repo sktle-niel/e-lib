@@ -13,6 +13,7 @@ include '../../back-end/read/modulesCount.php';
 include '../../back-end/read/BooksCount.php';
 include '../../back-end/read/countDownloads.php';
 
+
 // Get user ID from session
 $userId = $_SESSION['user_id'];
 
@@ -67,7 +68,7 @@ usort($downloads, function($a, $b) {
 $downloads = array_slice($downloads, 0, 6);
 ?>
 
-<link rel="stylesheet" href="../../src/css/dashboard.css">
+<link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 
 <!-- Main Content -->
 <div class="main-content">

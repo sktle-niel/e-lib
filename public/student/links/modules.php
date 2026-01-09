@@ -31,7 +31,7 @@ if (isset($_GET['ajax'])) {
 $initialModules = getAllModules($searchQuery, $courseFilter, $yearFilter, 12, 0);
 ?>
 
-<link rel="stylesheet" href="../../src/css/dashboard.css">
+<link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 
 <!-- Main Content -->
 <div class="main-content">
@@ -49,11 +49,9 @@ $initialModules = getAllModules($searchQuery, $courseFilter, $yearFilter, 12, 0)
         <form method="GET" action="" class="row g-3">
             <input type="hidden" name="page" value="modules">
             <div class="col-md-3">
-                <label for="search" class="form-label">Search</label>
                 <input type="text" name="search" id="search" class="form-control" placeholder="Search modules by title or instructor..." value="<?php echo htmlspecialchars($searchQuery); ?>">
             </div>
             <div class="col-md-2">
-                <label for="course" class="form-label">Course</label>
                 <select name="course" id="course" class="form-select">
                     <option value="">All Courses</option>
                     <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
@@ -65,7 +63,6 @@ $initialModules = getAllModules($searchQuery, $courseFilter, $yearFilter, 12, 0)
                 </select>
             </div>
             <div class="col-md-2">
-                <label for="year" class="form-label">Upload Year</label>
                 <select name="year" id="year" class="form-select">
                     <option value="">All Years</option>
                     <?php for ($y = 2000; $y <= 2026; $y++): ?>

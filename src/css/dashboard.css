@@ -229,3 +229,274 @@ body {
   border: 1px solid #dee2e6;
   padding: 8px 16px;
 }
+
+/* ============================================
+   MOBILE RESPONSIVE STYLES
+   ============================================ */
+
+/* Tablet and below (768px) */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px 15px;
+  }
+
+  .logo {
+    padding: 20px;
+    font-size: 24px;
+  }
+
+  .nav-item {
+    padding: 12px 20px;
+    font-size: 14px;
+  }
+
+  .page-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    margin-bottom: 15px;
+  }
+
+  .stat-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+
+  .stat-card h2 {
+    font-size: 24px;
+  }
+
+  .stat-card h6 {
+    font-size: 13px;
+  }
+
+  .stat-card small {
+    font-size: 11px;
+  }
+}
+
+/* Phone only (576px and below) */
+@media (max-width: 576px) {
+  .sidebar {
+    width: 100%;
+    position: relative;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 15px 10px;
+  }
+
+  .logo {
+    padding: 16px;
+    font-size: 20px;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .nav-item {
+    padding: 10px 16px;
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  .nav-item i {
+    font-size: 18px;
+  }
+
+  .page-title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  /* Stats Cards - Stack vertically */
+  .row.g-4 {
+    gap: 0.75rem !important;
+  }
+
+  .stat-card {
+    margin-bottom: 10px;
+  }
+
+  .stat-card .card-body {
+    padding: 15px;
+  }
+
+  .stat-icon {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+
+  .stat-card h2 {
+    font-size: 20px;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .stat-card h6 {
+    font-size: 12px;
+    margin-bottom: 0.5rem !important;
+  }
+
+  .stat-card small {
+    font-size: 10px;
+  }
+
+  /* Recent Viewed Section */
+  .card-custom {
+    margin-bottom: 15px;
+  }
+
+  .card-custom .card-body {
+    padding: 15px;
+  }
+
+  .card-custom h5.card-title {
+    font-size: 16px;
+  }
+
+  /* Recent Viewed Items - Make cards full width on mobile */
+  .col-md-4.col-sm-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+  .card-img-top {
+    height: 180px !important;
+  }
+
+  .card h6.card-title {
+    font-size: 14px;
+  }
+
+  .card .card-text {
+    font-size: 12px;
+  }
+
+  .badge {
+    font-size: 10px;
+    padding: 4px 8px;
+  }
+
+  /* Button sizes */
+  .btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .btn-sm i {
+    font-size: 14px;
+  }
+
+  /* Recent Downloads Section */
+  .col-lg-4 {
+    margin-top: 15px;
+  }
+
+  /* Download items */
+  .d-flex.justify-content-between.align-items-start.mb-3 {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .d-flex.justify-content-between.align-items-start.mb-3 .flex-grow-1 {
+    width: 100%;
+  }
+
+  .d-flex.justify-content-between.align-items-start.mb-3 .d-flex {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .d-flex.justify-content-between.align-items-start.mb-3 h6 {
+    font-size: 14px;
+  }
+
+  /* Empty state icons */
+  .text-center i[style*="font-size: 3rem"] {
+    font-size: 2rem !important;
+  }
+
+  .text-center p.text-muted {
+    font-size: 13px;
+  }
+
+  /* Logout button */
+  .logout-btn {
+    margin: 15px 20px;
+    font-size: 14px;
+  }
+
+  /* Spacing adjustments */
+  .mb-4 {
+    margin-bottom: 1rem !important;
+  }
+
+  .mb-3 {
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Make tables/content scroll horizontally if needed */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Extra small phones (375px and below) */
+@media (max-width: 375px) {
+  .logo {
+    font-size: 18px;
+    padding: 14px;
+  }
+
+  .page-title {
+    font-size: 18px;
+  }
+
+  .stat-card h2 {
+    font-size: 18px;
+  }
+
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .card-img-top {
+    height: 150px !important;
+  }
+
+  .nav-item {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+}
+
+/* Landscape orientation for phones */
+@media (max-width: 896px) and (orientation: landscape) {
+  .sidebar {
+    position: relative;
+    height: auto;
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .stat-card .d-flex {
+    flex-direction: row;
+  }
+}

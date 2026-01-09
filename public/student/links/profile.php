@@ -8,7 +8,7 @@ include '../../back-end/read/profileData.php';
 $currentPrograms = !empty($program) ? explode(',', $program) : [];
 ?>
 
-<link rel="stylesheet" href="../../src/css/dashboard.css">
+<link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 <link rel="stylesheet" href="../../src/css/profile.css">
 
 <!-- Success Message -->
