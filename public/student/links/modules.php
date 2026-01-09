@@ -5,6 +5,7 @@ if (!defined('MAIN_PAGE')) {
 $currentPage = 'Modules';
 
 include '../../back-end/read/studentModules.php';
+include '../../back-end/recent/recentPreviewModules.php';
 
 // Get search and filter parameters
 $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
@@ -94,9 +95,9 @@ $initialModules = getAllModules($searchQuery, $courseFilter, $yearFilter, 12, 0)
                     <p class="card-text text-muted small mb-2"><?php echo $module['course']; ?> - <?php echo date('M d, Y', strtotime($module['uploadedDate'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
-                            <a href="../../back-end/preview/previewModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
+                            <button class="btn btn-sm btn-outline-primary me-1 btn-preview" data-module-id="<?php echo $module['id']; ?>" title="View">
                                 <i class="bi bi-eye"></i>
-                            </a>
+                            </button>
                             <a href="../../back-end/download/downloadModules.php?id=<?php echo $module['id']; ?>" class="btn btn-sm btn-outline-success me-1" title="Download">
                                 <i class="bi bi-download"></i>
                             </a>
@@ -136,6 +137,34 @@ document.addEventListener('DOMContentLoaded', function() {
     let courseFilter = '<?php echo addslashes($courseFilter); ?>';
     let yearFilter = '<?php echo $yearFilter; ?>';
 
+    // Use event delegation for preview buttons (works for both initial and dynamically loaded modules)
+    document.getElementById('modules-container').addEventListener('click', function(e) {
+        const previewBtn = e.target.closest('.btn-preview');
+        if (previewBtn) {
+            const moduleId = parseInt(previewBtn.dataset.moduleId);
+            recordPreview(moduleId);
+        }
+    });
+
+    function recordPreview(module_id) {
+        fetch('../../back-end/recent/recentPreviewModules.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ module_id: module_id }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.open(`../../back-end/preview/previewModules.php?id=${module_id}`, '_blank');
+            }
+        })
+        .catch(error => {
+            console.error('Error recording preview:', error);
+        });
+    }
+
     function loadMoreModules() {
         if (!hasMore) return;
 
@@ -151,6 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 if (modules.length === 0) {
                     hasMore = false;
+                    document.getElementById('load-more-container').style.display = 'none';
                     document.getElementById('no-more').style.display = 'block';
                     return;
                 }
@@ -167,9 +197,9 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <p class="card-text text-muted small mb-2">${module.course} - ${new Date(module.uploadedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
-                                        <a href="../../back-end/preview/previewModules.php?id=${module.id}" class="btn btn-sm btn-outline-primary me-1" title="View" target="_blank">
+                                        <button class="btn btn-sm btn-outline-primary me-1 btn-preview" data-module-id="${module.id}" title="View">
                                             <i class="bi bi-eye"></i>
-                                        </a>
+                                        </button>
                                         <a href="../../back-end/download/downloadModules.php?id=${module.id}" class="btn btn-sm btn-outline-success me-1" title="Download">
                                             <i class="bi bi-download"></i>
                                         </a>

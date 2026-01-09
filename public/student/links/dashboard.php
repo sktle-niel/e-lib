@@ -66,12 +66,12 @@ $downloads = [
 
     <!-- Content Grid -->
     <div class="row g-4">
-        <!-- Recent Books -->
+        <!-- Recent Viewed -->
         <div class="col-lg-8">
             <div class="card card-custom">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="card-title fw-bold mb-0">Recent Books</h5>
+                        <h5 class="card-title fw-bold mb-0">Recent Viewed</h5>
                     </div>
                     <div class="row g-3">
                         <?php foreach($recentBooks as $book): ?>
