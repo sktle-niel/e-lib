@@ -2,48 +2,36 @@
 if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
-$currentPage = 'Downloads';
+$currentPage = 'Your Downloads';
 
-$downloadedBooks = [
-    ['title' => 'Introduction to Algorithms', 'author' => 'Cormen et al.', 'cover' => 'https://via.placeholder.com/150x200/11998e/ffffff?text=Algo', 'downloadDate' => '2023-10-15', 'course' => 'BSIT', 'year' => 2009],
-    ['title' => 'Computer Networks', 'author' => 'Andrew Tanenbaum', 'cover' => 'https://via.placeholder.com/150x200/38ef7d/000000?text=Networks', 'downloadDate' => '2023-10-10', 'course' => 'BSIT', 'year' => 2011],
-    ['title' => 'Database System Concepts', 'author' => 'Silberschatz et al.', 'cover' => 'https://via.placeholder.com/150x200/f093fb/000000?text=DB', 'downloadDate' => '2023-10-05', 'course' => 'BSIS', 'year' => 2010],
-    ['title' => 'Operating Systems', 'author' => 'William Stallings', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=OS', 'downloadDate' => '2023-09-28', 'course' => 'BSIT', 'year' => 2012],
-    ['title' => 'Artificial Intelligence', 'author' => 'Stuart Russell', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=AI', 'downloadDate' => '2023-09-20', 'course' => 'BSIT', 'year' => 2010],
-    ['title' => 'Machine Learning', 'author' => 'Tom Mitchell', 'cover' => 'https://via.placeholder.com/150x200/dc3545/ffffff?text=ML', 'downloadDate' => '2023-09-15', 'course' => 'BSIT', 'year' => 1997],
-    ['title' => 'Data Structures', 'author' => 'Mark Allen Weiss', 'cover' => 'https://via.placeholder.com/150x200/ffc107/000000?text=DS', 'downloadDate' => '2023-09-10', 'course' => 'BSIT', 'year' => 2006],
-    ['title' => 'Software Engineering', 'author' => 'Ian Sommerville', 'cover' => 'https://via.placeholder.com/150x200/17a2b8/ffffff?text=SE', 'downloadDate' => '2023-09-05', 'course' => 'BSIT', 'year' => 2015],
-    ['title' => 'Web Development', 'author' => 'Jon Duckett', 'cover' => 'https://via.placeholder.com/150x200/6f42c1/ffffff?text=Web', 'downloadDate' => '2023-08-30', 'course' => 'BSIT', 'year' => 2014],
-    ['title' => 'Cybersecurity', 'author' => 'William Stallings', 'cover' => 'https://via.placeholder.com/150x200/e83e8c/ffffff?text=Cyber', 'downloadDate' => '2023-08-25', 'course' => 'BSIT', 'year' => 2017],
-    ['title' => 'Cloud Computing', 'author' => 'Thomas Erl', 'cover' => 'https://via.placeholder.com/150x200/20c997/000000?text=Cloud', 'downloadDate' => '2023-08-20', 'course' => 'BSIS', 'year' => 2013],
-    ['title' => 'Big Data', 'author' => 'Viktor Mayer-Schönberger', 'cover' => 'https://via.placeholder.com/150x200/fd7e14/ffffff?text=BigData', 'downloadDate' => '2023-08-15', 'course' => 'BSIS', 'year' => 2013],
-    ['title' => 'Blockchain Technology', 'author' => 'Melanie Swan', 'cover' => 'https://via.placeholder.com/150x200/6c757d/ffffff?text=Blockchain', 'downloadDate' => '2023-08-10', 'course' => 'BSIT', 'year' => 2015],
-    ['title' => 'Internet of Things', 'author' => 'Adrian McEwen', 'cover' => 'https://via.placeholder.com/150x200/007bff/ffffff?text=IoT', 'downloadDate' => '2023-08-05', 'course' => 'BSIT', 'year' => 2014],
-    ['title' => 'Quantum Computing', 'author' => 'Nielsen & Chuang', 'cover' => 'https://via.placeholder.com/150x200/6610f2/ffffff?text=Quantum', 'downloadDate' => '2023-07-30', 'course' => 'BSIT', 'year' => 2010],
-    ['title' => 'DevOps Handbook', 'author' => 'Gene Kim', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=DevOps', 'downloadDate' => '2023-07-25', 'course' => 'BSIT', 'year' => 2016],
-    ['title' => 'Computer Graphics', 'author' => 'Donald Hearn', 'cover' => 'https://via.placeholder.com/150x200/6f42c1/ffffff?text=CG', 'downloadDate' => '2023-07-20', 'course' => 'BSIT', 'year' => 2018],
-    ['title' => 'Mobile App Development', 'author' => 'David Mark', 'cover' => 'https://via.placeholder.com/150x200/28a745/ffffff?text=Mobile', 'downloadDate' => '2023-07-15', 'course' => 'BSIT', 'year' => 2019],
-    ['title' => 'Data Mining', 'author' => 'Jiawei Han', 'cover' => 'https://via.placeholder.com/150x200/dc3545/ffffff?text=DM', 'downloadDate' => '2023-07-10', 'course' => 'BSIS', 'year' => 2011],
-    ['title' => 'Network Security', 'author' => 'Charlie Kaufman', 'cover' => 'https://via.placeholder.com/150x200/f5576c/ffffff?text=NetSec', 'downloadDate' => '2023-07-05', 'course' => 'BSIT', 'year' => 2013],
-];
+include '../../back-end/read/fetchDownloadedBooks.php';
+include '../../back-end/read/fetchDownloadedModules.php';
+
+// Get user ID from session
+$userId = $_SESSION['user_id'];
+
+// Fetch downloaded books and modules
+$downloadedBooks = getDownloadedBooks($userId);
+$downloadedModules = getDownloadedModules($userId);
+
+// Combine books and modules into one array
+$downloadedItems = array_merge($downloadedBooks, $downloadedModules);
 
 // Sort by download date descending (recent first)
-usort($downloadedBooks, function($a, $b) {
+usort($downloadedItems, function($a, $b) {
     return strtotime($b['downloadDate']) - strtotime($a['downloadDate']);
 });
 
-// Filter books based on search query, course, and year
+// Filter items based on search query and type
 $searchQuery = isset($_GET['search']) ? strtolower(trim($_GET['search'])) : '';
-$courseFilter = isset($_GET['course']) ? $_GET['course'] : '';
-$yearFilter = isset($_GET['year']) ? (int)$_GET['year'] : '';
-$filteredBooks = $downloadedBooks;
+$typeFilter = isset($_GET['type']) ? $_GET['type'] : '';
+$filteredItems = $downloadedItems;
 
-if ($searchQuery || $courseFilter || $yearFilter) {
-    $filteredBooks = array_filter($downloadedBooks, function($book) use ($searchQuery, $courseFilter, $yearFilter) {
-        $matchesSearch = !$searchQuery || strpos(strtolower($book['title']), $searchQuery) !== false || strpos(strtolower($book['author']), $searchQuery) !== false;
-        $matchesCourse = !$courseFilter || $book['course'] === $courseFilter;
-        $matchesYear = !$yearFilter || $book['year'] === $yearFilter;
-        return $matchesSearch && $matchesCourse && $matchesYear;
+if ($searchQuery || $typeFilter) {
+    $filteredItems = array_filter($downloadedItems, function($item) use ($searchQuery, $typeFilter) {
+        $matchesSearch = !$searchQuery || strpos(strtolower($item['title']), $searchQuery) !== false || strpos(strtolower($item['author']), $searchQuery) !== false;
+        $matchesType = !$typeFilter || $item['type'] === $typeFilter;
+        return $matchesSearch && $matchesType;
     });
 }
 
@@ -52,15 +40,15 @@ if (isset($_GET['ajax'])) {
     $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
     $perPage = 12; // 3 rows * 4 cards
     $offset = ($page - 1) * $perPage;
-    $booksToShow = array_slice($filteredBooks, $offset, $perPage);
-    echo json_encode($booksToShow);
+    $itemsToShow = array_slice($filteredItems, $offset, $perPage);
+    echo json_encode($itemsToShow);
     exit;
 }
 
-// For initial load, show first 12 books
-$initialBooks = array_slice($filteredBooks, 0, 12);
-$totalBooks = count($filteredBooks);
-$hasMore = $totalBooks > 12;
+// For initial load, show first 12 items
+$initialItems = array_slice($filteredItems, 0, 12);
+$totalItems = count($filteredItems);
+$hasMore = $totalItems > 12;
 ?>
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
@@ -81,44 +69,40 @@ $hasMore = $totalBooks > 12;
         <form method="GET" action="" class="d-flex">
             <input type="hidden" name="page" value="downloads">
             <input type="text" name="search" class="form-control me-2" style="max-width: 300px;" placeholder="Search downloads by title or author..." value="<?php echo htmlspecialchars($searchQuery); ?>">
-            <select name="course" class="form-select me-2" style="max-width: 150px;">
-                <option value="">All Courses</option>
-                <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
-                <option value="BSIS" <?php echo $courseFilter === 'BSIS' ? 'selected' : ''; ?>>BSIS</option>
-                <option value="ACT" <?php echo $courseFilter === 'ACT' ? 'selected' : ''; ?>>ACT</option>
-                <option value="SHS" <?php echo $courseFilter === 'SHS' ? 'selected' : ''; ?>>SHS</option>
-                <option value="BSHM" <?php echo $courseFilter === 'BSHM' ? 'selected' : ''; ?>>BSHM</option>
-                <option value="BSOA" <?php echo $courseFilter === 'BSOA' ? 'selected' : ''; ?>>BSOA</option>
-            </select>
-            <select name="year" class="form-select me-2" style="max-width: 120px;">
-                <option value="">All Years</option>
-                <?php for ($y = 2000; $y <= 2026; $y++): ?>
-                    <option value="<?php echo $y; ?>" <?php echo $yearFilter === $y ? 'selected' : ''; ?>><?php echo $y; ?></option>
-                <?php endfor; ?>
+            <select name="type" class="form-select me-2" style="max-width: 150px;">
+                <option value="">All Types</option>
+                <option value="book" <?php echo $typeFilter === 'book' ? 'selected' : ''; ?>>Books</option>
+                <option value="module" <?php echo $typeFilter === 'module' ? 'selected' : ''; ?>>Modules</option>
             </select>
             <button type="submit" class="btn btn-primary">
                 <i class="bi bi-search"></i> Search
             </button>
-            <?php if ($searchQuery || $courseFilter || $yearFilter): ?>
+            <?php if ($searchQuery || $typeFilter): ?>
                 <a href="?page=downloads" class="btn btn-outline-secondary ms-2">Clear</a>
             <?php endif; ?>
         </form>
     </div>
 
-    <!-- Downloaded Books Grid -->
-    <div id="books-container" class="row g-3">
-        <?php foreach($initialBooks as $book): ?>
+    <!-- Downloaded Items Grid -->
+    <div id="items-container" class="row g-3">
+        <?php foreach($initialItems as $item): ?>
         <div class="col-lg-3 col-md-4 col-sm-6">
             <div class="card h-100 border-0 shadow-sm">
-                <img src="<?php echo $book['cover']; ?>" class="card-img-top" alt="<?php echo $book['title']; ?>" style="height: 200px; object-fit: cover;">
+                <img src="<?php echo $item['cover']; ?>" class="card-img-top" alt="<?php echo $item['title']; ?>" style="height: 200px; object-fit: cover;">
                 <div class="card-body p-3">
-                    <h6 class="card-title fw-bold mb-1"><?php echo $book['title']; ?></h6>
-                    <p class="card-text text-muted small mb-1"><?php echo $book['author']; ?></p>
-                    <p class="card-text text-muted small mb-2">Downloaded: <?php echo date('M d, Y', strtotime($book['downloadDate'])); ?></p>
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-<?php echo $item['type'] === 'book' ? 'primary' : 'success'; ?> text-white"><?php echo ucfirst($item['type']); ?></span>
+                    </div>
+                    <h6 class="card-title fw-bold mb-1"><?php echo $item['title']; ?></h6>
+                    <p class="card-text text-muted small mb-1"><?php echo $item['author']; ?></p>
+                    <p class="card-text text-muted small mb-2">Downloaded: <?php echo date('M d, Y', strtotime($item['downloadDate'])); ?></p>
                     <div class="d-flex justify-content-end">
                         <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" title="Read">
-                                <i class="bi bi-book"></i>
+                            <button class="btn btn-sm btn-outline-primary me-1 preview-btn" title="Preview" data-id="<?php echo $item['id']; ?>" data-type="<?php echo $item['type']; ?>">
+                                <i class="bi bi-eye"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-success me-1 download-btn" title="Download" data-id="<?php echo $item['id']; ?>" data-type="<?php echo $item['type']; ?>">
+                                <i class="bi bi-download"></i>
                             </button>
                             <button class="btn btn-sm btn-outline-danger me-1" title="Delete">
                                 <i class="bi bi-trash"></i>
@@ -156,43 +140,42 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentPage = 1;
     let hasMore = <?php echo $hasMore ? 'true' : 'false'; ?>;
     let searchQuery = '<?php echo addslashes($searchQuery); ?>';
-    let courseFilter = '<?php echo addslashes($courseFilter); ?>';
-    let yearFilter = '<?php echo $yearFilter; ?>';
+    let typeFilter = '<?php echo addslashes($typeFilter); ?>';
 
-    function loadMoreBooks() {
+    function loadMoreItems() {
         if (!hasMore) return;
 
         document.getElementById('loading').style.display = 'block';
 
         currentPage++;
-        const url = `?page=downloads&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&course=${encodeURIComponent(courseFilter)}&year=${yearFilter}`;
+        const url = `?page=downloads&ajax=1&page=${currentPage}&search=${encodeURIComponent(searchQuery)}&type=${encodeURIComponent(typeFilter)}`;
 
         fetch(url)
             .then(response => response.json())
-            .then(books => {
+            .then(items => {
                 document.getElementById('loading').style.display = 'none';
 
-                if (books.length === 0) {
+                if (items.length === 0) {
                     hasMore = false;
                     document.getElementById('no-more').style.display = 'block';
                     return;
                 }
 
-                const container = document.getElementById('books-container');
-                books.forEach(book => {
+                const container = document.getElementById('items-container');
+                items.forEach(item => {
                     const col = document.createElement('div');
                     col.className = 'col-lg-3 col-md-4 col-sm-6';
                     col.innerHTML = `
                         <div class="card h-100 border-0 shadow-sm">
-                            <img src="${book.cover}" class="card-img-top" alt="${book.title}" style="height: 200px; object-fit: cover;">
+                            <img src="${item.cover}" class="card-img-top" alt="${item.title}" style="height: 200px; object-fit: cover;">
                             <div class="card-body p-3">
-                                <h6 class="card-title fw-bold mb-1">${book.title}</h6>
-                                <p class="card-text text-muted small mb-1">${book.author}</p>
-                                <p class="card-text text-muted small mb-2">Downloaded: ${new Date(book.downloadDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
+                                <h6 class="card-title fw-bold mb-1">${item.title}</h6>
+                                <p class="card-text text-muted small mb-1">${item.author}</p>
+                                <p class="card-text text-muted small mb-2">Downloaded: ${new Date(item.downloadDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
-                                        <button class="btn btn-sm btn-outline-primary me-1" title="Read">
-                                            <i class="bi bi-book"></i>
+                                        <button class="btn btn-sm btn-outline-primary me-1" title="Preview">
+                                            <i class="bi bi-eye"></i>
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger me-1" title="Delete">
                                             <i class="bi bi-trash"></i>
@@ -205,8 +188,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     container.appendChild(col);
                 });
 
-                // Check if there are more books
-                if (books.length < 12) {
+                // Check if there are more items
+                if (items.length < 12) {
                     hasMore = false;
                     document.getElementById('load-more-container').style.display = 'none';
                     document.getElementById('no-more').style.display = 'block';
@@ -223,10 +206,46 @@ document.addEventListener('DOMContentLoaded', function() {
     if (loadMoreBtn) {
         loadMoreBtn.addEventListener('click', function() {
             console.log('Load More button clicked');
-            loadMoreBooks();
+            loadMoreItems();
         });
     } else {
         console.log('Load More button not found');
     }
+
+    // Add event listeners to preview buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.preview-btn')) {
+            const btn = e.target.closest('.preview-btn');
+            const id = btn.getAttribute('data-id');
+            const type = btn.getAttribute('data-type');
+            let url = '';
+            if (type === 'book') {
+                url = `../../back-end/preview/previewBooks.php?id=${id}`;
+            } else if (type === 'module') {
+                url = `../../back-end/preview/previewModules.php?id=${id}`;
+            }
+            if (url) {
+                window.open(url, '_blank');
+            }
+        }
+    });
+
+    // Add event listeners to download buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.download-btn')) {
+            const btn = e.target.closest('.download-btn');
+            const id = btn.getAttribute('data-id');
+            const type = btn.getAttribute('data-type');
+            let url = '';
+            if (type === 'book') {
+                url = `../../back-end/download/downloadBooks.php?id=${id}`;
+            } else if (type === 'module') {
+                url = `../../back-end/download/downloadModules.php?id=${id}`;
+            }
+            if (url) {
+                window.location.href = url;
+            }
+        }
+    });
 });
 </script>

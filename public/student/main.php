@@ -21,7 +21,7 @@ include '../../auth/sessionCheck.php';
             include 'links/dashboard.php';
             break;
         case 'recent':
-            include 'links/recent.php';
+            include 'links/allFiles.php';
             break;
         case 'modules':
             include 'links/modules.php';
