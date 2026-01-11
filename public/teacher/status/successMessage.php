@@ -13,9 +13,9 @@
         z-index: 1000;
     }
 </style>
-<div id="success-message" class="success-message">Account Created Successfully!</div>
+<div id="success-message" class="success-message"><?php echo isset($successMessage) ? $successMessage : 'Success!'; ?></div>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+    function showSuccessMessage() {
         var msg = document.getElementById("success-message");
         msg.style.opacity = "1";
         setTimeout(function() {
@@ -24,5 +24,5 @@
                 msg.style.display = "none";
             }, 1000);
         }, 3000);
-    });
+    }
 </script>
