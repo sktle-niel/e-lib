@@ -30,7 +30,7 @@ $recentModules = getAllModules('', '', '', 4, 0);
 $uploadedBooks = getAllBooks('', '', '', '', 4, 0);
 ?>
 
-<link rel="stylesheet" href="../../src/css/dashboard.css">
+<link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 
 <style>
 #next-programs {

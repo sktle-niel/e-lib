@@ -23,7 +23,7 @@ $hasMore = $totalBooks > 12;
 $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $yearFilter, 12, 0);
 ?>
 
-<link rel="stylesheet" href="../../src/css/dashboard.css">
+<link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 
 <style>
 /* Optional: Style for the file input to match your design */
