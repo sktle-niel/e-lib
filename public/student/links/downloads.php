@@ -7,6 +7,7 @@ $currentPage = 'Your Downloads';
 include '../../back-end/read/fetchDownloadedBooks.php';
 include '../../back-end/read/fetchDownloadedModules.php';
 include '../../back-end/delete/removeDownloads.php';
+include 'components/deleteModal.php';
 
 // Get user ID from session
 $userId = $_SESSION['user_id'];
@@ -53,6 +54,25 @@ $hasMore = $totalItems > 12;
 ?>
 
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
+
+<style>
+    .success-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border-radius: 5px;
+        opacity: 0;
+        transition: opacity 1s;
+        font-size: 16px;
+        z-index: 1000;
+    }
+</style>
+
+<!-- Success Message -->
+<div id="success-message" class="success-message" style="display: none;">Download removed successfully!</div>
 
 <!-- Main Content -->
 <div class="main-content">
@@ -252,39 +272,77 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Variables to store delete item info
+    let deleteItemId = null;
+    let deleteItemType = null;
+    let deleteCardElement = null;
+
     // Add event listeners to delete buttons
     document.addEventListener('click', function(e) {
         if (e.target.closest('.delete-btn')) {
             const btn = e.target.closest('.delete-btn');
-            const id = btn.getAttribute('data-id');
-            const type = btn.getAttribute('data-type');
+            deleteItemId = btn.getAttribute('data-id');
+            deleteItemType = btn.getAttribute('data-type');
+            deleteCardElement = btn.closest('.col-lg-3, .col-md-4, .col-sm-6');
 
-            if (confirm('Are you sure you want to delete this download?')) {
-                fetch('../../back-end/delete/removeDownloads.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: `item_id=${encodeURIComponent(id)}&type=${encodeURIComponent(type)}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Remove the card from the DOM
-                        const card = btn.closest('.col-lg-3, .col-md-4, .col-sm-6');
-                        if (card) {
-                            card.remove();
-                        }
-                        alert('Download removed successfully');
-                    } else {
-                        alert('Error: ' + data.message);
+            // Show the modal
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            deleteModal.show();
+        }
+    });
+
+    // Add event listener to confirm delete button in modal
+    document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
+        if (deleteItemId && deleteItemType) {
+            fetch('../../back-end/delete/removeDownloads.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `item_id=${encodeURIComponent(deleteItemId)}&type=${encodeURIComponent(deleteItemType)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Hide the modal
+                const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                deleteModal.hide();
+
+                if (data.success) {
+                    // Remove the card from the DOM
+                    if (deleteCardElement) {
+                        deleteCardElement.remove();
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('An error occurred while deleting the download');
-                });
-            }
+                    // Show success message
+                    const successMsg = document.getElementById('success-message');
+                    successMsg.style.display = 'block';
+                    successMsg.style.opacity = '1';
+                    setTimeout(function() {
+                        successMsg.style.opacity = '0';
+                        setTimeout(function() {
+                            successMsg.style.display = 'none';
+                        }, 1000);
+                    }, 3000);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+
+                // Reset variables
+                deleteItemId = null;
+                deleteItemType = null;
+                deleteCardElement = null;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Hide the modal
+                const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteModal'));
+                deleteModal.hide();
+                alert('An error occurred while deleting the download');
+
+                // Reset variables
+                deleteItemId = null;
+                deleteItemType = null;
+                deleteCardElement = null;
+            });
         }
     });
 });
