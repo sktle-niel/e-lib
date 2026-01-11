@@ -6,6 +6,7 @@ $currentPage = 'Your Downloads';
 
 include '../../back-end/read/fetchDownloadedBooks.php';
 include '../../back-end/read/fetchDownloadedModules.php';
+include '../../back-end/delete/removeDownloads.php';
 
 // Get user ID from session
 $userId = $_SESSION['user_id'];
@@ -104,7 +105,7 @@ $hasMore = $totalItems > 12;
                             <button class="btn btn-sm btn-outline-success me-1 download-btn" title="Download" data-id="<?php echo $item['id']; ?>" data-type="<?php echo $item['type']; ?>">
                                 <i class="bi bi-download"></i>
                             </button>
-                            <button class="btn btn-sm btn-outline-danger me-1" title="Delete">
+                            <button class="btn btn-sm btn-outline-danger me-1 delete-btn" title="Delete" data-id="<?php echo $item['id']; ?>" data-type="<?php echo $item['type']; ?>">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -174,10 +175,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                 <p class="card-text text-muted small mb-2">Downloaded: ${new Date(item.downloadDate).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</p>
                                 <div class="d-flex justify-content-end">
                                     <div>
-                                        <button class="btn btn-sm btn-outline-primary me-1" title="Preview">
+                                        <button class="btn btn-sm btn-outline-primary me-1 preview-btn" title="Preview" data-id="${item.id}" data-type="${item.type}">
                                             <i class="bi bi-eye"></i>
                                         </button>
-                                        <button class="btn btn-sm btn-outline-danger me-1" title="Delete">
+                                        <button class="btn btn-sm btn-outline-success me-1 download-btn" title="Download" data-id="${item.id}" data-type="${item.type}">
+                                            <i class="bi bi-download"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger me-1 delete-btn" title="Delete" data-id="${item.id}" data-type="${item.type}">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </div>
@@ -244,6 +248,42 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             if (url) {
                 window.location.href = url;
+            }
+        }
+    });
+
+    // Add event listeners to delete buttons
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-btn')) {
+            const btn = e.target.closest('.delete-btn');
+            const id = btn.getAttribute('data-id');
+            const type = btn.getAttribute('data-type');
+
+            if (confirm('Are you sure you want to delete this download?')) {
+                fetch('../../back-end/delete/removeDownloads.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `item_id=${encodeURIComponent(id)}&type=${encodeURIComponent(type)}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the card from the DOM
+                        const card = btn.closest('.col-lg-3, .col-md-4, .col-sm-6');
+                        if (card) {
+                            card.remove();
+                        }
+                        alert('Download removed successfully');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the download');
+                });
             }
         }
     });
