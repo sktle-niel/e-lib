@@ -1,4 +1,8 @@
 <?php
+// Only start session if one hasn't been started yet
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 include '../../config/connection.php';
 
 function editModule($moduleId, $title, $course, $coverImage = null) {
