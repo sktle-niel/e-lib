@@ -29,11 +29,20 @@ include '../../auth/sessionCheck.php';
         case 'books':
             include 'links/books.php';
             break;
+        case 'borrow_book':
+            include 'links/borrow.php';
+            break;
+        case 'borrowed_books':
+            include 'links/borrowed.php';
+            break;
+        case 'penalty':
+            include 'links/penalty.php';
+            break;
         case 'downloads':
             include 'links/downloads.php';
             break;
-        case 'borrowed':
-            include 'links/borrowed.php';
+        case 'borrow':
+            include 'links/borrowBook.php';
             break;
         case 'profile':
             include 'links/profile.php';
