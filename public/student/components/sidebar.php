@@ -524,6 +524,9 @@ body {
         <a href="?page=books" class="nav-item <?php echo $currentPage == 'books' ? 'active' : ''; ?>">
             <i class="bi bi-book"></i> <span class="nav-text">Books</span>
         </a>
+        <a href="?page=downloads" class="nav-item <?php echo $currentPage == 'downloads' ? 'active' : ''; ?>">
+            <i class="bi bi-download"></i> <span class="nav-text">Downloads</span>
+        </a>
         <a href="?page=borrow_book" class="nav-item <?php echo $currentPage == 'borrow_book' ? 'active' : ''; ?>">
             <i class="bi bi-bookmark-plus"></i> <span class="nav-text">Borrow Book</span>
         </a>
@@ -532,9 +535,6 @@ body {
         </a>
         <a href="?page=penalty" class="nav-item <?php echo $currentPage == 'penalty' ? 'active' : ''; ?>">
             <i class="bi bi-exclamation-triangle"></i> <span class="nav-text">Penalty</span>
-        </a>
-        <a href="?page=downloads" class="nav-item <?php echo $currentPage == 'downloads' ? 'active' : ''; ?>">
-            <i class="bi bi-download"></i> <span class="nav-text">Downloads</span>
         </a>
         <a href="?page=profile" class="nav-item <?php echo $currentPage == 'profile' ? 'active' : ''; ?>">
             <i class="bi bi-person"></i> <span class="nav-text">Profile</span>
