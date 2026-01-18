@@ -8,6 +8,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
     $user_type = $_POST['user_type'];
 
+    // Validate user_type
+    $valid_user_types = ['student', 'teacher', 'librarian'];
+    if (!in_array($user_type, $valid_user_types)) {
+        header("Location: ../../public/signup.php?error=invalid_user_type");
+        exit;
+    }
+
     if ($_POST['password'] !== $_POST['confirm_password']) {
         header("Location: ../../public/signup.php?error=password_mismatch");
         exit;

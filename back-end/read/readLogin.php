@@ -21,6 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $_SESSION['lastname'] = $user['lastname'];
             if ($user['user_type'] == 'teacher') {
                 header("Location: ../../public/teacher/main.php");
+            } elseif ($user['user_type'] == 'librarian') {
+                header("Location: ../../public/librarian/main.php");
             } else {
                 header("Location: ../../public/student/main.php");
             }

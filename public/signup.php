@@ -104,6 +104,12 @@
                                     Teacher
                                 </label>
                             </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="user_type" id="librarian" value="librarian" required>
+                                <label class="form-check-label" for="librarian">
+                                    Librarian
+                                </label>
+                            </div>
                         </div>
 
                         <button type="submit" class="btn btn-primary btn-login w-100">Sign Up</button>
