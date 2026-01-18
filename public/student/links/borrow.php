@@ -9,6 +9,8 @@ $searchQuery = isset($_GET['search']) ? trim($_GET['search']) : '';
 $courseFilter = isset($_GET['course']) ? $_GET['course'] : '';
 $publishYearFilter = isset($_GET['publish_year']) ? (int)$_GET['publish_year'] : '';
 $uploadYearFilter = isset($_GET['upload_year']) ? (int)$_GET['upload_year'] : '';
+$page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
+$perPage = 15;
 $hasMore = false;
 
 // Dummy data for books
@@ -82,11 +84,74 @@ $allBooks = [
         'course' => 'BSIS',
         'author' => 'Henry Taylor',
         'publish_date' => '2024-03-05'
+    ],
+    [
+        'id' => 6,
+        'title' => 'Information Systems Analysis',
+        'course' => 'BSIS',
+        'author' => 'Diana Davis',
+        'publish_date' => '2023-11-08'
+    ],
+    [
+        'id' => 7,
+        'title' => 'Computer Networks',
+        'course' => 'BSIT',
+        'author' => 'Eve Martinez',
+        'publish_date' => '2022-09-15'
+    ],
+    [
+        'id' => 8,
+        'title' => 'Business Information Systems',
+        'course' => 'BSIS',
+        'author' => 'Frank Garcia',
+        'publish_date' => '2022-11-20'
+    ],
+    [
+        'id' => 9,
+        'title' => 'Artificial Intelligence',
+        'course' => 'BSIT',
+        'author' => 'Grace Lee',
+        'publish_date' => '2024-01-10'
+    ],
+    [
+        'id' => 10,
+        'title' => 'Data Mining',
+        'course' => 'BSIS',
+        'author' => 'Henry Taylor',
+        'publish_date' => '2024-03-05'
+    ],
+    [
+        'id' => 9,
+        'title' => 'Artificial Intelligence',
+        'course' => 'BSIT',
+        'author' => 'Grace Lee',
+        'publish_date' => '2024-01-10'
+    ],
+    [
+        'id' => 10,
+        'title' => 'Data Mining',
+        'course' => 'BSIS',
+        'author' => 'Henry Taylor',
+        'publish_date' => '2024-03-05'
+    ],
+    [
+        'id' => 9,
+        'title' => 'Artificial Intelligence',
+        'course' => 'BSIT',
+        'author' => 'Grace Lee',
+        'publish_date' => '2024-01-10'
+    ],
+    [
+        'id' => 10,
+        'title' => 'Data Mining',
+        'course' => 'BSIS',
+        'author' => 'Henry Taylor',
+        'publish_date' => '2024-03-05'
     ]
 ];
 
 // Filter books based on parameters
-$initialBooks = array_filter($allBooks, function($book) use ($searchQuery, $courseFilter, $publishYearFilter, $uploadYearFilter) {
+$filteredBooks = array_filter($allBooks, function($book) use ($searchQuery, $courseFilter, $publishYearFilter, $uploadYearFilter) {
     // Search filter
     if ($searchQuery) {
         $searchLower = strtolower($searchQuery);
@@ -119,6 +184,12 @@ $initialBooks = array_filter($allBooks, function($book) use ($searchQuery, $cour
 
     return true;
 });
+
+// Pagination
+$totalBooks = count($filteredBooks);
+$totalPages = ceil($totalBooks / $perPage);
+$offset = ($page - 1) * $perPage;
+$initialBooks = array_slice($filteredBooks, $offset, $perPage);
 ?>
 
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
@@ -222,6 +293,41 @@ $initialBooks = array_filter($allBooks, function($book) use ($searchQuery, $cour
             <i class="bi bi-arrow-down-circle me-2"></i>Load More Books
         </button>
     </div>
+
+    <!-- Pagination -->
+    <?php if ($totalPages > 1): ?>
+    <nav aria-label="Books pagination" class="mt-4">
+        <ul class="pagination justify-content-center">
+            <!-- Previous button -->
+            <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=borrow_book&p=<?php echo $page - 1; ?><?php echo $searchQuery ? '&search=' . urlencode($searchQuery) : ''; ?><?php echo $courseFilter ? '&course=' . urlencode($courseFilter) : ''; ?><?php echo $publishYearFilter ? '&publish_year=' . $publishYearFilter : ''; ?><?php echo $uploadYearFilter ? '&upload_year=' . $uploadYearFilter : ''; ?>" tabindex="-1">
+                    Previous
+                </a>
+            </li>
+
+            <!-- Page numbers -->
+            <?php
+            $startPage = max(1, $page - 2);
+            $endPage = min($totalPages, $page + 2);
+
+            for ($i = $startPage; $i <= $endPage; $i++):
+            ?>
+            <li class="page-item <?php echo $i === $page ? 'active' : ''; ?>">
+                <a class="page-link" href="?page=borrow_book&p=<?php echo $i; ?><?php echo $searchQuery ? '&search=' . urlencode($searchQuery) : ''; ?><?php echo $courseFilter ? '&course=' . urlencode($courseFilter) : ''; ?><?php echo $publishYearFilter ? '&publish_year=' . $publishYearFilter : ''; ?><?php echo $uploadYearFilter ? '&upload_year=' . $uploadYearFilter : ''; ?>">
+                    <?php echo $i; ?>
+                </a>
+            </li>
+            <?php endfor; ?>
+
+            <!-- Next button -->
+            <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
+                <a class="page-link" href="?page=borrow_book&p=<?php echo $page + 1; ?><?php echo $searchQuery ? '&search=' . urlencode($searchQuery) : ''; ?><?php echo $courseFilter ? '&course=' . urlencode($courseFilter) : ''; ?><?php echo $publishYearFilter ? '&publish_year=' . $publishYearFilter : ''; ?><?php echo $uploadYearFilter ? '&upload_year=' . $uploadYearFilter : ''; ?>">
+                    Next
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <?php endif; ?>
 
     <!-- No more books message -->
     <div id="no-more" class="text-center mt-4" style="display: none;">
