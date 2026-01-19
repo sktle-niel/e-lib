@@ -14,7 +14,7 @@ $page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
 $perPage = 15;
 
 // Get books from database with filters
-function getFilteredBooks($search, $course, $publishYear, $uploadYear, $page, $perPage) {
+function getFilteredBooksPaginated($search, $course, $publishYear, $uploadYear, $page, $perPage) {
     global $conn;
     
     $offset = ($page - 1) * $perPage;
@@ -97,7 +97,7 @@ function getFilteredBooks($search, $course, $publishYear, $uploadYear, $page, $p
     ];
 }
 
-$result = getFilteredBooks($searchQuery, $courseFilter, $publishYearFilter, $uploadYearFilter, $page, $perPage);
+$result = getFilteredBooksPaginated($searchQuery, $courseFilter, $publishYearFilter, $uploadYearFilter, $page, $perPage);
 $initialBooks = $result['books'];
 $totalBooks = $result['total'];
 $totalPages = ceil($totalBooks / $perPage);
