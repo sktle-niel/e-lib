@@ -29,6 +29,9 @@ include '../../auth/sessionCheck.php';
         case 'borrowed_list':
             include 'links/borrowedList.php';
             break;
+        case 'history':
+            include 'links/history.php';
+            break;
         case 'penalties':
             include 'links/penaltiesList.php';
             break;
