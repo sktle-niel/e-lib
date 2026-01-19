@@ -1,5 +1,4 @@
-# TODO: Replace Browser Alert with Custom Success Message
-
-- [x] Add CSS styles for success message to public/librarian/links/addBook.php
-- [x] Add HTML div for success message to public/librarian/links/addBook.php
-- [x] Modify JavaScript to show success message instead of alert in public/librarian/links/addBook.php
+- [x] Modify markAsReturned.php to generate a unique 7-digit random ID for the 'return_id' column in book_return_history table
+- [x] Update the INSERT statement to include the new 'return_id' column
+- [x] Add logic to ensure the random ID is unique by checking against existing records
+- [ ] Test the functionality to confirm random ID generation and uniqueness
