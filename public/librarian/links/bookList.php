@@ -65,10 +65,10 @@ function getFilteredBooks($search, $course, $publishYear, $uploadYear, $page, $p
     $countStmt->close();
     
     // Get books
-    $sql = "SELECT id, book_title, book_course, author, publish_date, created_at 
-            FROM lib_books 
-            {$whereClause} 
-            ORDER BY created_at DESC 
+    $sql = "SELECT id, book_title, book_course, author, publish_date, created_at, status
+            FROM lib_books
+            {$whereClause}
+            ORDER BY created_at DESC
             LIMIT ? OFFSET ?";
     
     $params[] = $perPage;
@@ -203,7 +203,11 @@ $totalPages = ceil($totalBooks / $perPage);
                         <td><?php echo date('M d, Y', strtotime($book['publish_date'])); ?></td>
                         <td><?php echo date('M d, Y', strtotime($book['created_at'])); ?></td>
                         <td>
-                            <span class="badge bg-success">Available</span>
+                            <?php if (strtolower($book['status']) === 'available'): ?>
+                                <span class="badge bg-success">Available</span>
+                            <?php else: ?>
+                                <span class="badge bg-danger">Not Available</span>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>
