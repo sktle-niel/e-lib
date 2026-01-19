@@ -524,6 +524,9 @@ body {
         <a href="?page=borrowed_list" class="nav-item <?php echo $currentPage == 'borrowed_list' ? 'active' : ''; ?>">
             <i class="bi bi-bookmark-check"></i> <span class="nav-text">List of Borrowed Books</span>
         </a>
+        <a href="?page=history" class="nav-item <?php echo $currentPage == 'history' ? 'active' : ''; ?>">
+            <i class="bi bi-clock-history"></i> <span class="nav-text">History</span>
+        </a>
         <a href="?page=penalties" class="nav-item <?php echo $currentPage == 'penalties' ? 'active' : ''; ?>">
             <i class="bi bi-exclamation-triangle"></i> <span class="nav-text">List of Penalties</span>
         </a>

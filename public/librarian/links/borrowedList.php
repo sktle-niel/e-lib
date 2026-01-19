@@ -192,7 +192,12 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.text())
         .then(data => {
-            console.log('Response:', data); // For debugging
+            // ADDED: Better debugging
+            console.log('Response:', data);
+            console.log('Response length:', data.length);
+            console.log('Response trimmed:', data.trim());
+            console.log('Comparison result:', data.trim() === 'success');
+            
             if (data.trim() === 'success') {
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('confirmReturnModal'));
@@ -214,6 +219,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 alert('Error marking book as returned. Please try again.');
                 console.error('Server response:', data);
+                console.error('Expected: "success", Got:', JSON.stringify(data)); // ADDED
             }
         })
         .catch(error => {
