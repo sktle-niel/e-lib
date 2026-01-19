@@ -20,6 +20,21 @@ $totalBooks = count($initialBooks);
 ?>
 
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
+<style>
+    .success-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border-radius: 5px;
+        opacity: 0;
+        transition: opacity 1s;
+        font-size: 16px;
+        z-index: 1000;
+    }
+</style>
 
 <!-- Main Content -->
 <div class="main-content">
@@ -117,7 +132,7 @@ $totalBooks = count($initialBooks);
                             </span>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-primary btn-borrow" data-book-id="<?php echo $book['id']; ?>" title="Borrow">
+                            <button class="btn btn-sm btn-primary btn-borrow" data-book-id="<?php echo $book['id']; ?>" title="Borrow" <?php echo isset($book['status']) && $book['status'] !== 'available' ? 'disabled' : ''; ?>>
                                 <i class="bi bi-bookmark-plus"></i> Borrow
                             </button>
                         </td>
@@ -138,6 +153,28 @@ $totalBooks = count($initialBooks);
     <!-- No more books message -->
     <div id="no-more" class="text-center mt-4" style="display: none;">
         <p class="text-muted">No more books to load.</p>
+    </div>
+</div>
+
+<div id="success-message" class="success-message">Book borrowed successfully!</div>
+
+<!-- Borrow Confirmation Modal -->
+<div class="modal fade" id="borrowBookModal" tabindex="-1" aria-labelledby="borrowBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="borrowBookModalLabel">Confirm Borrow</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to borrow "<span id="borrowBookTitle"></span>"? The book must be returned within 3 days.</p>
+                <input type="hidden" id="borrowBookId">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmBorrowBtn">Confirm Borrow</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -164,9 +201,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (borrowBtn) {
             const bookId = parseInt(borrowBtn.dataset.bookId);
-            console.log('Book ID:', bookId);
-            // TODO: Implement borrow functionality
-            alert('Borrow functionality for book ID ' + bookId + ' will be implemented.');
+            const bookTitle = borrowBtn.closest('tr').querySelector('td:first-child').textContent.trim();
+            console.log('Book ID:', bookId, 'Book Title:', bookTitle);
+
+            // Populate modal
+            document.getElementById('borrowBookId').value = bookId;
+            document.getElementById('borrowBookTitle').textContent = bookTitle;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('borrowBookModal'));
+            modal.show();
         }
     });
 
@@ -273,6 +317,58 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = currentUrl.toString();
         });
     }
+
+    // Handle confirm borrow
+    document.getElementById('confirmBorrowBtn').addEventListener('click', function() {
+        const bookId = document.getElementById('borrowBookId').value;
+        const btn = this;
+        const originalText = btn.innerHTML;
+
+        // Disable button
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Processing...';
+
+        fetch('../../../back-end/create/borrowBook.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'book_id=' + encodeURIComponent(bookId)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                const msg = document.getElementById("success-message");
+                msg.style.opacity = "1";
+                setTimeout(function() {
+                    msg.style.opacity = "0";
+                    setTimeout(function() {
+                        msg.style.display = "none";
+                        // Reload to update status after message fades out
+                        location.reload();
+                    }, 1000);
+                }, 3000);
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('borrowBookModal'));
+                modal.hide();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while borrowing the book: ' + error.message);
+        })
+        .finally(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+        });
+    });
 
     const loadMoreBtn = document.getElementById('load-more-btn');
     if (loadMoreBtn) {

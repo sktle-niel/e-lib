@@ -2,90 +2,20 @@
 if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
+include '../../back-end/read/readBorrowedBooks.php';
 $currentPage = 'Borrowed Books';
 
 $page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
 $perPage = 15;
+$userId = $_SESSION['user_id'];
 
-// Dummy data for borrowed books
-$allBorrowedBooks = [
-    [
-        'id' => 1,
-        'title' => 'Introduction to Programming',
-        'borrow_date' => '2024-01-15',
-        'return_date' => '2024-02-15',
-        'status' => 'Returned'
-    ],
-    [
-        'id' => 2,
-        'title' => 'Data Structures and Algorithms',
-        'borrow_date' => '2024-01-20',
-        'return_date' => '2024-02-20',
-        'status' => 'Returned'
-    ],
-    [
-        'id' => 3,
-        'title' => 'Database Management Systems',
-        'borrow_date' => '2024-02-01',
-        'return_date' => '2024-03-01',
-        'status' => 'Overdue'
-    ],
-    [
-        'id' => 4,
-        'title' => 'Web Development Fundamentals',
-        'borrow_date' => '2024-02-10',
-        'return_date' => '2024-03-10',
-        'status' => 'Borrowed'
-    ],
-    [
-        'id' => 5,
-        'title' => 'Software Engineering Principles',
-        'borrow_date' => '2024-02-15',
-        'return_date' => '2024-03-15',
-        'status' => 'Borrowed'
-    ],
-    [
-        'id' => 6,
-        'title' => 'Information Systems Analysis',
-        'borrow_date' => '2024-02-20',
-        'return_date' => '2024-03-20',
-        'status' => 'Borrowed'
-    ],
-    [
-        'id' => 7,
-        'title' => 'Computer Networks',
-        'borrow_date' => '2024-01-25',
-        'return_date' => '2024-02-25',
-        'status' => 'Returned'
-    ],
-    [
-        'id' => 8,
-        'title' => 'Business Information Systems',
-        'borrow_date' => '2024-02-05',
-        'return_date' => '2024-03-05',
-        'status' => 'Overdue'
-    ],
-    [
-        'id' => 9,
-        'title' => 'Artificial Intelligence',
-        'borrow_date' => '2024-02-12',
-        'return_date' => '2024-03-12',
-        'status' => 'Borrowed'
-    ],
-    [
-        'id' => 10,
-        'title' => 'Data Mining',
-        'borrow_date' => '2024-02-18',
-        'return_date' => '2024-03-18',
-        'status' => 'Borrowed'
-    ]
-];
-
-// Pagination
-$totalBooks = count($allBorrowedBooks);
+// Get total count of borrowed books for this user
+$totalBooks = getBorrowedBooksCount($userId);
 $totalPages = ceil($totalBooks / $perPage);
 $offset = ($page - 1) * $perPage;
-$borrowedBooks = array_slice($allBorrowedBooks, $offset, $perPage);
+
+// Get borrowed books for this user with pagination
+$borrowedBooks = getBorrowedBooks($userId, $perPage, $offset);
 ?>
 
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
@@ -113,21 +43,30 @@ $borrowedBooks = array_slice($allBorrowedBooks, $offset, $perPage);
                 </tr>
             </thead>
             <tbody id="borrowed-books-table-body">
-                <?php foreach($borrowedBooks as $book): ?>
-                <tr>
-                    <td><?php echo htmlspecialchars($book['title']); ?></td>
-                    <td><?php echo date('M d, Y', strtotime($book['borrow_date'])); ?></td>
-                    <td><?php echo date('M d, Y', strtotime($book['return_date'])); ?></td>
-                    <td>
-                        <span class="badge <?php
-                            echo $book['status'] === 'Returned' ? 'bg-success' :
-                                 ($book['status'] === 'Overdue' ? 'bg-danger' : 'bg-warning text-dark');
-                        ?>">
-                            <?php echo htmlspecialchars($book['status']); ?>
-                        </span>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                <?php if (empty($borrowedBooks)): ?>
+                    <tr>
+                        <td colspan="4" class="text-center py-4">
+                            <i class="bi bi-book" style="font-size: 3rem; color: #ccc;"></i>
+                            <p class="text-muted mt-2">No borrowed books found</p>
+                        </td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach($borrowedBooks as $book): ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($book['book_title']); ?></td>
+                        <td><?php echo date('M d, Y', strtotime($book['borrow_date'])); ?></td>
+                        <td><?php echo date('M d, Y', strtotime($book['expected_return_date'])); ?></td>
+                        <td>
+                            <span class="badge <?php
+                                echo $book['status'] === 'returned' ? 'bg-success' :
+                                     ($book['status'] === 'overdue' ? 'bg-danger' : 'bg-warning text-dark');
+                            ?>">
+                                <?php echo htmlspecialchars(ucfirst($book['status'])); ?>
+                            </span>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
@@ -138,7 +77,7 @@ $borrowedBooks = array_slice($allBorrowedBooks, $offset, $perPage);
         <ul class="pagination justify-content-center">
             <!-- Previous button -->
             <li class="page-item <?php echo $page <= 1 ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=borrow_book&p=<?php echo $page - 1; ?><?php echo $searchQuery ? '&search=' . urlencode($searchQuery) : ''; ?><?php echo $courseFilter ? '&course=' . urlencode($courseFilter) : ''; ?><?php echo $publishYearFilter ? '&publish_year=' . $publishYearFilter : ''; ?><?php echo $uploadYearFilter ? '&upload_year=' . $uploadYearFilter : ''; ?>" tabindex="-1">
+                <a class="page-link" href="?page=borrowed&p=<?php echo $page - 1; ?>" tabindex="-1">
                     Previous
                 </a>
             </li>
@@ -151,7 +90,7 @@ $borrowedBooks = array_slice($allBorrowedBooks, $offset, $perPage);
             for ($i = $startPage; $i <= $endPage; $i++):
             ?>
             <li class="page-item <?php echo $i === $page ? 'active' : ''; ?>">
-                <a class="page-link" href="?page=borrow_book&p=<?php echo $i; ?><?php echo $searchQuery ? '&search=' . urlencode($searchQuery) : ''; ?><?php echo $courseFilter ? '&course=' . urlencode($courseFilter) : ''; ?><?php echo $publishYearFilter ? '&publish_year=' . $publishYearFilter : ''; ?><?php echo $uploadYearFilter ? '&upload_year=' . $uploadYearFilter : ''; ?>">
+                <a class="page-link" href="?page=borrowed&p=<?php echo $i; ?>">
                     <?php echo $i; ?>
                 </a>
             </li>
@@ -159,7 +98,7 @@ $borrowedBooks = array_slice($allBorrowedBooks, $offset, $perPage);
 
             <!-- Next button -->
             <li class="page-item <?php echo $page >= $totalPages ? 'disabled' : ''; ?>">
-                <a class="page-link" href="?page=borrow_book&p=<?php echo $page + 1; ?><?php echo $searchQuery ? '&search=' . urlencode($searchQuery) : ''; ?><?php echo $courseFilter ? '&course=' . urlencode($courseFilter) : ''; ?><?php echo $publishYearFilter ? '&publish_year=' . $publishYearFilter : ''; ?><?php echo $uploadYearFilter ? '&upload_year=' . $uploadYearFilter : ''; ?>">
+                <a class="page-link" href="?page=borrowed&p=<?php echo $page + 1; ?>">
                     Next
                 </a>
             </li>
