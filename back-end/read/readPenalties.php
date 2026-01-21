@@ -1,8 +1,13 @@
 <?php
 include '../../config/connection.php';
 
-function getPenalties($limit = 15, $offset = 0) {
+function getPenalties($user_id = null, $limit = 15, $offset = 0) {
     global $conn;
+
+    $whereClause = "b.expected_return_date < CURDATE() AND b.status != 'Returned'";
+    if ($user_id !== null) {
+        $whereClause .= " AND b.user_id = ?";
+    }
 
     $stmt = $conn->prepare("
         SELECT
@@ -17,11 +22,16 @@ function getPenalties($limit = 15, $offset = 0) {
         FROM borrowed_lib_books b
         JOIN lib_books lb ON b.book_id = lb.id
         JOIN users u ON b.user_id = u.id
-        WHERE b.expected_return_date < CURDATE() AND b.status != 'Returned'
+        WHERE $whereClause
         ORDER BY b.expected_return_date ASC
         LIMIT ? OFFSET ?
     ");
-    $stmt->bind_param("ii", $limit, $offset);
+
+    if ($user_id !== null) {
+        $stmt->bind_param("iii", $user_id, $limit, $offset);
+    } else {
+        $stmt->bind_param("ii", $limit, $offset);
+    }
 
     if ($stmt->execute()) {
         $result = $stmt->get_result();
@@ -37,10 +47,19 @@ function getPenalties($limit = 15, $offset = 0) {
     }
 }
 
-function getPenaltiesCount() {
+function getPenaltiesCount($user_id = null) {
     global $conn;
 
-    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM borrowed_lib_books WHERE expected_return_date < CURDATE() AND status != 'Returned'");
+    $whereClause = "expected_return_date < CURDATE() AND status != 'Returned'";
+    if ($user_id !== null) {
+        $whereClause .= " AND user_id = ?";
+    }
+
+    $stmt = $conn->prepare("SELECT COUNT(*) as count FROM borrowed_lib_books WHERE $whereClause");
+
+    if ($user_id !== null) {
+        $stmt->bind_param("i", $user_id);
+    }
 
     if ($stmt->execute()) {
         $result = $stmt->get_result();
@@ -69,10 +88,19 @@ function getTotalPenaltyAmount() {
     }
 }
 
-function getAverageDaysOverdue() {
+function getAverageDaysOverdue($user_id = null) {
     global $conn;
 
-    $stmt = $conn->prepare("SELECT AVG(DATEDIFF(CURDATE(), expected_return_date)) as avg_days FROM borrowed_lib_books WHERE expected_return_date < CURDATE() AND status != 'Returned'");
+    $whereClause = "expected_return_date < CURDATE() AND status != 'Returned'";
+    if ($user_id !== null) {
+        $whereClause .= " AND user_id = ?";
+    }
+
+    $stmt = $conn->prepare("SELECT AVG(DATEDIFF(CURDATE(), expected_return_date)) as avg_days FROM borrowed_lib_books WHERE $whereClause");
+
+    if ($user_id !== null) {
+        $stmt->bind_param("i", $user_id);
+    }
 
     if ($stmt->execute()) {
         $result = $stmt->get_result();

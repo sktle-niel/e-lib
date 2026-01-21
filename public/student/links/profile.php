@@ -62,7 +62,7 @@ $currentPrograms = !empty($program) ? explode(',', $program) : [];
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-bold">Program:</label>
-                        <p class="mb-0"><?php echo htmlspecialchars($program); ?></p>
+                        <p class="mb-0"><?php echo !empty($program) ? htmlspecialchars($program) : 'N/A'; ?></p>
                     </div>
                     <div class="mb-0">
                         <label class="form-label fw-bold">Member Since:</label>

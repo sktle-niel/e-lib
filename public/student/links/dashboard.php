@@ -21,7 +21,7 @@ $stats = [
     ['title' => 'Available Books', 'value' => getBooksCount(), 'subtitle' => 'Books available for download', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
     ['title' => 'Available Modules', 'value' => getModulesCount(), 'subtitle' => 'Total modules available', 'icon' => 'bi-file-earmark-text', 'iconClass' => 'icon-green'],
     ['title' => 'Your Downloads', 'value' => getDownloadsCount($userId), 'subtitle' => 'Books downloaded since launch', 'icon' => 'bi-download', 'iconClass' => 'icon-green'],
-    ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => 'Books downloaded this month', 'icon' => 'bi-person', 'iconClass' => 'icon-green']
+    ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => '', 'icon' => 'bi-person', 'iconClass' => 'icon-green']
 ];
 
 // Get recent viewed books and modules from database
