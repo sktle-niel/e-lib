@@ -2,65 +2,19 @@
 if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
+include '../../back-end/read/readPenalties.php';
 $currentPage = 'Penalty';
 
 $page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
-$perPage = 15;
+$perPage = 10;
 
-// Dummy data for overdue books with penalties
-$allOverdueBooks = [
-    [
-        'id' => 3,
-        'title' => 'Database Management Systems',
-        'borrow_date' => '2024-02-01',
-        'return_date' => '2024-03-01',
-        'days_overdue' => 15,
-        'penalty_amount' => 15.00,
-        'status' => 'Overdue'
-    ],
-    [
-        'id' => 8,
-        'title' => 'Business Information Systems',
-        'borrow_date' => '2024-02-05',
-        'return_date' => '2024-03-05',
-        'days_overdue' => 11,
-        'penalty_amount' => 11.00,
-        'status' => 'Overdue'
-    ],
-    [
-        'id' => 11,
-        'title' => 'Advanced Database Systems',
-        'borrow_date' => '2024-01-10',
-        'return_date' => '2024-02-10',
-        'days_overdue' => 26,
-        'penalty_amount' => 26.00,
-        'status' => 'Overdue'
-    ],
-    [
-        'id' => 12,
-        'title' => 'Machine Learning Fundamentals',
-        'borrow_date' => '2024-01-15',
-        'return_date' => '2024-02-15',
-        'days_overdue' => 21,
-        'penalty_amount' => 21.00,
-        'status' => 'Overdue'
-    ],
-    [
-        'id' => 13,
-        'title' => 'Cybersecurity Essentials',
-        'borrow_date' => '2024-01-20',
-        'return_date' => '2024-02-20',
-        'days_overdue' => 16,
-        'penalty_amount' => 16.00,
-        'status' => 'Overdue'
-    ]
-];
-
-// Pagination
-$totalBooks = count($allOverdueBooks);
+// Get total count of penalties
+$totalBooks = getPenaltiesCount();
 $totalPages = ceil($totalBooks / $perPage);
 $offset = ($page - 1) * $perPage;
-$overdueBooks = array_slice($allOverdueBooks, $offset, $perPage);
+
+// Get penalties with pagination
+$overdueBooks = getPenalties($perPage, $offset);
 ?>
 
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
@@ -82,6 +36,7 @@ $overdueBooks = array_slice($allOverdueBooks, $offset, $perPage);
             <thead class="table-dark">
                 <tr>
                     <th>Book Name</th>
+                    <th>Borrower Name</th>
                     <th>Date Borrowed</th>
                     <th>Date of Return</th>
                     <th>Days Overdue</th>
@@ -93,6 +48,7 @@ $overdueBooks = array_slice($allOverdueBooks, $offset, $perPage);
                 <?php foreach($overdueBooks as $book): ?>
                 <tr>
                     <td><?php echo htmlspecialchars($book['title']); ?></td>
+                    <td><?php echo htmlspecialchars($book['borrower_name']); ?></td>
                     <td><?php echo date('M d, Y', strtotime($book['borrow_date'])); ?></td>
                     <td><?php echo date('M d, Y', strtotime($book['return_date'])); ?></td>
                     <td><?php echo htmlspecialchars($book['days_overdue']); ?> days</td>
@@ -108,27 +64,7 @@ $overdueBooks = array_slice($allOverdueBooks, $offset, $perPage);
         </table>
     </div>
 
-    <!-- Total Penalty Summary -->
-    <div class="mt-4 p-3 bg-light rounded">
-        <h5>Total Penalty Summary</h5>
-        <div class="row">
-            <div class="col-md-4">
-                <strong>Total Overdue Books:</strong> <?php echo count($allOverdueBooks); ?>
-            </div>
-            <div class="col-md-4">
-                <strong>Total Penalty Amount:</strong> ₱<?php
-                    $totalPenalty = array_sum(array_column($allOverdueBooks, 'penalty_amount'));
-                    echo number_format($totalPenalty, 2);
-                ?>
-            </div>
-            <div class="col-md-4">
-                <strong>Average Days Overdue:</strong> <?php
-                    $avgDays = array_sum(array_column($allOverdueBooks, 'days_overdue')) / count($allOverdueBooks);
-                    echo round($avgDays, 1) . ' days';
-                ?>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Pagination -->
     <?php if ($totalPages > 1): ?>
