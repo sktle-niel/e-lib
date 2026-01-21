@@ -53,6 +53,7 @@ $borrowedBooks = getAllBorrowedBooks($perPage, $offset);
             <thead class="table-dark">
                 <tr>
                     <th>Book Name</th>
+                    <th>Borrower Name</th>
                     <th>Date Borrowed</th>
                     <th>Date of Return</th>
                     <th>Status</th>
@@ -64,6 +65,7 @@ $borrowedBooks = getAllBorrowedBooks($perPage, $offset);
                     <?php foreach($borrowedBooks as $book): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($book['title']); ?></td>
+                        <td><?php echo htmlspecialchars($book['borrower_name']); ?></td>
                         <td><?php echo date('M d, Y', strtotime($book['borrow_date'])); ?></td>
                         <td><?php echo date('M d, Y', strtotime($book['return_date'])); ?></td>
                         <td>
@@ -85,7 +87,7 @@ $borrowedBooks = getAllBorrowedBooks($perPage, $offset);
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" class="text-center text-muted">No borrowed books found.</td>
+                        <td colspan="6" class="text-center text-muted">No borrowed books found.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>

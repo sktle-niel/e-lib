@@ -49,9 +49,10 @@ function getAllBorrowedBooks($limit = 15, $offset = 0) {
     global $conn;
 
     $stmt = $conn->prepare("
-        SELECT b.id, lb.book_title as title, b.borrow_date, b.expected_return_date as return_date, b.status
+        SELECT b.id, lb.book_title as title, b.borrow_date, b.expected_return_date as return_date, b.status, CONCAT(u.firstname, ' ', u.lastname) as borrower_name
         FROM borrowed_lib_books b
         JOIN lib_books lb ON b.book_id = lb.id
+        JOIN users u ON b.user_id = u.id
         ORDER BY b.borrow_date DESC
         LIMIT ? OFFSET ?
     ");

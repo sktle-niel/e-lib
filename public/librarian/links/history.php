@@ -44,6 +44,7 @@ $returnedBooks = getReturnedBooksHistory($perPage, $offset);
                 <tr>
                     <th>Return ID</th>
                     <th>Book Name</th>
+                    <th>Borrower Name</th>
                     <th>Borrow Date</th>
                     <th>Expected Return Date</th>
                     <th>Actual Return Date</th>
@@ -57,6 +58,7 @@ $returnedBooks = getReturnedBooksHistory($perPage, $offset);
                 <tr>
                     <td><?= htmlspecialchars($book['id']) ?></td>
                     <td><?= htmlspecialchars($book['book_title']) ?></td>
+                    <td><?= htmlspecialchars($book['borrower_name']) ?></td>
                     <td><?= date('M d, Y', strtotime($book['borrow_date'])) ?></td>
                     <td><?= date('M d, Y', strtotime($book['expected_return_date'])) ?></td>
                     <td><?= $book['actual_return_date'] ? date('M d, Y', strtotime($book['actual_return_date'])) : 'N/A' ?></td>
@@ -76,7 +78,7 @@ $returnedBooks = getReturnedBooksHistory($perPage, $offset);
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="7" class="text-center text-muted">No returned books history found.</td>
+                    <td colspan="8" class="text-center text-muted">No returned books history found.</td>
                 </tr>
             <?php endif; ?>
             </tbody>
