@@ -4,10 +4,9 @@ if (!defined('MAIN_PAGE')) {
 }
 include '../../back-end/read/profileData.php';
 
-// Parse current programs for pre-selection
-$currentPrograms = !empty($program) ? explode(',', $program) : [];
-?>
 
+?>
+    
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 <link rel="stylesheet" href="../../src/css/profile.css">
 
@@ -98,31 +97,7 @@ $currentPrograms = !empty($program) ? explode(',', $program) : [];
                         </form>
                     </div>
 
-                    <hr class="my-4">
 
-                    <!-- Select Course -->
-                    <div class="mb-4">
-                        <h6 class="mb-3">Select Course</h6>
-                        <form>
-                            <div class="mb-3">
-                                <label for="courseSelect" class="form-label">Course</label>
-                                <select class="form-select" id="courseSelect">
-                                    <option value="">Select a course</option>
-                                    <option value="BSIT" <?php echo ($program == 'BSIT') ? 'selected' : ''; ?>>BSIT - Bachelor of Science in Information Technology</option>
-                                    <option value="BSIS" <?php echo ($program == 'BSIS') ? 'selected' : ''; ?>>BSIS - Bachelor of Science in Information Systems</option>
-                                    <option value="ACT" <?php echo ($program == 'ACT') ? 'selected' : ''; ?>>ACT - Associate in Computer Technology</option>
-                                    <option value="SHS" <?php echo ($program == 'SHS') ? 'selected' : ''; ?>>SHS - Senior High School</option>
-                                    <option value="BSHM" <?php echo ($program == 'BSHM') ? 'selected' : ''; ?>>BSHM - Bachelor of Science in Hospitality Management</option>
-                                    <option value="BSOA" <?php echo ($program == 'BSOA') ? 'selected' : ''; ?>>BSOA - Bachelor of Science in Office Administration</option>
-                                </select>
-                            </div>
-                            <button type="button" class="btn btn-primary" id="updateCourseBtn">
-                                <i class="bi bi-check-circle me-2"></i>Update Course
-                            </button>
-                        </form>
-                    </div>
-
-                    <hr class="my-4">
 
                     <!-- Change Password -->
                     <div class="mb-4">
@@ -248,36 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Course selection
-    const courseBtn = document.getElementById('updateCourseBtn');
-    if (courseBtn) {
-        courseBtn.addEventListener('click', function() {
-            const courseSelect = document.getElementById('courseSelect');
-            const course = courseSelect.value;
-            if (!course) {
-                alert('Please select a course');
-                return;
-            }
-            const formData = new FormData();
-            formData.append('course', course);
-            fetch('../../back-end/create/selectCourse.php', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showSuccessMessage();
-                } else {
-                    alert(data.message || 'Failed to update course');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while updating the course');
-            });
-        });
-    }
+
 
     // Password visibility toggles
     const toggleCurrentPassword = document.getElementById('toggleCurrentPassword');
