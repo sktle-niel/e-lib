@@ -4,7 +4,7 @@ include '../../config/connection.php';
 function getPenalties($user_id = null, $limit = 15, $offset = 0) {
     global $conn;
 
-    $whereClause = "b.expected_return_date < CURDATE() AND b.status != 'Returned'";
+    $whereClause = "b.expected_return_date < CURDATE()";
     if ($user_id !== null) {
         $whereClause .= " AND b.user_id = ?";
     }
@@ -50,7 +50,7 @@ function getPenalties($user_id = null, $limit = 15, $offset = 0) {
 function getPenaltiesCount($user_id = null) {
     global $conn;
 
-    $whereClause = "expected_return_date < CURDATE() AND status != 'Returned'";
+    $whereClause = "expected_return_date < CURDATE()";
     if ($user_id !== null) {
         $whereClause .= " AND user_id = ?";
     }
@@ -75,7 +75,7 @@ function getPenaltiesCount($user_id = null) {
 function getTotalPenaltyAmount() {
     global $conn;
 
-    $stmt = $conn->prepare("SELECT COUNT(*) as total FROM borrowed_lib_books WHERE expected_return_date < CURDATE() AND status != 'Returned'");
+    $stmt = $conn->prepare("SELECT COUNT(*) as total FROM borrowed_lib_books WHERE expected_return_date < CURDATE()");
 
     if ($stmt->execute()) {
         $result = $stmt->get_result();
@@ -91,7 +91,7 @@ function getTotalPenaltyAmount() {
 function getAverageDaysOverdue($user_id = null) {
     global $conn;
 
-    $whereClause = "expected_return_date < CURDATE() AND status != 'Returned'";
+    $whereClause = "expected_return_date < DATE_SUB(CURDATE(), INTERVAL 3 DAY) AND status != 'Returned'";
     if ($user_id !== null) {
         $whereClause .= " AND user_id = ?";
     }

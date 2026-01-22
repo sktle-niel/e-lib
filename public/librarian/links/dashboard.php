@@ -12,16 +12,20 @@ include '../../back-end/recent/recentPreviewModules.php';
 include '../../back-end/read/modulesCount.php';
 include '../../back-end/read/BooksCount.php';
 include '../../back-end/read/countDownloads.php';
+include '../../back-end/read/countLibBooks.php';
+include '../../back-end/read/countBorrowedLibBooks.php';
+include '../../back-end/read/countBookPenalties.php';
+include '../../back-end/read/countStudents.php';
 
 
 // Get user ID from session
 $userId = $_SESSION['user_id'];
 
 $stats = [
-    ['title' => 'Available Books', 'value' => getBooksCount(), 'subtitle' => 'Books available for download', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
-    ['title' => 'Available Modules', 'value' => getModulesCount(), 'subtitle' => 'Total modules available', 'icon' => 'bi-file-earmark-text', 'iconClass' => 'icon-green'],
-    ['title' => 'Your Downloads', 'value' => getDownloadsCount($userId), 'subtitle' => 'Books downloaded since launch', 'icon' => 'bi-download', 'iconClass' => 'icon-green'],
-    ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => 'Books downloaded this month', 'icon' => 'bi-person', 'iconClass' => 'icon-green']
+    ['title' => 'Available Books', 'value' => getLibBooksCount(), 'subtitle' => 'Available Library Books', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
+    ['title' => 'Borrowed Books', 'value' => getBorrowedLibBooksCount(), 'subtitle' => 'Total borrowed books', 'icon' => 'bi-file-earmark-text', 'iconClass' => 'icon-green'],
+    ['title' => 'Overdue Books', 'value' => getBookPenaltiesCount(), 'subtitle' => 'Books overdue by more than 3 days', 'icon' => 'bi-exclamation-triangle', 'iconClass' => 'icon-red'],
+    ['title' => 'Total Students', 'value' => getStudentsCount(), 'subtitle' => 'Registered students', 'icon' => 'bi-people', 'iconClass' => 'icon-green']
 ];
 
 // Get recent viewed books and modules from database
