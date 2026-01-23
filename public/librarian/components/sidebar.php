@@ -530,6 +530,9 @@ body {
         <a href="?page=penalties" class="nav-item <?php echo $currentPage == 'penalties' ? 'active' : ''; ?>">
             <i class="bi bi-exclamation-triangle"></i> <span class="nav-text">List of Penalties</span>
         </a>
+        <a href="?page=cleared_penalties" class="nav-item <?php echo $currentPage == 'cleared_penalties' ? 'active' : ''; ?>">
+            <i class="bi bi-check-circle"></i> <span class="nav-text">Cleared Penalties</span>
+        </a>
         <a href="?page=profile" class="nav-item <?php echo $currentPage == 'profile' ? 'active' : ''; ?>">
             <i class="bi bi-person"></i> <span class="nav-text">Profile</span>
         </a>
