@@ -35,6 +35,9 @@ include '../../auth/sessionCheck.php';
         case 'penalties':
             include 'links/penaltiesList.php';
             break;
+        case 'cleared_penalties':
+            include 'links/clearedPenalties.php';
+            break;
         case 'profile':
             include 'links/profile.php';
             break;
