@@ -8,8 +8,54 @@
     <link href="../src/css/global.css" rel="stylesheet">
 </head>
 <body>
-    <?php if (isset($_GET['error']) && $_GET['error'] == '1'): ?>
-        <div id="error-message" style="position: fixed; top: 20px; right: 20px; padding: 15px 20px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; border-radius: 5px; opacity: 0; transition: opacity 1s; font-size: 16px; z-index: 1000;">Invalid username or password.</div>
+    <?php if (isset($_GET['success']) && $_GET['success'] == '1'): ?>
+        <style>
+            .success-message {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                color: white;
+                border-radius: 5px;
+                opacity: 0;
+                transition: opacity 1s;
+                font-size: 16px;
+                z-index: 1000;
+            }
+        </style>
+        <div id="success-message" class="success-message">Password Reset Successfully!</div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var msg = document.getElementById("success-message");
+                msg.style.opacity = "1";
+                setTimeout(function() {
+                    msg.style.opacity = "0";
+                    setTimeout(function() {
+                        msg.style.display = "none";
+                    }, 1000);
+                }, 3000);
+            });
+        </script>
+    <?php endif; ?>
+    <?php if (isset($_GET['error'])): ?>
+        <?php
+        $error_message = '';
+        switch ($_GET['error']) {
+            case '1':
+                $error_message = 'Invalid username or LRN number.';
+                break;
+            case '2':
+                $error_message = 'Passwords do not match.';
+                break;
+            case '3':
+                $error_message = 'Failed to update password. Please try again.';
+                break;
+            default:
+                $error_message = 'An error occurred.';
+        }
+        ?>
+        <div id="error-message" style="position: fixed; top: 20px; right: 20px; padding: 15px 20px; background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; border-radius: 5px; opacity: 0; transition: opacity 1s; font-size: 16px; z-index: 1000;"><?php echo $error_message; ?></div>
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 var msg = document.getElementById("error-message");
@@ -48,7 +94,7 @@
                 <div class="login-container">
                     <div class="login-header">
                         <h3>Forgot Password</h3>
-                        <p>Enter your email to reset your password</p>
+                        <p>Enter your username and LRN to reset your password</p>
                     </div>
 
                     <form action="../../back-end/update/forgotPassword.php" method="POST">
@@ -58,7 +104,25 @@
                                    placeholder="Enter your username" required>
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-login w-100">Send Reset Link</button>
+                        <div class="mb-3">
+                            <label for="lrn" class="form-label">LRN Number</label>
+                            <input type="text" class="form-control" id="lrn" name="lrn"
+                                   placeholder="Enter your LRN number" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="new_password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new_password" name="new_password"
+                                   placeholder="Enter your new password" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="confirm_password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                                   placeholder="Confirm your new password" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-login w-100">Reset Password</button>
                     </form>
 
                     <div class="signup-link">
