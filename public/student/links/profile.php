@@ -64,6 +64,10 @@ $currentPrograms = !empty($program) ? explode(',', $program) : [];
                         <label class="form-label fw-bold">Program:</label>
                         <p class="mb-0"><?php echo !empty($program) ? htmlspecialchars($program) : 'N/A'; ?></p>
                     </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">LRN Number:</label>
+                        <p class="mb-0"><?php echo !empty($lrn_number) ? htmlspecialchars($lrn_number) : 'N/A'; ?></p>
+                    </div>
                     <div class="mb-0">
                         <label class="form-label fw-bold">Member Since:</label>
                         <p class="mb-0"><?php echo date('F j, Y', strtotime($created_at)); ?></p>
@@ -118,6 +122,22 @@ $currentPrograms = !empty($program) ? explode(',', $program) : [];
                             </div>
                             <button type="button" class="btn btn-primary" id="updateCourseBtn">
                                 <i class="bi bi-check-circle me-2"></i>Update Course
+                            </button>
+                        </form>
+                    </div>
+
+                    <hr class="my-4">
+
+                    <!-- Update LRN Number -->
+                    <div class="mb-4">
+                        <h6 class="mb-3">Update LRN Number</h6>
+                        <form>
+                            <div class="mb-3">
+                                <label for="lrnNumber" class="form-label">LRN Number</label>
+                                <input type="text" class="form-control" id="lrnNumber" placeholder="Enter your LRN number" value="<?php echo !empty($lrn_number) ? htmlspecialchars($lrn_number) : ''; ?>">
+                            </div>
+                            <button type="button" class="btn btn-primary" id="updateLrnBtn">
+                                <i class="bi bi-check-circle me-2"></i>Update LRN Number
                             </button>
                         </form>
                     </div>
@@ -275,6 +295,39 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => {
                 console.error('Error:', error);
                 alert('An error occurred while updating the course');
+            });
+        });
+    }
+
+    // Update LRN Number
+    const updateLrnBtn = document.getElementById('updateLrnBtn');
+    if (updateLrnBtn) {
+        updateLrnBtn.addEventListener('click', function() {
+            const lrnNumber = document.getElementById('lrnNumber').value.trim();
+
+            if (!lrnNumber) {
+                alert('Please enter your LRN number');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('lrnNumber', lrnNumber);
+
+            fetch('../../back-end/update/updateLrn.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage();
+                } else {
+                    alert(data.message || 'Failed to update LRN number');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the LRN number');
             });
         });
     }
