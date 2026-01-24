@@ -43,7 +43,6 @@
                     <li>File reservation requests.</li>
                     <li>Online book borrowing, renewal, and many more.</li>
                 </ul>
-                <button class="btn btn-contact">Contact Us</button>
             </div>
             <div class="col-lg-6 right-section">
                 <div class="login-container">
@@ -65,13 +64,7 @@
                                    placeholder="Enter your password" required>
                         </div>
 
-                        <div class="mb-3 d-flex justify-content-between align-items-center">
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="remember" name="remember">
-                                <label class="form-check-label" for="remember">
-                                    Remember me
-                                </label>
-                            </div>
+                        <div class="mb-3 d-flex justify-content-end align-items-center">
                             <a href="#" class="forgot-link">Forgot password?</a>
                         </div>
 

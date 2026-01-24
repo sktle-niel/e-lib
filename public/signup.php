@@ -49,7 +49,6 @@
                     <li>File reservation requests.</li>
                     <li>Online book borrowing, renewal, and many more.</li>
                 </ul>
-                <button class="btn btn-contact">Contact Us</button>
             </div>
             <div class="col-lg-6 right-section">
                 <div class="login-container" style="max-width: 500px;">
