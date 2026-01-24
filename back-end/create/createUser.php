@@ -21,8 +21,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $id = rand(1000000, 9999999);
-    $stmt = $conn->prepare("INSERT INTO users (id, firstname, lastname, username, password, user_type) VALUES (?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("isssss", $id, $firstname, $lastname, $username, $password, $user_type);
+    if ($user_type == 'teacher' || $user_type == 'librarian') {
+        $stmt = $conn->prepare("INSERT INTO pending_accounts (id, username, password, user_type, firstname, lastname) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isssss", $id, $username, $password, $user_type, $firstname, $lastname);
+    } else {
+        $stmt = $conn->prepare("INSERT INTO users (id, firstname, lastname, username, password, user_type) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("isssss", $id, $firstname, $lastname, $username, $password, $user_type);
+    }
     try {
         if ($stmt->execute()) {
             header("Location: ../../public/signup.php?success=1");
