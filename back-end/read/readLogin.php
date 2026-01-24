@@ -23,6 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 header("Location: ../../public/teacher/main.php");
             } elseif ($user['user_type'] == 'librarian') {
                 header("Location: ../../public/librarian/main.php");
+            } elseif ($user['user_type'] == 'admin') {
+                header("Location: ../../public/admin/main.php");
             } else {
                 header("Location: ../../public/student/main.php");
             }
