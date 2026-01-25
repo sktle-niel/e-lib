@@ -58,10 +58,6 @@ $currentPrograms = !empty($program) ? explode(',', $program) : [];
                         <p class="mb-0"><?php echo htmlspecialchars($firstname . ' ' . $lastname); ?></p>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Program:</label>
-                        <p class="mb-0"><?php echo !empty($program) ? htmlspecialchars($program) : 'Not set'; ?></p>
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label fw-bold">User Type:</label>
                         <p class="mb-0"><?php echo htmlspecialchars(ucfirst($user_type)); ?></p>
                     </div>
@@ -97,28 +93,6 @@ $currentPrograms = !empty($program) ? explode(',', $program) : [];
                                 <i class="bi bi-check-circle me-2"></i>Update Name
                             </button>
                         </form>
-                    </div>
-
-                    <hr class="my-4">
-
-                    <!-- Choose Program -->
-                    <div class="mb-4">
-                        <h6 class="mb-3">Choose a Program</h6>
-                        <div class="mb-3">
-                            <label for="programSelect" class="form-label">Program</label>
-                            <select class="form-select" id="programSelect" multiple>
-                                <option value="BSIT" <?php echo in_array('BSIT', $currentPrograms) ? 'selected' : ''; ?>>BSIT - Bachelor of Science in Information Technology</option>
-                                <option value="BSIS" <?php echo in_array('BSIS', $currentPrograms) ? 'selected' : ''; ?>>BSIS - Bachelor of Science in Information Systems</option>
-                                <option value="ACT" <?php echo in_array('ACT', $currentPrograms) ? 'selected' : ''; ?>>ACT - Associate in Computer Technology</option>
-                                <option value="BSHM" <?php echo in_array('BSHM', $currentPrograms) ? 'selected' : ''; ?>>BSHM - Bachelor of Science in Hospitality Management</option>
-                                <option value="BSOA" <?php echo in_array('BSOA', $currentPrograms) ? 'selected' : ''; ?>>BSOA - Bachelor of Science in Office Administration</option>
-                                <option value="SHS" <?php echo in_array('SHS', $currentPrograms) ? 'selected' : ''; ?>>SHS - Senior High School</option>
-                            </select>
-                            <small class="form-text text-muted">Hold Ctrl (or Cmd on Mac) to select multiple programs</small>
-                        </div>
-                        <button type="button" class="btn btn-primary" id="updateProgramBtn">
-                            <i class="bi bi-check-circle me-2"></i>Update Program
-                        </button>
                     </div>
 
                     <hr class="my-4">

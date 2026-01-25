@@ -20,11 +20,20 @@ include '../../auth/sessionCheck.php';
         case 'dashboard':
             include 'links/dashboard.php';
             break;
-        case 'upload_modules':
-            include 'links/uploadModules.php';
+        case 'teachers':
+            include 'links/teachers.php';
             break;
-        case 'upload_books':
-            include 'links/uploadBooks.php';
+        case 'librarian':
+            include 'links/librarian.php';
+            break;
+        case 'approved':
+            include 'links/approved.php';
+            break;
+        case 'admin':
+            include 'links/admin.php';
+            break;
+        case 'students':
+            include 'links/students.php';
             break;
         case 'profile':
             include 'links/profile.php';

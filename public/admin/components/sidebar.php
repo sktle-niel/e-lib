@@ -515,11 +515,20 @@ body {
         <a href="?page=dashboard" class="nav-item <?php echo $currentPage == 'dashboard' ? 'active' : ''; ?>">
             <i class="bi bi-speedometer2"></i> <span class="nav-text">Dashboard</span>
         </a>
-        <a href="?page=upload_modules" class="nav-item <?php echo $currentPage == 'upload_modules' ? 'active' : ''; ?>">
+        <a href="?page=teachers" class="nav-item <?php echo $currentPage == 'teachers' ? 'active' : ''; ?>">
             <i class="bi bi-people"></i> <span class="nav-text">Teachers</span>
         </a>
-        <a href="?page=upload_books" class="nav-item <?php echo $currentPage == 'upload_books' ? 'active' : ''; ?>">
+        <a href="?page=librarian" class="nav-item <?php echo $currentPage == 'librarian' ? 'active' : ''; ?>">
             <i class="bi bi-book"></i> <span class="nav-text">Librarian</span>
+        </a>
+        <a href="?page=approved" class="nav-item <?php echo $currentPage == 'approved' ? 'active' : ''; ?>">
+            <i class="bi bi-check-circle"></i> <span class="nav-text">Approved</span>
+        </a>
+        <a href="?page=students" class="nav-item <?php echo $currentPage == 'students' ? 'active' : ''; ?>">
+            <i class="bi bi-people"></i> <span class="nav-text">Students</span>
+        </a>
+        <a href="?page=admin" class="nav-item <?php echo $currentPage == 'admin' ? 'active' : ''; ?>">
+            <i class="bi bi-shield-lock"></i> <span class="nav-text">Admin</span>
         </a>
         <a href="?page=profile" class="nav-item <?php echo $currentPage == 'profile' ? 'active' : ''; ?>">
             <i class="bi bi-person"></i> <span class="nav-text">Profile</span>
