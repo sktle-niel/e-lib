@@ -3,18 +3,10 @@ if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
 include '../../back-end/read/PendingAccounts.php';
-include '../../back-end/delete/deleteSuper.php';
 
 $currentPage = 'Approved';
 
 $approvedAccounts = getAllApprovedAccounts();
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_id'])) {
-    header('Content-Type: application/json');
-    $result = deleteSuperAccount($_POST['delete_id']);
-    echo json_encode($result);
-    exit;
-}
 ?>
 
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
@@ -27,7 +19,63 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_id'])) {
     transform: translateY(-50%) !important;
     cursor: pointer;
 }
+
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    font-size: 16px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.success-message.show {
+    opacity: 1;
+}
+
+.error-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    color: white;
+    border-radius: 5px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    font-size: 16px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.error-message.show {
+    opacity: 1;
+}
 </style>
+
+<!-- Success Message -->
+<div id="success-message" class="success-message">
+    <i class="bi bi-check-circle-fill"></i>
+    <span id="success-text">Account deleted successfully!</span>
+</div>
+
+<!-- Error Message -->
+<div id="error-message" class="error-message">
+    <i class="bi bi-exclamation-circle-fill"></i>
+    <span id="error-text">An error occurred</span>
+</div>
 
 <!-- Main Content -->
 <div class="main-content">
@@ -103,11 +151,39 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_id'])) {
                             </table>
                         </div>
                     <?php endif; ?>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Delete Confirmation Modal -->
+<?php include '../../public/admin/components/deleteModal.php'; ?>
+
 <script>
+// Success and Error Message Functions
+function showSuccessMessage(message = 'Account deleted successfully!') {
+    const successMsg = document.getElementById("success-message");
+    const successText = document.getElementById("success-text");
+    successText.textContent = message;
+    successMsg.classList.add('show');
+
+    setTimeout(function() {
+        successMsg.classList.remove('show');
+    }, 3000);
+}
+
+function showErrorMessage(message = 'An error occurred') {
+    const errorMsg = document.getElementById("error-message");
+    const errorText = document.getElementById("error-text");
+    errorText.textContent = message;
+    errorMsg.classList.add('show');
+
+    setTimeout(function() {
+        errorMsg.classList.remove('show');
+    }, 3000);
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const deleteButtons = document.querySelectorAll('.delete-btn');
     const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
@@ -126,32 +202,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
     confirmDeleteBtn.addEventListener('click', function() {
         if (accountIdToDelete) {
-            fetch('', {
+            // Show loading state
+            confirmDeleteBtn.disabled = true;
+            confirmDeleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Deleting...';
+
+            fetch('../../back-end/delete/deleteLibAdmin.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: 'delete_id=' + encodeURIComponent(accountIdToDelete)
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.status);
+                }
+                // Log the raw response text for debugging
+                return response.text().then(text => {
+                    console.log('Raw response:', text);
+                    try {
+                        return JSON.parse(text);
+                    } catch (e) {
+                        console.error('JSON parse error:', e);
+                        console.error('Response text:', text);
+                        throw new Error('Invalid JSON response from server');
+                    }
+                });
+            })
             .then(data => {
                 if (data.success) {
-                    alert(data.message);
-                    location.reload(); // Reload to update the table
+                    showSuccessMessage(data.message);
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
                 } else {
-                    alert('Error: ' + data.message);
+                    showErrorMessage(data.message || 'Failed to delete account');
+                    confirmDeleteBtn.disabled = false;
+                    confirmDeleteBtn.innerHTML = 'Delete';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred while deleting the account.');
+                showErrorMessage('Network error: ' + error.message);
+                confirmDeleteBtn.disabled = false;
+                confirmDeleteBtn.innerHTML = 'Delete';
             })
             .finally(() => {
-                deleteModal.hide();
+                if (!deleteModal._isShown) {
+                    deleteModal.hide();
+                }
             });
         }
     });
 });
 </script>
-
-<?php include '../../public/admin/components/deleteModal.php'; ?>
