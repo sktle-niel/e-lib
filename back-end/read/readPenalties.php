@@ -4,8 +4,8 @@ include '../../config/connection.php';
 function getPenalties($user_id = null, $limit = 15, $offset = 0) {
     global $conn;
 
-    // Modified to show only books that are 3+ days overdue
-    $whereClause = "b.expected_return_date < DATE_SUB(CURDATE(), INTERVAL 3 DAY) AND b.status != 'Returned'";
+    // Modified to show only books that are 1+ days overdue
+    $whereClause = "DATEDIFF(CURDATE(), b.expected_return_date) >= 1 AND b.status != 'Returned'";
 
     if ($user_id !== null) {
         $whereClause .= " AND b.user_id = ?";
@@ -52,8 +52,8 @@ function getPenalties($user_id = null, $limit = 15, $offset = 0) {
 function getPenaltiesCount($user_id = null) {
     global $conn;
 
-    // Modified to count only books that are 3+ days overdue
-    $whereClause = "expected_return_date < DATE_SUB(CURDATE(), INTERVAL 3 DAY) AND status != 'Returned'";
+    // Modified to count only books that are 1+ days overdue
+    $whereClause = "DATEDIFF(CURDATE(), expected_return_date) >= 1 AND status != 'Returned'";
 
     if ($user_id !== null) {
         $whereClause .= " AND user_id = ?";
@@ -78,12 +78,12 @@ function getPenaltiesCount($user_id = null) {
 
 function getTotalPenaltyAmount() {
     global $conn;
-    
-    // Modified to calculate penalty only for books 3+ days overdue
+
+    // Modified to calculate penalty only for books 1+ days overdue
     $stmt = $conn->prepare("
-        SELECT SUM(DATEDIFF(CURDATE(), expected_return_date) * 50) as total 
-        FROM borrowed_lib_books 
-        WHERE expected_return_date < DATE_SUB(CURDATE(), INTERVAL 3 DAY) 
+        SELECT SUM(DATEDIFF(CURDATE(), expected_return_date) * 50) as total
+        FROM borrowed_lib_books
+        WHERE DATEDIFF(CURDATE(), expected_return_date) >= 1
         AND status != 'Returned'
     ");
     
@@ -100,8 +100,8 @@ function getTotalPenaltyAmount() {
 
 function getAverageDaysOverdue($user_id = null) {
     global $conn;
-    
-    $whereClause = "expected_return_date < DATE_SUB(CURDATE(), INTERVAL 3 DAY) AND status != 'Returned'";
+
+    $whereClause = "DATEDIFF(CURDATE(), expected_return_date) >= 1 AND status != 'Returned'";
     
     if ($user_id !== null) {
         $whereClause .= " AND user_id = ?";
