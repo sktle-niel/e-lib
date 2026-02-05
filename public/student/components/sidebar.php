@@ -515,9 +515,6 @@ body {
         <a href="?page=dashboard" class="nav-item <?php echo $currentPage == 'dashboard' ? 'active' : ''; ?>">
             <i class="bi bi-speedometer2"></i> <span class="nav-text">Dashboard</span>
         </a>
-        <a href="?page=recent" class="nav-item <?php echo $currentPage == 'allFiles' ? 'active' : ''; ?>">
-            <i class="bi bi-book-half"></i> <span class="nav-text">Modules & Books</span>
-        </a>
         <a href="?page=modules" class="nav-item <?php echo $currentPage == 'modules' ? 'active' : ''; ?>">
             <i class="bi bi-journal"></i> <span class="nav-text">Modules</span>
         </a>
@@ -529,9 +526,6 @@ body {
         </a>
         <a href="?page=borrow_book" class="nav-item <?php echo $currentPage == 'borrow_book' ? 'active' : ''; ?>">
             <i class="bi bi-bookmark-plus"></i> <span class="nav-text">Borrow Book</span>
-        </a>
-        <a href="?page=borrowed_books" class="nav-item <?php echo $currentPage == 'borrowed_books' ? 'active' : ''; ?>">
-            <i class="bi bi-bookmark-check"></i> <span class="nav-text">Borrowed Books</span>
         </a>
         <a href="?page=penalty" class="nav-item <?php echo $currentPage == 'penalty' ? 'active' : ''; ?>">
             <i class="bi bi-exclamation-triangle"></i> <span class="nav-text">Penalty</span>

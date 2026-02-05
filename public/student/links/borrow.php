@@ -3,6 +3,7 @@ if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
 include '../../back-end/read/readLibBooks.php';
+include '../../back-end/read/readBorrowedBooks.php';
 $currentPage = 'Borrow Books';
 
 // Get filter parameters
@@ -153,6 +154,52 @@ $totalBooks = count($initialBooks);
     <!-- No more books message -->
     <div id="no-more" class="text-center mt-4" style="display: none;">
         <p class="text-muted">No more books to load.</p>
+    </div>
+
+    <!-- Borrowed Books Section -->
+    <div class="mt-5">
+        <h3 class="mb-3">Your Borrowed Books</h3>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Book Name</th>
+                        <th>Date Borrowed</th>
+                        <th>Date of Return</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="borrowed-books-table-body">
+                    <?php
+                    $userId = $_SESSION['user_id'];
+                    $borrowedBooks = getBorrowedBooks($userId, 10, 0); // Get first 10 borrowed books
+                    if (empty($borrowedBooks)): ?>
+                        <tr>
+                            <td colspan="4" class="text-center py-4">
+                                <i class="bi bi-book" style="font-size: 3rem; color: #ccc;"></i>
+                                <p class="text-muted mt-2">No borrowed books found</p>
+                            </td>
+                        </tr>
+                    <?php else: ?>
+                        <?php foreach($borrowedBooks as $book): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($book['book_title']); ?></td>
+                            <td><?php echo date('M d, Y', strtotime($book['borrow_date'])); ?></td>
+                            <td><?php echo date('M d, Y', strtotime($book['expected_return_date'])); ?></td>
+                            <td>
+                                <span class="badge <?php
+                                    echo $book['status'] === 'returned' ? 'bg-success' :
+                                         ($book['status'] === 'overdue' ? 'bg-danger' : 'bg-warning text-dark');
+                                ?>">
+                                    <?php echo htmlspecialchars(ucfirst($book['status'])); ?>
+                                </span>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 

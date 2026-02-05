@@ -9,43 +9,60 @@ include '../../back-end/read/fetchDownloadedBooks.php';
 include '../../back-end/read/fetchDownloadedModules.php';
 include '../../back-end/recent/recentPreviewBooks.php';
 include '../../back-end/recent/recentPreviewModules.php';
-include '../../back-end/read/modulesCount.php';
-include '../../back-end/read/BooksCount.php';
 include '../../back-end/read/countDownloads.php';
+include '../../back-end/read/studentBooks.php';
+include '../../back-end/read/studentModules.php';
 
 
 // Get user ID from session
 $userId = $_SESSION['user_id'];
 
 $stats = [
-    ['title' => 'Available Books', 'value' => getBooksCount(), 'subtitle' => 'Books available for download', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
-    ['title' => 'Available Modules', 'value' => getModulesCount(), 'subtitle' => 'Total modules available', 'icon' => 'bi-file-earmark-text', 'iconClass' => 'icon-green'],
-    ['title' => 'Your Downloads', 'value' => getDownloadsCount($userId), 'subtitle' => 'Books downloaded since launch', 'icon' => 'bi-download', 'iconClass' => 'icon-green'],
-    ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => '', 'icon' => 'bi-person', 'iconClass' => 'icon-green']
+    ['title' => 'Available Books', 'value' => getBooksCount(), 'subtitle' => 'Books available for download', 'icon' => 'bi-book', 'iconClass' => 'icon-green', 'link' => '?page=books'],
+    ['title' => 'Available Modules', 'value' => getModulesCount(), 'subtitle' => 'Total modules available', 'icon' => 'bi-file-earmark-text', 'iconClass' => 'icon-green', 'link' => '?page=modules'],
+    ['title' => 'Your Downloads', 'value' => getDownloadsCount($userId), 'subtitle' => 'Books downloaded since launch', 'icon' => 'bi-download', 'iconClass' => 'icon-green', 'link' => '?page=downloads'],
+    ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => '', 'icon' => 'bi-person', 'iconClass' => 'icon-green', 'link' => '?page=profile']
 ];
 
-// Get recent viewed books and modules from database
-$recentBooks = getRecentViewedBooks(3); // Get 3 books
-$recentModules = getRecentViewedModules(3); // Get 3 modules
+// Fetch all books and modules for random selection
+$allBooks = getAllBooks('', '', '', '', null, 0); // Get all books
+$allModules = getAllModules('', '', '', PHP_INT_MAX, 0); // Get all modules
 
-// Combine and remove duplicates, keeping only the latest preview for each unique item
-$recentViewed = array_merge($recentBooks, $recentModules);
-$uniqueViewed = [];
-foreach ($recentViewed as $item) {
-    $key = $item['type'] . '_' . $item['id'];
-    if (!isset($uniqueViewed[$key]) || strtotime($item['previewed_at']) > strtotime($uniqueViewed[$key]['previewed_at'])) {
-        $uniqueViewed[$key] = $item;
-    }
+// Combine books and modules into one array
+$randomItems = [];
+
+// Add books
+foreach ($allBooks as $book) {
+    $randomItems[] = [
+        'id' => $book['id'],
+        'title' => $book['title'],
+        'author' => $book['author'],
+        'course' => $book['course'],
+        'cover' => $book['cover'],
+        'date' => $book['publish_date'],
+        'type' => 'book',
+        'available' => $book['available']
+    ];
 }
-$recentViewed = array_values($uniqueViewed);
 
-// Sort by previewed_at timestamp descending
-usort($recentViewed, function($a, $b) {
-    return strtotime($b['previewed_at']) - strtotime($a['previewed_at']);
-});
+// Add modules
+foreach ($allModules as $module) {
+    $randomItems[] = [
+        'id' => $module['id'],
+        'title' => $module['title'],
+        'author' => $module['course'], // Use course as author for modules
+        'course' => $module['course'],
+        'cover' => $module['cover'],
+        'date' => $module['uploadedDate'],
+        'type' => 'module'
+    ];
+}
+
+// Shuffle the array to randomize
+shuffle($randomItems);
 
 // Limit to 6 total items
-$recentViewed = array_slice($recentViewed, 0, 6);
+$recentViewed = array_slice($randomItems, 0, 6);
 
 $borrowedBooks = [
     ['title' => 'Data Structures and Algorithms', 'dueDate' => '2024-01-15', 'status' => 'On Time'],
@@ -83,20 +100,22 @@ $downloads = array_slice($downloads, 0, 6);
     <div class="row g-4 mb-4">
         <?php foreach($stats as $stat): ?>
         <div class="col-md-6 col-xl-3">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <h6 class="text-muted mb-2"><?php echo $stat['title']; ?></h6>
-                            <h2 class="fw-bold mb-1"><?php echo $stat['value']; ?></h2>
-                            <small class="text-muted"><?php echo $stat['subtitle']; ?></small>
-                        </div>
-                        <div class="stat-icon <?php echo $stat['iconClass']; ?>">
-                            <i class="<?php echo $stat['icon']; ?>"></i>
+            <a href="<?php echo $stat['link']; ?>" class="text-decoration-none">
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h6 class="text-muted mb-2"><?php echo $stat['title']; ?></h6>
+                                <h2 class="fw-bold mb-1"><?php echo $stat['value']; ?></h2>
+                                <small class="text-muted"><?php echo $stat['subtitle']; ?></small>
+                            </div>
+                            <div class="stat-icon <?php echo $stat['iconClass']; ?>">
+                                <i class="<?php echo $stat['icon']; ?>"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
         <?php endforeach; ?>
     </div>
@@ -108,7 +127,7 @@ $downloads = array_slice($downloads, 0, 6);
             <div class="card card-custom">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="card-title fw-bold mb-0">Recent Viewed</h5>
+                        <h5 class="card-title fw-bold mb-0">Random Books and Modules</h5>
                     </div>
                     
                     <?php if (empty($recentViewed)): ?>
@@ -133,7 +152,7 @@ $downloads = array_slice($downloads, 0, 6);
                                             <?php echo htmlspecialchars($item['author']); ?>
                                         </p>
                                         <small class="text-muted d-block mb-2">
-                                            <i class="bi bi-clock"></i> <?php echo date('M d, Y', strtotime($item['previewed_at'])); ?>
+                                            <i class="bi bi-clock"></i> <?php echo date('M d, Y', strtotime($item['date'])); ?>
                                         </small>
                                         <div class="d-flex justify-content-end">
                                             <div>
