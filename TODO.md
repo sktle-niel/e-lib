@@ -1,6 +1,15 @@
-# TODO: Add Custom Success Message for Penalty Clearing
+# Remove book_course Field Task
 
-- [x] Add success message styles to penaltiesList.php
-- [x] Add success message HTML div to penaltiesList.php
-- [x] Modify JavaScript success callback to display custom message instead of alert
-- [x] Update JavaScript to reload page after message fades out
+## Completed Tasks
+
+- [ ] Create TODO.md file
+
+## Pending Tasks
+
+- [ ] Remove course field from addBook.php form
+- [ ] Remove course column from table display in addBook.php
+- [ ] Remove course from edit modal in addBook.php
+- [ ] Update uploadLibBooks.php to remove book_course from INSERT query
+- [ ] Update readLibBooks.php to remove book_course from SELECT queries
+- [ ] Update editLibBooks.php to remove book_course from INSERT/UPDATE queries
+- [ ] Test the application to ensure no errors

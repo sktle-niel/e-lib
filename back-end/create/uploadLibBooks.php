@@ -14,15 +14,12 @@ if (!isset($_SESSION['user_id'])) {
 
 include '../../config/connection.php';
 
-function addBook($title, $course, $author, $publishDate) {
+function addBook($title, $author, $publishDate) {
     global $conn;
-    
+
     // Validate inputs
     if (empty($title)) {
         return ['success' => false, 'message' => 'Book title is required'];
-    }
-    if (empty($course)) {
-        return ['success' => false, 'message' => 'Course is required'];
     }
     if (empty($author)) {
         return ['success' => false, 'message' => 'Author is required'];
@@ -41,9 +38,9 @@ function addBook($title, $course, $author, $publishDate) {
     } while ($stmt->num_rows > 0);
     $stmt->close();
     
-    // Insert into database - FIXED: Changed bind_param to match 5 parameters
-    $stmt = $conn->prepare("INSERT INTO lib_books (id, book_title, book_course, author, publish_date, created_at) VALUES (?, ?, ?, ?, ?, NOW())");
-    $stmt->bind_param("issss", $bookId, $title, $course, $author, $publishDate);
+    // Insert into database
+    $stmt = $conn->prepare("INSERT INTO lib_books (id, book_title, author, publish_date, created_at) VALUES (?, ?, ?, ?, NOW())");
+    $stmt->bind_param("isss", $bookId, $title, $author, $publishDate);
     
     if ($stmt->execute()) {
         $stmt->close();
@@ -58,11 +55,10 @@ function addBook($title, $course, $author, $publishDate) {
 // Handle POST request
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $title = trim($_POST['book_title'] ?? '');
-    $course = trim($_POST['book_course'] ?? '');
     $author = trim($_POST['author'] ?? '');
     $publishDate = trim($_POST['publish_date'] ?? '');
-    
-    $result = addBook($title, $course, $author, $publishDate);
+
+    $result = addBook($title, $author, $publishDate);
     
     header('Content-Type: application/json');
     echo json_encode($result);

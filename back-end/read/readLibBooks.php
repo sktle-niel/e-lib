@@ -5,7 +5,7 @@ include '../../config/connection.php';
 function getRecentLibBooks($limit = 10) {
     global $conn;
 
-    $stmt = $conn->prepare("SELECT id, book_title, book_course, author, publish_date, created_at, status FROM lib_books ORDER BY created_at DESC LIMIT ?");
+    $stmt = $conn->prepare("SELECT id, book_title, author, publish_date, created_at, status FROM lib_books ORDER BY created_at DESC LIMIT ?");
     $stmt->bind_param("i", $limit);
 
     if ($stmt->execute()) {
@@ -52,7 +52,7 @@ function getFilteredBooks($search, $course, $publishYear, $limit = 20) {
 
     $whereClause = !empty($conditions) ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
-    $sql = "SELECT id, book_title, book_course, author, publish_date, created_at, status FROM lib_books {$whereClause} ORDER BY created_at DESC LIMIT ?";
+    $sql = "SELECT id, book_title, author, publish_date, created_at, status FROM lib_books {$whereClause} ORDER BY created_at DESC LIMIT ?";
 
     $params[] = $limit;
     $types .= 'i';

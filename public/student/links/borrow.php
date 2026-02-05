@@ -55,17 +55,7 @@ $totalBooks = count($initialBooks);
             <div class="col-md-3">
                 <input type="text" name="search" id="search" class="form-control" placeholder="Search books by title or author..." value="<?php echo htmlspecialchars($searchQuery); ?>">
             </div>
-            <div class="col-md-2">
-                <select name="course" id="course" class="form-select">
-                    <option value="">All Courses</option>
-                    <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
-                    <option value="BSIS" <?php echo $courseFilter === 'BSIS' ? 'selected' : ''; ?>>BSIS</option>
-                    <option value="ACT" <?php echo $courseFilter === 'ACT' ? 'selected' : ''; ?>>ACT</option>
-                    <option value="SHS" <?php echo $courseFilter === 'SHS' ? 'selected' : ''; ?>>SHS</option>
-                    <option value="BSHM" <?php echo $courseFilter === 'BSHM' ? 'selected' : ''; ?>>BSHM</option>
-                    <option value="BSOA" <?php echo $courseFilter === 'BSOA' ? 'selected' : ''; ?>>BSOA</option>
-                </select>
-            </div>
+
             <div class="col-md-2">
                 <select name="publish_year" id="publish_year" class="form-select">
                     <option value="">All Years</option>
@@ -102,7 +92,6 @@ $totalBooks = count($initialBooks);
             <thead class="table-dark">
                 <tr>
                     <th>Book Name</th>
-                    <th>Program</th>
                     <th>Author</th>
                     <th>Date</th>
                     <th>Status</th>
@@ -124,7 +113,6 @@ $totalBooks = count($initialBooks);
                     <?php foreach($initialBooks as $book): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($book['book_title']); ?></td>
-                        <td><?php echo htmlspecialchars($book['book_course']); ?></td>
                         <td><?php echo htmlspecialchars($book['author']); ?></td>
                         <td><?php echo date('M d, Y', strtotime($book['publish_date'])); ?></td>
                         <td>

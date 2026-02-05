@@ -32,11 +32,7 @@ function getFilteredBooksPaginated($search, $course, $publishYear, $uploadYear, 
         $types .= 'ss';
     }
     
-    if (!empty($course)) {
-        $conditions[] = "book_course = ?";
-        $params[] = $course;
-        $types .= 's';
-    }
+
     
     if (!empty($publishYear)) {
         $conditions[] = "YEAR(publish_date) = ?";
@@ -66,7 +62,7 @@ function getFilteredBooksPaginated($search, $course, $publishYear, $uploadYear, 
     $countStmt->close();
     
     // Get books
-    $sql = "SELECT id, book_title, book_course, author, publish_date, created_at, status
+    $sql = "SELECT id, book_title, author, publish_date, created_at, status
             FROM lib_books
             {$whereClause}
             ORDER BY created_at DESC
@@ -135,17 +131,7 @@ $borrowedBooks = getAllBorrowedBooks($perPageBorrowed, $offsetBorrowed);
             <div class="col-md-3">
                 <input type="text" name="search" id="search" class="form-control" placeholder="Search books by title or author..." value="<?php echo htmlspecialchars($searchQuery); ?>">
             </div>
-            <div class="col-md-2">
-                <select name="course" id="course" class="form-select">
-                    <option value="">All Courses</option>
-                    <option value="BSIT" <?php echo $courseFilter === 'BSIT' ? 'selected' : ''; ?>>BSIT</option>
-                    <option value="BSIS" <?php echo $courseFilter === 'BSIS' ? 'selected' : ''; ?>>BSIS</option>
-                    <option value="ACT" <?php echo $courseFilter === 'ACT' ? 'selected' : ''; ?>>ACT</option>
-                    <option value="SHS" <?php echo $courseFilter === 'SHS' ? 'selected' : ''; ?>>SHS</option>
-                    <option value="BSHM" <?php echo $courseFilter === 'BSHM' ? 'selected' : ''; ?>>BSHM</option>
-                    <option value="BSOA" <?php echo $courseFilter === 'BSOA' ? 'selected' : ''; ?>>BSOA</option>
-                </select>
-            </div>
+
             <div class="col-md-2">
                 <select name="publish_year" id="publish_year" class="form-select">
                     <option value="">Publish Year</option>
@@ -189,7 +175,6 @@ $borrowedBooks = getAllBorrowedBooks($perPageBorrowed, $offsetBorrowed);
             <thead class="table-dark">
                 <tr>
                     <th>Book Name</th>
-                    <th>Program</th>
                     <th>Author</th>
                     <th>Publish Date</th>
                     <th>Date Added</th>
@@ -199,7 +184,7 @@ $borrowedBooks = getAllBorrowedBooks($perPageBorrowed, $offsetBorrowed);
             <tbody id="books-table-body">
                 <?php if (empty($initialBooks)): ?>
                     <tr>
-                        <td colspan="6" class="text-center py-4">
+                        <td colspan="5" class="text-center py-4">
                             <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
                             <p class="text-muted mt-2">No books found</p>
                             <?php if ($searchQuery || $courseFilter || $publishYearFilter || $uploadYearFilter): ?>
@@ -211,7 +196,6 @@ $borrowedBooks = getAllBorrowedBooks($perPageBorrowed, $offsetBorrowed);
                     <?php foreach($initialBooks as $book): ?>
                     <tr>
                         <td><?php echo htmlspecialchars($book['book_title']); ?></td>
-                        <td><span class="badge bg-primary"><?php echo htmlspecialchars($book['book_course']); ?></span></td>
                         <td><?php echo htmlspecialchars($book['author']); ?></td>
                         <td><?php echo date('M d, Y', strtotime($book['publish_date'])); ?></td>
                         <td><?php echo date('M d, Y', strtotime($book['created_at'])); ?></td>
@@ -447,7 +431,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Update URL parameters
         const search = formData.get('search');
-        const course = formData.get('course');
         const publishYear = formData.get('publish_year');
         const uploadYear = formData.get('upload_year');
 
@@ -455,12 +438,6 @@ document.addEventListener('DOMContentLoaded', function() {
             currentUrl.searchParams.set('search', search);
         } else {
             currentUrl.searchParams.delete('search');
-        }
-
-        if (course) {
-            currentUrl.searchParams.set('course', course);
-        } else {
-            currentUrl.searchParams.delete('course');
         }
 
         if (publishYear) {
@@ -490,19 +467,17 @@ document.addEventListener('DOMContentLoaded', function() {
         clearFiltersBtn.addEventListener('click', function() {
             const currentUrl = new URL(window.location.href);
             currentUrl.searchParams.delete('search');
-            currentUrl.searchParams.delete('course');
             currentUrl.searchParams.delete('publish_year');
             currentUrl.searchParams.delete('upload_year');
             currentUrl.searchParams.delete('p');
             window.location.href = currentUrl.toString();
         });
     }
-    
+
     if (clearFiltersBtn2) {
         clearFiltersBtn2.addEventListener('click', function() {
             const currentUrl = new URL(window.location.href);
             currentUrl.searchParams.delete('search');
-            currentUrl.searchParams.delete('course');
             currentUrl.searchParams.delete('publish_year');
             currentUrl.searchParams.delete('upload_year');
             currentUrl.searchParams.delete('p');

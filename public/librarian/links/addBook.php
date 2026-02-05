@@ -41,18 +41,7 @@ $currentPage = 'Add Library Book';
                 <label for="book_title" class="form-label">Book Title</label>
                 <input type="text" name="book_title" id="book_title" class="form-control" placeholder="Enter book title..." required>
             </div>
-            <div class="col-md-2">
-                <label for="book_course" class="form-label">Course</label>
-                <select name="book_course" id="book_course" class="form-select" required>
-                    <option value="">Select Course</option>
-                    <option value="BSIT">BSIT</option>
-                    <option value="BSIS">BSIS</option>
-                    <option value="ACT">ACT</option>
-                    <option value="SHS">SHS</option>
-                    <option value="BSHM">BSHM</option>
-                    <option value="BSOA">BSOA</option>
-                </select>
-            </div>
+
             <div class="col-md-2">
                 <label for="author" class="form-label">Author</label>
                 <input type="text" name="author" id="author" class="form-control" placeholder="Enter author..." required>
@@ -78,7 +67,6 @@ $currentPage = 'Add Library Book';
                     <tr>
                         <th>ID</th>
                         <th>Book Title</th>
-                        <th>Course</th>
                         <th>Author</th>
                         <th>Publish Date</th>
                         <th>Added At</th>
@@ -89,18 +77,17 @@ $currentPage = 'Add Library Book';
                     <?php
                     $recentBooks = getRecentLibBooks(10);
                     if (empty($recentBooks)) {
-                        echo '<tr><td colspan="7" class="text-center">No books found</td></tr>';
+                        echo '<tr><td colspan="6" class="text-center">No books found</td></tr>';
                     } else {
                         foreach ($recentBooks as $book) {
                             echo '<tr>';
                             echo '<td>' . htmlspecialchars($book['id']) . '</td>';
                             echo '<td>' . htmlspecialchars($book['book_title']) . '</td>';
-                            echo '<td>' . htmlspecialchars($book['book_course']) . '</td>';
                             echo '<td>' . htmlspecialchars($book['author']) . '</td>';
                             echo '<td>' . htmlspecialchars($book['publish_date']) . '</td>';
                             echo '<td>' . htmlspecialchars($book['created_at']) . '</td>';
                             echo '<td>';
-                            echo '<button class="btn btn-sm btn-outline-warning me-1 edit-btn" title="Edit" data-book-id="' . htmlspecialchars($book['id']) . '" data-book-title="' . htmlspecialchars($book['book_title']) . '" data-book-course="' . htmlspecialchars($book['book_course']) . '" data-author="' . htmlspecialchars($book['author']) . '" data-publish-date="' . htmlspecialchars($book['publish_date']) . '"><i class="bi bi-pencil"></i></button>';
+                            echo '<button class="btn btn-sm btn-outline-warning me-1 edit-btn" title="Edit" data-book-id="' . htmlspecialchars($book['id']) . '" data-book-title="' . htmlspecialchars($book['book_title']) . '" data-author="' . htmlspecialchars($book['author']) . '" data-publish-date="' . htmlspecialchars($book['publish_date']) . '"><i class="bi bi-pencil"></i></button>';
                             echo '<button class="btn btn-sm btn-outline-danger delete-btn" title="Delete" data-book-id="' . htmlspecialchars($book['id']) . '" data-book-title="' . htmlspecialchars($book['book_title']) . '"><i class="bi bi-trash"></i></button>';
                             echo '</td>';
                             echo '</tr>';
@@ -150,18 +137,7 @@ $currentPage = 'Add Library Book';
                         <label for="edit_book_title" class="form-label">Book Title</label>
                         <input type="text" name="book_title" id="edit_book_title" class="form-control" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="edit_book_course" class="form-label">Course</label>
-                        <select name="book_course" id="edit_book_course" class="form-select" required>
-                            <option value="">Select Course</option>
-                            <option value="BSIT">BSIT</option>
-                            <option value="BSIS">BSIS</option>
-                            <option value="ACT">ACT</option>
-                            <option value="SHS">SHS</option>
-                            <option value="BSHM">BSHM</option>
-                            <option value="BSOA">BSOA</option>
-                        </select>
-                    </div>
+
                     <div class="mb-3">
                         <label for="edit_author" class="form-label">Author</label>
                         <input type="text" name="author" id="edit_author" class="form-control" required>
@@ -249,14 +225,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const btn = e.target.closest('.edit-btn');
             const bookId = btn.dataset.bookId;
             const bookTitle = btn.dataset.bookTitle;
-            const bookCourse = btn.dataset.bookCourse;
             const author = btn.dataset.author;
             const publishDate = btn.dataset.publishDate;
 
             // Populate modal
             document.getElementById('edit_book_id').value = bookId;
             document.getElementById('edit_book_title').value = bookTitle;
-            document.getElementById('edit_book_course').value = bookCourse;
             document.getElementById('edit_author').value = author;
             document.getElementById('edit_publish_date').value = publishDate;
 
@@ -382,7 +356,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Check if table is now empty
                         const tbody = document.querySelector('.table tbody');
                         if (tbody.querySelectorAll('tr').length === 0) {
-                            tbody.innerHTML = '<tr><td colspan="7" class="text-center">No books found</td></tr>';
+                            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No books found</td></tr>';
                         }
                     }, 500);
                 }
