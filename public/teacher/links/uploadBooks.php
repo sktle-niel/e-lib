@@ -23,7 +23,6 @@ $hasMore = $totalBooks > 12;
 $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $yearFilter, 12, 0);
 ?>
 
-<link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 
 <style>
 /* Optional: Style for the file input to match your design */
@@ -48,6 +47,20 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
     font-size: 0.75rem;
     color: #6c757d;
     margin-top: 0.25rem;
+}
+
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 1s;
+    font-size: 16px;
+    z-index: 1000;
 }
 </style>
 
@@ -206,6 +219,29 @@ $initialBooks = getAllBooks($searchQuery, $courseFilter, $publishYearFilter, $ye
     </div>
 </div>
 
+<div id="success-message" class="success-message" style="display:none;">
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteBookModal" tabindex="-1" aria-labelledby="deleteBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="deleteBookModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the book "<span id="deleteBookTitle"></span>"?</p>
+                <p class="text-muted small">This action cannot be undone. The book file and cover image will also be permanently deleted.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete Book</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Edit Book Modal -->
 <div class="modal fade" id="editBookModal" tabindex="-1" aria-labelledby="editBookModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -310,9 +346,14 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('Book uploaded successfully!');
                     uploadForm.reset();
-                    location.reload();
+                    const successMsg = document.getElementById('success-message');
+                    successMsg.textContent = 'Book uploaded successfully!';
+                    successMsg.style.display = 'block';
+                    successMsg.style.opacity = '1';
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
                 } else {
                     alert('Upload failed: ' + data.message);
                 }
@@ -508,8 +549,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Book updated successfully!');
-                location.reload();
+                const successMsg = document.getElementById('success-message');
+                successMsg.textContent = 'Book updated successfully!';
+                successMsg.style.display = 'block';
+                successMsg.style.opacity = '1';
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
             } else {
                 alert('Error: ' + data.message);
             }
@@ -532,7 +578,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const bookId = card.dataset.bookId;
             const title = card.querySelector('.card-title').textContent;
 
-            if (confirm('Are you sure you want to delete the book "' + title + '"? This action cannot be undone.')) {
+            // Populate modal
+            document.getElementById('deleteBookTitle').textContent = title;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('deleteBookModal'));
+            modal.show();
+
+            // Handle confirm delete button
+            document.getElementById('confirmDeleteBtn').onclick = function() {
+                modal.hide();
+
+                const deleteBtn = this;
+                const originalText = deleteBtn.innerHTML;
+
+                // Disable button and show loading
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Deleting...';
+
                 fetch('../../back-end/delete/removeBook.php', {
                     method: 'POST',
                     headers: {
@@ -543,8 +606,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Book deleted successfully!');
-                        location.reload();
+                        const successMsg = document.getElementById('success-message');
+                        successMsg.textContent = 'Book deleted successfully!';
+                        successMsg.style.display = 'block';
+                        successMsg.style.opacity = '1';
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
                     } else {
                         alert('Error: ' + data.message);
                     }
@@ -552,8 +620,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error => {
                     console.error('Error:', error);
                     alert('An error occurred while deleting the book.');
+                })
+                .finally(() => {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = originalText;
                 });
-            }
+            };
         }
     });
 });

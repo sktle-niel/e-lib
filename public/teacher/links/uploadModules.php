@@ -21,6 +21,22 @@ $hasMore = $totalModules > 12;
 
 <link rel="stylesheet" href="../../src/css/dashboard.css">
 
+<style>
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 1s;
+    font-size: 16px;
+    z-index: 1000;
+}
+</style>
+
 <!-- Main Content -->
 <div class="main-content">
     <!-- Header -->
@@ -159,6 +175,29 @@ $hasMore = $totalModules > 12;
     </div>
 </div>
 
+<div id="success-message" class="success-message" style="display:none;">
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModuleModal" tabindex="-1" aria-labelledby="deleteModuleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title" id="deleteModuleModalLabel">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete the module "<span id="deleteModuleTitle"></span>"?</p>
+                <p class="text-muted small">This action cannot be undone. The module file and cover image will also be permanently deleted.</p>
+            </div>
+            <div class="modal-footer border-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteModuleBtn">Delete Module</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Edit Module Modal -->
 <div class="modal fade" id="editModuleModal" tabindex="-1" aria-labelledby="editModuleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -255,9 +294,14 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Module uploaded successfully!');
                 uploadForm.reset();
-                location.reload();
+                const successMsg = document.getElementById('success-message');
+                successMsg.textContent = 'Module uploaded successfully!';
+                successMsg.style.display = 'block';
+                successMsg.style.opacity = '1';
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
             } else {
                 alert('Error: ' + data.message);
             }
@@ -432,8 +476,13 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('Module updated successfully!');
-                location.reload();
+                const successMsg = document.getElementById('success-message');
+                successMsg.textContent = 'Module updated successfully!';
+                successMsg.style.display = 'block';
+                successMsg.style.opacity = '1';
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
             } else {
                 alert('Error: ' + data.message);
             }
@@ -452,7 +501,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const moduleId = card.dataset.moduleId;
             const title = card.querySelector('.card-title').textContent;
 
-            if (confirm('Are you sure you want to delete the module "' + title + '"? This action cannot be undone.')) {
+            // Populate modal
+            document.getElementById('deleteModuleTitle').textContent = title;
+
+            // Show modal
+            const modal = new bootstrap.Modal(document.getElementById('deleteModuleModal'));
+            modal.show();
+
+            // Handle confirm delete button
+            document.getElementById('confirmDeleteModuleBtn').onclick = function() {
+                modal.hide();
+
+                const deleteBtn = this;
+                const originalText = deleteBtn.innerHTML;
+
+                // Disable button and show loading
+                deleteBtn.disabled = true;
+                deleteBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Deleting...';
+
                 fetch('../../back-end/delete/removeModule.php', {
                     method: 'POST',
                     headers: {
@@ -463,8 +529,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Module deleted successfully!');
-                        location.reload();
+                        const successMsg = document.getElementById('success-message');
+                        successMsg.textContent = 'Module deleted successfully!';
+                        successMsg.style.display = 'block';
+                        successMsg.style.opacity = '1';
+                        setTimeout(() => {
+                            location.reload();
+                        }, 2000);
                     } else {
                         alert('Error: ' + data.message);
                     }
@@ -472,8 +543,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 .catch(error => {
                     console.error('Error:', error);
                     alert('An error occurred while deleting the module.');
+                })
+                .finally(() => {
+                    deleteBtn.disabled = false;
+                    deleteBtn.innerHTML = originalText;
                 });
-            }
+            };
         }
     });
 });
