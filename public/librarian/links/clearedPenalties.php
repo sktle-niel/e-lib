@@ -34,6 +34,22 @@ if (count($clearedPenalties) > 0) {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 
+<style>
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    color: white;
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 1s;
+    font-size: 16px;
+    z-index: 1000;
+}
+</style>
+
 <!-- Main Content -->
 <div class="main-content">
     <!-- Header -->
@@ -218,10 +234,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.hide();
 
                 // Show success message
-                alert('Penalty cleared successfully!');
-
-                // Refresh the page to update the table
-                location.reload();
+                const successMsg = document.getElementById('clear-success-message');
+                successMsg.style.display = 'block';
+                successMsg.style.opacity = '1';
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
             } else {
                 alert('Error: ' + data.message);
             }

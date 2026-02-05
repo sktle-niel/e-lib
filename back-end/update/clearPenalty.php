@@ -15,19 +15,7 @@ ob_clean();
 
 header('Content-Type: application/json');
 
-function generateUniqueId() {
-    global $conn;
-    do {
-        $id = rand(1000000, 9999999);
-        $stmt = $conn->prepare("SELECT id FROM book_return_history WHERE id = ?");
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $exists = $result->num_rows > 0;
-        $stmt->close();
-    } while ($exists);
-    return $id;
-}
+
 
 function generateUniqueReturnId() {
     global $conn;
@@ -67,17 +55,16 @@ function markAsReturned($borrowId) {
             $stmt->close();
 
             // Generate unique IDs
-            $uniqueId = generateUniqueId();
             $returnId = generateUniqueReturnId();
 
             // Insert into history table
             $stmt4 = $conn->prepare("
                 INSERT INTO book_return_history
-                (id, return_id, borrow_id, book_id, user_id, book_title, borrow_date, expected_return_date, processed_by)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                (return_id, borrow_id, book_id, user_id, book_title, borrow_date, expected_return_date, processed_by)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ");
             $processedBy = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
-            $stmt4->bind_param("iiiiisssi", $uniqueId, $returnId, $borrowId, $bookId, $userId, $bookTitle, $borrowDate, $expectedReturnDate, $processedBy);
+            $stmt4->bind_param("iiiisssi", $returnId, $borrowId, $bookId, $userId, $bookTitle, $borrowDate, $expectedReturnDate, $processedBy);
 
             if (!$stmt4->execute()) {
                 throw new Exception("Failed to save to history: " . $stmt4->error);
@@ -148,28 +135,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['borrow_id'])) {
             $expectedReturnDate = $row['expected_return_date'];
             $stmt->close();
 
-            // Calculate days overdue and penalty amount
+            // Calculate days overdue and penalty amount (fixed at 50)
             $expectedDate = new DateTime($expectedReturnDate);
             $currentDate = new DateTime();
             $interval = $expectedDate->diff($currentDate);
             $daysOverdue = max(0, (int)$interval->days);
-            $penaltyAmount = $daysOverdue * 50;
+            $penaltyAmount = 50;
 
             // *** THIS IS WHERE IT INSERTS INTO penalty_clear_log ***
             error_log("Attempting to insert into penalty_clear_log: borrow_id=$borrowId, book_id=$bookId, user_id=$userId, penalty_amount=$penaltyAmount, days_overdue=$daysOverdue, cleared_by=$clearedBy, notes=$notes");
 
-            $stmt2 = $conn->prepare("
-                INSERT INTO penalty_clear_log
-                (borrow_id, book_id, user_id, penalty_amount, days_overdue, cleared_by, cleared_at, notes)
-                VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)
-            ");
-
-            if (!$stmt2) {
-                throw new Exception('Failed to prepare penalty_clear_log insert: ' . $conn->error);
+            if ($clearedBy === null) {
+                $stmt2 = $conn->prepare("
+                    INSERT INTO penalty_clear_log
+                    (borrow_id, book_id, user_id, penalty_amount, days_overdue, cleared_at, notes)
+                    VALUES (?, ?, ?, ?, ?, NOW(), ?)
+                ");
+                if (!$stmt2) {
+                    throw new Exception('Failed to prepare penalty_clear_log insert: ' . $conn->error);
+                }
+                $stmt2->bind_param("iiidis", $borrowId, $bookId, $userId, $penaltyAmount, $daysOverdue, $notes);
+            } else {
+                $stmt2 = $conn->prepare("
+                    INSERT INTO penalty_clear_log
+                    (borrow_id, book_id, user_id, penalty_amount, days_overdue, cleared_by, cleared_at, notes)
+                    VALUES (?, ?, ?, ?, ?, ?, NOW(), ?)
+                ");
+                if (!$stmt2) {
+                    throw new Exception('Failed to prepare penalty_clear_log insert: ' . $conn->error);
+                }
+                $stmt2->bind_param("iiidiis", $borrowId, $bookId, $userId, $penaltyAmount, $daysOverdue, $clearedBy, $notes);
             }
-
-            // Bind parameters: i,i,i,d,i,i,s (borrow_id, book_id, user_id, penalty_amount, days_overdue, cleared_by, notes)
-            $stmt2->bind_param("iiidiis", $borrowId, $bookId, $userId, $penaltyAmount, $daysOverdue, $clearedBy, $notes);
 
             if (!$stmt2->execute()) {
                 throw new Exception('Failed to log penalty clearance: ' . $stmt2->error);
