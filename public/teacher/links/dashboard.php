@@ -13,14 +13,14 @@ $modulesCount = getModulesCount();
 $booksCount = getBooksCount();
 
 // Get teacher's programs and student counts
-$programs = explode(',', $program);
+$programs = !empty($program) ? explode(',', $program) : [];
 $studentCounts = getStudentCounts($programs);
 
 $stats = [
-    ['title' => 'Modules Uploaded', 'value' => $modulesCount, 'subtitle' => 'Modules you have uploaded', 'icon' => 'bi-check-circle', 'iconClass' => 'icon-blue'],
-    ['title' => 'Books Uploaded', 'value' => $booksCount, 'subtitle' => 'Books you have uploaded', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
+    ['title' => 'Modules Uploaded', 'value' => $modulesCount, 'subtitle' => 'Modules you have uploaded', 'icon' => 'bi-check-circle', 'iconClass' => 'icon-blue', 'link' => '?page=upload_modules'],
+    ['title' => 'Books Uploaded', 'value' => $booksCount, 'subtitle' => 'Books you have uploaded', 'icon' => 'bi-book', 'iconClass' => 'icon-green', 'link' => '?page=upload_books'],
     ['title' => 'Students Count', 'value' => '<div style="position:relative;"><div id="student-counts" style="display:inline;"></div><i id="next-programs" class="bi bi-chevron-right" style="cursor:pointer; display:none; position:absolute; right:0; top:50%; transform:translateY(-50%);"></i></div>', 'subtitle' => 'Students in your programs', 'icon' => 'bi-people', 'iconClass' => 'icon-red'],
-    ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => ucfirst($user_type), 'icon' => 'bi-person', 'iconClass' => 'icon-orange']
+    ['title' => 'Your Profile', 'value' => htmlspecialchars($username), 'subtitle' => ucfirst($user_type), 'icon' => 'bi-person', 'iconClass' => 'icon-orange', 'link' => '?page=profile']
 ];
 
 // Fetch recent modules from database (limit to 4 for dashboard display)
@@ -84,20 +84,26 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="row g-4 mb-4">
         <?php foreach($stats as $stat): ?>
         <div class="col-md-6 col-xl-3">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <h6 class="text-muted mb-2"><?php echo $stat['title']; ?></h6>
-                            <h2 class="fw-bold mb-1"><?php echo $stat['value']; ?></h2>
-                            <small class="text-muted"><?php echo $stat['subtitle']; ?></small>
-                        </div>
-                        <div class="stat-icon <?php echo $stat['iconClass']; ?>">
-                            <i class="<?php echo $stat['icon']; ?>"></i>
+            <?php if (isset($stat['link'])): ?>
+            <a href="<?php echo $stat['link']; ?>" class="text-decoration-none">
+            <?php endif; ?>
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h6 class="text-muted mb-2"><?php echo $stat['title']; ?></h6>
+                                <h2 class="fw-bold mb-1"><?php echo $stat['value']; ?></h2>
+                                <small class="text-muted"><?php echo $stat['subtitle']; ?></small>
+                            </div>
+                            <div class="stat-icon <?php echo $stat['iconClass']; ?>">
+                                <i class="<?php echo $stat['icon']; ?>"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            <?php if (isset($stat['link'])): ?>
+            </a>
+            <?php endif; ?>
         </div>
         <?php endforeach; ?>
     </div>

@@ -3,6 +3,7 @@ if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
 include '../../back-end/read/readPenalties.php';
+include '../../back-end/read/readClearedPenalties.php';
 $currentPage = 'Penalty';
 
 $page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
