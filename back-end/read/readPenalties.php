@@ -18,7 +18,7 @@ function getPenalties($user_id = null, $limit = 15, $offset = 0) {
             b.borrow_date,
             b.expected_return_date as return_date,
             DATEDIFF(CURDATE(), b.expected_return_date) as days_overdue,
-            (DATEDIFF(CURDATE(), b.expected_return_date) * 50) as penalty_amount,
+            50 as penalty_amount,
             'Overdue' as status,
             CONCAT(u.firstname, ' ', u.lastname) as borrower_name
         FROM borrowed_lib_books b
@@ -81,7 +81,7 @@ function getTotalPenaltyAmount() {
 
     // Modified to calculate penalty only for books 1+ days overdue
     $stmt = $conn->prepare("
-        SELECT SUM(DATEDIFF(CURDATE(), expected_return_date) * 50) as total
+        SELECT SUM(50) as total
         FROM borrowed_lib_books
         WHERE DATEDIFF(CURDATE(), expected_return_date) >= 1
         AND status != 'Returned'

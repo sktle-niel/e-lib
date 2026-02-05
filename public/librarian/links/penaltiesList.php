@@ -34,6 +34,22 @@ if (count($overdueBooks) > 0) {
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
 
+<style>
+    .success-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        color: white;
+        border-radius: 5px;
+        opacity: 0;
+        transition: opacity 1s;
+        font-size: 16px;
+        z-index: 1000;
+    }
+</style>
+
 <!-- Main Content -->
 <div class="main-content">
     <!-- Header -->
@@ -133,6 +149,9 @@ if (count($overdueBooks) > 0) {
     </div>
 </div>
 
+<!-- Success Message -->
+<div id="success-message" class="success-message">Penalty cleared successfully!</div>
+
 <!-- Clear Penalty Confirmation Modal -->
 <div class="modal fade" id="clearPenaltyModal" tabindex="-1" aria-labelledby="clearPenaltyModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -231,10 +250,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.hide();
 
                 // Show success message
-                alert('Penalty cleared successfully!');
-
-                // Refresh the page to update the table
-                location.reload();
+                const msg = document.getElementById('success-message');
+                msg.style.opacity = "1";
+                setTimeout(function() {
+                    msg.style.opacity = "0";
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                }, 3000);
             } else {
                 alert('Error: ' + data.message);
             }

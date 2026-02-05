@@ -13,21 +13,21 @@ function getClearedPenalties($user_id = null, $limit = 15, $offset = 0) {
     $stmt = $conn->prepare("
         SELECT
             pcl.id,
-            lb.book_title as title,
-            b.borrow_date,
-            b.expected_return_date as return_date,
+            COALESCE(lb.book_title, 'N/A') as title,
+            COALESCE(b.borrow_date, 'N/A') as borrow_date,
+            COALESCE(b.expected_return_date, 'N/A') as return_date,
             pcl.days_overdue,
             pcl.penalty_amount,
             'Cleared' as status,
-            CONCAT(u.firstname, ' ', u.lastname) as borrower_name,
+            COALESCE(CONCAT(u.firstname, ' ', u.lastname), 'N/A') as borrower_name,
             pcl.cleared_at,
             pcl.notes,
-            CONCAT(cleared_user.firstname, ' ', cleared_user.lastname) as cleared_by_name
+            COALESCE(CONCAT(cleared_user.firstname, ' ', cleared_user.lastname), 'N/A') as cleared_by_name
         FROM penalty_clear_log pcl
-        JOIN borrowed_lib_books b ON pcl.borrow_id = b.id
-        JOIN lib_books lb ON pcl.book_id = lb.id
-        JOIN users u ON pcl.user_id = u.id
-        JOIN users cleared_user ON pcl.cleared_by = cleared_user.id
+        LEFT JOIN borrowed_lib_books b ON pcl.borrow_id = b.id
+        LEFT JOIN lib_books lb ON pcl.book_id = lb.id
+        LEFT JOIN users u ON pcl.user_id = u.id
+        LEFT JOIN users cleared_user ON pcl.cleared_by = cleared_user.id
         $whereClause
         ORDER BY pcl.cleared_at DESC
         LIMIT ? OFFSET ?

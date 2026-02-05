@@ -11,15 +11,24 @@ function abortReturned($returnId, $bookId, $userId, $borrowDate, $expectedReturn
     $conn->begin_transaction();
     
     try {
-        // Validate return exists
-        $stmt = $conn->prepare("SELECT id FROM book_return_history WHERE id=?");
+        // Validate return exists and get borrow_id
+        $stmt = $conn->prepare("SELECT borrow_id FROM book_return_history WHERE id=?");
         $stmt->bind_param("i", $returnId);
         $stmt->execute();
-        if ($stmt->get_result()->num_rows === 0) {
+        $result = $stmt->get_result();
+        if ($result->num_rows === 0) {
             throw new Exception("Return record not found");
         }
+        $row = $result->fetch_assoc();
+        $borrowId = $row['borrow_id'];
         $stmt->close();
-        
+
+        // Delete from penalty_clear_log if exists
+        $stmt = $conn->prepare("DELETE FROM penalty_clear_log WHERE book_id=?");
+        $stmt->bind_param("i", $bookId);
+        $stmt->execute();
+        $stmt->close();
+
         // Reinsert borrow record with status 'borrowed'
         $status = 'borrowed';
         $stmt = $conn->prepare("

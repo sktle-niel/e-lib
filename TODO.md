@@ -1,10 +1,6 @@
-# TODO: Fix Overdue Books Not Showing in Penalties List
+# TODO: Add Custom Success Message for Penalty Clearing
 
-## Steps to Complete
-
-- [x] Update getPenalties function WHERE clause to include books overdue by 1 or more days
-- [x] Update getPenaltiesCount function WHERE clause to include books overdue by 1 or more days
-- [x] Update getTotalPenaltyAmount function WHERE clause to include books overdue by 1 or more days
-- [x] Update getAverageDaysOverdue function WHERE clause to include books overdue by 1 or more days
-- [x] Test the penaltiesList.php page to verify overdue books now display
-- [x] Confirm clear penalty action inserts into penalty_clear_log table
+- [x] Add success message styles to penaltiesList.php
+- [x] Add success message HTML div to penaltiesList.php
+- [x] Modify JavaScript success callback to display custom message instead of alert
+- [x] Update JavaScript to reload page after message fades out

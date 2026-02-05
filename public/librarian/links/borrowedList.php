@@ -63,27 +63,30 @@ $borrowedBooks = getAllBorrowedBooks($perPage, $offset);
             <tbody id="borrowed-books-table-body">
                 <?php if (count($borrowedBooks) > 0): ?>
                     <?php foreach($borrowedBooks as $book): ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($book['title']); ?></td>
-                        <td><?php echo htmlspecialchars($book['borrower_name']); ?></td>
-                        <td><?php echo date('M d, Y', strtotime($book['borrow_date'])); ?></td>
-                        <td><?php echo date('M d, Y', strtotime($book['return_date'])); ?></td>
-                        <td>
-                            <span class="badge <?php
-                                echo $book['status'] === 'Returned' ? 'bg-success' :
-                                     ($book['status'] === 'Overdue' ? 'bg-danger' : 'bg-warning text-dark');
-                            ?>">
-                                <?php echo htmlspecialchars($book['status']); ?>
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-success mark-returned-btn"
-                                    data-book-title="<?php echo htmlspecialchars($book['title']); ?>"
-                                    data-borrow-id="<?php echo htmlspecialchars($book['id']); ?>">
-                                Mark as Returned
-                            </button>
-                        </td>
-                    </tr>
+                        <?php if ($book['status'] !== 'Overdue'): ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($book['title']); ?></td>
+                            <td><?php echo htmlspecialchars($book['borrower_name']); ?></td>
+                            <td><?php echo date('M d, Y', strtotime($book['borrow_date'])); ?></td>
+                            <td><?php echo date('M d, Y', strtotime($book['return_date'])); ?></td>
+                            <td>
+                                <span class="badge <?php
+                                    echo $book['status'] === 'Returned' ? 'bg-success' :
+                                         ($book['status'] === 'Overdue' ? 'bg-danger' : 'bg-warning text-dark');
+                                ?>">
+                                    <?php echo htmlspecialchars($book['status']); ?>
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-success mark-returned-btn"
+                                        data-book-title="<?php echo htmlspecialchars($book['title']); ?>"
+                                        data-borrow-id="<?php echo htmlspecialchars($book['id']); ?>"
+                                        data-status="<?php echo htmlspecialchars($book['status']); ?>">
+                                    Mark as Returned
+                                </button>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
@@ -184,29 +187,34 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle Confirm Return button click
     document.getElementById('confirm-return-btn').addEventListener('click', function() {
         const borrowId = this.getAttribute('data-borrow-id');
+        const status = this.getAttribute('data-status');
 
-        fetch('../../back-end/update/markAsReturned.php', {
+        const url = status === 'Overdue' ? '../../back-end/update/clearPenalty.php' : '../../back-end/update/markAsReturned.php';
+
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: 'borrow_id=' + encodeURIComponent(borrowId)
         })
-        .then(response => response.text())
+        .then(response => status === 'Overdue' ? response.json() : response.text())
         .then(data => {
-            // ADDED: Better debugging
-            console.log('Response:', data);
-            console.log('Response length:', data.length);
-            console.log('Response trimmed:', data.trim());
-            console.log('Comparison result:', data.trim() === 'success');
-            
-            if (data.trim() === 'success') {
+            let success = false;
+            if (status === 'Overdue') {
+                success = data.success === true;
+            } else {
+                success = data.trim() === 'success';
+            }
+
+            if (success) {
                 // Close modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('confirmReturnModal'));
                 modal.hide();
 
                 // Show success message
                 const successMsg = document.getElementById('success-message');
+                successMsg.textContent = status === 'Overdue' ? 'Penalty cleared successfully!' : 'Book marked as returned successfully!';
                 successMsg.style.display = 'block';
                 successMsg.style.opacity = '1';
                 setTimeout(function() {
@@ -219,9 +227,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 }, 3000);
 
             } else {
-                alert('Error marking book as returned. Please try again.');
+                alert('Error processing request. Please try again.');
                 console.error('Server response:', data);
-                console.error('Expected: "success", Got:', JSON.stringify(data)); // ADDED
             }
         })
         .catch(error => {
