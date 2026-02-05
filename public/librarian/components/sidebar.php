@@ -521,9 +521,6 @@ body {
         <a href="?page=book_list" class="nav-item <?php echo $currentPage == 'book_list' ? 'active' : ''; ?>">
             <i class="bi bi-bookmark-plus"></i> <span class="nav-text">List of Books</span>
         </a>
-        <a href="?page=borrowed_list" class="nav-item <?php echo $currentPage == 'borrowed_list' ? 'active' : ''; ?>">
-            <i class="bi bi-bookmark-check"></i> <span class="nav-text">List of Borrowed Books</span>
-        </a>
         <a href="?page=history" class="nav-item <?php echo $currentPage == 'history' ? 'active' : ''; ?>">
             <i class="bi bi-clock-history"></i> <span class="nav-text">History</span>
         </a>

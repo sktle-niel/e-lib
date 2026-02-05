@@ -3,6 +3,7 @@ if (!defined('MAIN_PAGE')) {
     include '../../auth/sessionCheck.php';
 }
 include '../../back-end/read/readLibBooks.php';
+include '../../back-end/read/readBorrowedBooks.php';
 $currentPage = 'Borrow Books';
 
 // Get filter parameters
@@ -101,6 +102,18 @@ $result = getFilteredBooksPaginated($searchQuery, $courseFilter, $publishYearFil
 $initialBooks = $result['books'];
 $totalBooks = $result['total'];
 $totalPages = ceil($totalBooks / $perPage);
+
+// Get borrowed books data
+$pageBorrowed = isset($_GET['pb']) ? (int)$_GET['pb'] : 1;
+$perPageBorrowed = 15;
+
+// Get total count of all borrowed books
+$totalBorrowedBooks = getAllBorrowedBooksCount();
+$totalBorrowedPages = ceil($totalBorrowedBooks / $perPageBorrowed);
+$offsetBorrowed = ($pageBorrowed - 1) * $perPageBorrowed;
+
+// Get all borrowed books with pagination
+$borrowedBooks = getAllBorrowedBooks($perPageBorrowed, $offsetBorrowed);
 ?>
 
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
@@ -216,6 +229,94 @@ $totalPages = ceil($totalBooks / $perPage);
         </table>
     </div>
 
+    <!-- Borrowed Books Table -->
+    <div class="mt-5">
+        <h3 class="mb-3">Borrowed Books</h3>
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Book Name</th>
+                        <th>Borrower Name</th>
+                        <th>Date Borrowed</th>
+                        <th>Date of Return</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="borrowed-books-table-body">
+                    <?php if (count($borrowedBooks) > 0): ?>
+                        <?php foreach($borrowedBooks as $book): ?>
+                            <?php if ($book['status'] !== 'Overdue'): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($book['title']); ?></td>
+                                <td><?php echo htmlspecialchars($book['borrower_name']); ?></td>
+                                <td><?php echo date('M d, Y', strtotime($book['borrow_date'])); ?></td>
+                                <td><?php echo date('M d, Y', strtotime($book['return_date'])); ?></td>
+                                <td>
+                                    <span class="badge <?php
+                                        echo $book['status'] === 'Returned' ? 'bg-success' :
+                                             ($book['status'] === 'Overdue' ? 'bg-danger' : 'bg-warning text-dark');
+                                    ?>">
+                                        <?php echo htmlspecialchars($book['status']); ?>
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-success mark-returned-btn"
+                                            data-book-title="<?php echo htmlspecialchars($book['title']); ?>"
+                                            data-borrow-id="<?php echo htmlspecialchars($book['id']); ?>"
+                                            data-status="<?php echo htmlspecialchars($book['status']); ?>">
+                                        Mark as Returned
+                                    </button>
+                                </td>
+                            </tr>
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No borrowed books found.</td>
+                        </tr>
+                    <?php endif; ?>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination for Borrowed Books -->
+        <?php if ($totalBorrowedPages > 1): ?>
+        <nav aria-label="Borrowed Books pagination" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <!-- Previous button -->
+                <li class="page-item <?php echo $pageBorrowed <= 1 ? 'disabled' : ''; ?>">
+                    <a class="page-link borrowed-pagination-link" href="#" data-page="<?php echo $pageBorrowed - 1; ?>" tabindex="-1">
+                        Previous
+                    </a>
+                </li>
+
+                <!-- Page numbers -->
+                <?php
+                $startPageBorrowed = max(1, $pageBorrowed - 2);
+                $endPageBorrowed = min($totalBorrowedPages, $pageBorrowed + 2);
+
+                for ($i = $startPageBorrowed; $i <= $endPageBorrowed; $i++):
+                ?>
+                <li class="page-item <?php echo $i === $pageBorrowed ? 'active' : ''; ?>">
+                    <a class="page-link borrowed-pagination-link" href="#" data-page="<?php echo $i; ?>">
+                        <?php echo $i; ?>
+                    </a>
+                </li>
+                <?php endfor; ?>
+
+                <!-- Next button -->
+                <li class="page-item <?php echo $pageBorrowed >= $totalBorrowedPages ? 'disabled' : ''; ?>">
+                    <a class="page-link borrowed-pagination-link" href="#" data-page="<?php echo $pageBorrowed + 1; ?>">
+                        Next
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <?php endif; ?>
+    </div>
+
     <!-- Pagination -->
     <?php if ($totalPages > 1): ?>
     <nav aria-label="Books pagination" class="mt-4">
@@ -251,7 +352,7 @@ $totalPages = ceil($totalBooks / $perPage);
             <?php endfor; ?>
 
             <?php if ($endPage < $totalPages): ?>
-            <?php if ($endPage < $totalPages - 1): ?>
+            <?php if ($endEnd < $totalPages - 1): ?>
             <li class="page-item disabled"><span class="page-link">...</span></li>
             <?php endif; ?>
             <li class="page-item">
@@ -293,6 +394,28 @@ $totalPages = ceil($totalBooks / $perPage);
         </div>
     </div>
 </div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmReturnModal" tabindex="-1" aria-labelledby="confirmReturnModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmReturnModalLabel">Confirm Return</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to mark "<span id="book-title"></span>" as returned?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="confirm-return-btn">Mark as Returned</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Message -->
+<div id="success-message" class="success-message" style="display: none;">Book marked as returned successfully!</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -469,6 +592,73 @@ document.addEventListener('DOMContentLoaded', function() {
         .finally(() => {
             btn.disabled = false;
             btn.innerHTML = originalText;
+        });
+    });
+
+    // Handle Mark as Returned button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('mark-returned-btn')) {
+            const bookTitle = e.target.getAttribute('data-book-title');
+            const borrowId = e.target.getAttribute('data-borrow-id');
+
+            document.getElementById('book-title').textContent = bookTitle;
+            document.getElementById('confirm-return-btn').setAttribute('data-borrow-id', borrowId);
+
+            const modal = new bootstrap.Modal(document.getElementById('confirmReturnModal'));
+            modal.show();
+        }
+    });
+
+    // Handle Confirm Return button click
+    document.getElementById('confirm-return-btn').addEventListener('click', function() {
+        const borrowId = this.getAttribute('data-borrow-id');
+        const status = this.getAttribute('data-status');
+
+        const url = status === 'Overdue' ? '../../back-end/update/clearPenalty.php' : '../../back-end/update/markAsReturned.php';
+
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'borrow_id=' + encodeURIComponent(borrowId)
+        })
+        .then(response => status === 'Overdue' ? response.json() : response.text())
+        .then(data => {
+            let success = false;
+            if (status === 'Overdue') {
+                success = data.success === true;
+            } else {
+                success = data.trim() === 'success';
+            }
+
+            if (success) {
+                // Close modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('confirmReturnModal'));
+                modal.hide();
+
+                // Show success message
+                const successMsg = document.getElementById('success-message');
+                successMsg.textContent = status === 'Overdue' ? 'Penalty cleared successfully!' : 'Book marked as returned successfully!';
+                successMsg.style.display = 'block';
+                successMsg.style.opacity = '1';
+                setTimeout(function() {
+                    successMsg.style.opacity = '0';
+                    setTimeout(function() {
+                        successMsg.style.display = 'none';
+                        // Reload the page to reflect changes
+                        location.reload();
+                    }, 1000);
+                }, 3000);
+
+            } else {
+                alert('Error processing request. Please try again.');
+                console.error('Server response:', data);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Please try again.');
         });
     });
 });

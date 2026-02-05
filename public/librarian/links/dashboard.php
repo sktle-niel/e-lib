@@ -10,9 +10,9 @@ include '../../back-end/read/readPenalties.php';
 include '../../back-end/read/readBorrowedBooks.php';
 
 $stats = [
-    ['title' => 'Available Books', 'value' => getLibBooksCount(), 'subtitle' => 'Available Library Books', 'icon' => 'bi-book', 'iconClass' => 'icon-green'],
-    ['title' => 'Borrowed Books', 'value' => getBorrowedLibBooksCount(), 'subtitle' => 'Total borrowed books', 'icon' => 'bi-file-earmark-text', 'iconClass' => 'icon-blue'],
-    ['title' => 'Overdue Books', 'value' => getBookPenaltiesCount(), 'subtitle' => 'Books overdue by more than 3 days', 'icon' => 'bi-exclamation-triangle', 'iconClass' => 'icon-red'],
+    ['title' => 'Available Books', 'value' => getLibBooksCount(), 'subtitle' => 'Available Library Books', 'icon' => 'bi-book', 'iconClass' => 'icon-green', 'link' => '?page=book_list'],
+    ['title' => 'Borrowed Books', 'value' => getBorrowedLibBooksCount(), 'subtitle' => 'Total borrowed books', 'icon' => 'bi-file-earmark-text', 'iconClass' => 'icon-blue', 'link' => '?page=borrowed_list'],
+    ['title' => 'Overdue Books', 'value' => getBookPenaltiesCount(), 'subtitle' => 'Books overdue by more than 3 days', 'icon' => 'bi-exclamation-triangle', 'iconClass' => 'icon-red', 'link' => '?page=penalties'],
     ['title' => 'Total Students', 'value' => getStudentsCount(), 'subtitle' => 'Registered students', 'icon' => 'bi-people', 'iconClass' => 'icon-orange']
 ];
 
@@ -38,20 +38,26 @@ $recentBorrowed = getAllBorrowedBooks(5, 0);
     <div class="row g-4 mb-4">
         <?php foreach($stats as $stat): ?>
         <div class="col-md-6 col-xl-3">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div>
-                            <h6 class="text-muted mb-2"><?php echo $stat['title']; ?></h6>
-                            <h2 class="fw-bold mb-1"><?php echo $stat['value']; ?></h2>
-                            <small class="text-muted"><?php echo $stat['subtitle']; ?></small>
-                        </div>
-                        <div class="stat-icon <?php echo $stat['iconClass']; ?>">
-                            <i class="<?php echo $stat['icon']; ?>"></i>
+            <?php if (isset($stat['link'])): ?>
+            <a href="<?php echo $stat['link']; ?>" class="text-decoration-none">
+            <?php endif; ?>
+                <div class="card stat-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h6 class="text-muted mb-2"><?php echo $stat['title']; ?></h6>
+                                <h2 class="fw-bold mb-1"><?php echo $stat['value']; ?></h2>
+                                <small class="text-muted"><?php echo $stat['subtitle']; ?></small>
+                            </div>
+                            <div class="stat-icon <?php echo $stat['iconClass']; ?>">
+                                <i class="<?php echo $stat['icon']; ?>"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            <?php if (isset($stat['link'])): ?>
+            </a>
+            <?php endif; ?>
         </div>
         <?php endforeach; ?>
     </div>
