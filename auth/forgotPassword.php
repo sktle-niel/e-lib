@@ -86,8 +86,7 @@
                 <p>Reset your password to regain access to the library's online resources and services.</p>
                 <ul>
                     <li>Search library's collection.</li>
-                    <li>File reservation requests.</li>
-                    <li>Online book borrowing, renewal, and many more.</li>
+                    <li>Teachers Books and Modules</li>
                 </ul>
             </div>
             <div class="col-lg-6 right-section">
