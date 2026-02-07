@@ -40,8 +40,7 @@
                 <p>Login to access the library's online resources and services anytime, anywhere.</p>
                 <ul>
                     <li>Search library's collection.</li>
-                    <li>File reservation requests.</li>
-                    <li>Online book borrowing, renewal, and many more.</li>
+                    <li>Teachers Books and Modules</li>
                 </ul>
             </div>
             <div class="col-lg-6 right-section">
