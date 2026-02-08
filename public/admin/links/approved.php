@@ -110,7 +110,6 @@ $approvedAccounts = getAllApprovedAccounts();
                                         <th>First Name</th>
                                         <th>Last Name</th>
                                         <th>Program</th>
-                                        <th>LRN Number</th>
                                         <th>User Type</th>
                                         <th>Created At</th>
                                         <th>Actions</th>
@@ -133,7 +132,6 @@ $approvedAccounts = getAllApprovedAccounts();
                                         <td><?php echo htmlspecialchars($account['firstname']); ?></td>
                                         <td><?php echo htmlspecialchars($account['lastname']); ?></td>
                                         <td><?php echo htmlspecialchars($account['program'] ?: 'N/A'); ?></td>
-                                        <td><?php echo htmlspecialchars($account['lrn_number'] ?: 'N/A'); ?></td>
                                         <td>
                                             <span class="badge bg-<?php echo $account['user_type'] == 'teacher' ? 'primary' : 'success'; ?>">
                                                 <?php echo ucfirst($account['user_type']); ?>
