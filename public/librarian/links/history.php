@@ -5,14 +5,15 @@ if (!defined('MAIN_PAGE')) {
 include '../../back-end/read/returnedBookHistory.php';
 $currentPage = 'Returned Books History';
 
+$month = isset($_GET['month']) ? (int)$_GET['month'] : null;
 $page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
 $perPage = 15;
 
-$totalBooks = getReturnedBooksHistoryCount();
+$totalBooks = getReturnedBooksHistoryCount($month);
 $totalPages = ceil($totalBooks / $perPage);
 $offset = ($page - 1) * $perPage;
 
-$returnedBooks = getReturnedBooksHistory($perPage, $offset);
+$returnedBooks = getReturnedBooksHistory($perPage, $offset, $month);
 ?>
 
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
@@ -37,6 +38,33 @@ $returnedBooks = getReturnedBooksHistory($perPage, $offset);
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="page-title"><?php echo $currentPage; ?></h1>
     </div>
+
+    <form method="GET" action="" class="mb-4">
+        <input type="hidden" name="page" value="history">
+        <div class="row">
+            <div class="col-md-3">
+                <label for="month" class="form-label">Filter by Month:</label>
+                <select name="month" id="month" class="form-select">
+                    <option value="">All</option>
+                    <option value="1" <?php echo ($month == 1) ? 'selected' : ''; ?>>January</option>
+                    <option value="2" <?php echo ($month == 2) ? 'selected' : ''; ?>>February</option>
+                    <option value="3" <?php echo ($month == 3) ? 'selected' : ''; ?>>March</option>
+                    <option value="4" <?php echo ($month == 4) ? 'selected' : ''; ?>>April</option>
+                    <option value="5" <?php echo ($month == 5) ? 'selected' : ''; ?>>May</option>
+                    <option value="6" <?php echo ($month == 6) ? 'selected' : ''; ?>>June</option>
+                    <option value="7" <?php echo ($month == 7) ? 'selected' : ''; ?>>July</option>
+                    <option value="8" <?php echo ($month == 8) ? 'selected' : ''; ?>>August</option>
+                    <option value="9" <?php echo ($month == 9) ? 'selected' : ''; ?>>September</option>
+                    <option value="10" <?php echo ($month == 10) ? 'selected' : ''; ?>>October</option>
+                    <option value="11" <?php echo ($month == 11) ? 'selected' : ''; ?>>November</option>
+                    <option value="12" <?php echo ($month == 12) ? 'selected' : ''; ?>>December</option>
+                </select>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
 
     <div class="table-responsive">
         <table class="table table-striped table-hover">
@@ -84,6 +112,31 @@ $returnedBooks = getReturnedBooksHistory($perPage, $offset);
             </tbody>
         </table>
     </div>
+
+    <!-- Pagination -->
+    <?php if ($totalPages > 1): ?>
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            <?php
+            $baseUrl = '?page=history&';
+            if ($month) {
+                $baseUrl .= 'month=' . $month . '&';
+            }
+            ?>
+            <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="<?php echo $baseUrl; ?>p=<?php echo $page - 1; ?>" tabindex="-1">Previous</a>
+            </li>
+            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+            <li class="page-item <?php echo ($i == $page) ? 'active' : ''; ?>">
+                <a class="page-link" href="<?php echo $baseUrl; ?>p=<?php echo $i; ?>"><?php echo $i; ?></a>
+            </li>
+            <?php endfor; ?>
+            <li class="page-item <?php echo ($page >= $totalPages) ? 'disabled' : ''; ?>">
+                <a class="page-link" href="<?php echo $baseUrl; ?>p=<?php echo $page + 1; ?>">Next</a>
+            </li>
+        </ul>
+    </nav>
+    <?php endif; ?>
 </div>
 
 <!-- Confirm Modal -->

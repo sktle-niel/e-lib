@@ -1,15 +1,18 @@
-# Remove book_course Field Task
+# TODO: Add Month Filter to Returned Books History
 
-## Completed Tasks
+## Backend Changes
 
-- [ ] Create TODO.md file
+- [x] Modify `getReturnedBooksHistory($limit, $offset, $month = null)` in `back-end/read/returnedBookHistory.php` to add optional `$month` parameter and filter by `MONTH(actual_return_date) = ?` if provided.
+- [x] Modify `getReturnedBooksHistoryCount($month = null)` in `back-end/read/returnedBookHistory.php` to add optional `$month` parameter and filter by `MONTH(actual_return_date) = ?` if provided.
 
-## Pending Tasks
+## Frontend Changes
 
-- [ ] Remove course field from addBook.php form
-- [ ] Remove course column from table display in addBook.php
-- [ ] Remove course from edit modal in addBook.php
-- [ ] Update uploadLibBooks.php to remove book_course from INSERT query
-- [ ] Update readLibBooks.php to remove book_course from SELECT queries
-- [ ] Update editLibBooks.php to remove book_course from INSERT/UPDATE queries
-- [ ] Test the application to ensure no errors
+- [x] Add a form with month select dropdown above the table in `public/librarian/links/history.php`.
+- [x] Update PHP code in `public/librarian/links/history.php` to read `$_GET['month']` and pass it to backend functions.
+- [x] Ensure pagination links in `public/librarian/links/history.php` include the month parameter if set.
+
+## Testing
+
+- [x] Test the filter: Select different months and verify only returns from that month are shown across all years.
+- [x] Test pagination: Ensure page counts and navigation work with the filter applied.
+- [x] Handle cases where no returns exist for a selected month.
