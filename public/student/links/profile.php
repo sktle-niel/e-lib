@@ -65,7 +65,7 @@ $currentPrograms = !empty($program) ? explode(',', $program) : [];
                         <p class="mb-0"><?php echo !empty($program) ? htmlspecialchars($program) : 'N/A'; ?></p>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label fw-bold">LRN Number:</label>
+                        <label class="form-label fw-bold">Student Number:</label>
                         <p class="mb-0"><?php echo !empty($lrn_number) ? htmlspecialchars($lrn_number) : 'N/A'; ?></p>
                     </div>
                     <div class="mb-0">
@@ -130,14 +130,14 @@ $currentPrograms = !empty($program) ? explode(',', $program) : [];
 
                     <!-- Update LRN Number -->
                     <div class="mb-4">
-                        <h6 class="mb-3">Update LRN Number</h6>
+                        <h6 class="mb-3">Update Student Number</h6>
                         <form>
                             <div class="mb-3">
-                                <label for="lrnNumber" class="form-label">LRN Number</label>
-                                <input type="text" class="form-control" id="lrnNumber" placeholder="Enter your LRN number" value="<?php echo !empty($lrn_number) ? htmlspecialchars($lrn_number) : ''; ?>">
+                                <label for="lrnNumber" class="form-label">Student Number</label>
+                                <input type="text" class="form-control" id="lrnNumber" placeholder="Enter your Student number" value="<?php echo !empty($lrn_number) ? htmlspecialchars($lrn_number) : ''; ?>">
                             </div>
                             <button type="button" class="btn btn-primary" id="updateLrnBtn">
-                                <i class="bi bi-check-circle me-2"></i>Update LRN Number
+                                <i class="bi bi-check-circle me-2"></i>Update S/N
                             </button>
                         </form>
                     </div>

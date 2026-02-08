@@ -116,7 +116,7 @@ $totalPages = ceil($totalStudents / $limit);
                                         <th>First Name</th>
                                         <th>Last Name</th>
                                         <th>Program</th>
-                                        <th>LRN Number</th>
+                                        <th>Student Number</th>
                                         <th>User Type</th>
                                         <th>Created At</th>
                                         <th>Actions</th>

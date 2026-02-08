@@ -104,9 +104,9 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="lrn" class="form-label">LRN Number</label>
+                            <label for="lrn" class="form-label">Student Number</label>
                             <input type="text" class="form-control" id="lrn" name="lrn"
-                                   placeholder="Enter your LRN number" required>
+                                   placeholder="Enter your SN number" required>
                         </div>
 
                         <div class="mb-3">
