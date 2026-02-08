@@ -60,7 +60,12 @@ $currentPage = 'Add Library Book';
 
     <!-- Recent Books Table -->
     <div class="mb-4">
-        <h3 class="mb-3">Recent Added Books</h3>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Recent Added Books</h3>
+            <a href="../../back-end/read/exportBookExcel.php" class="btn btn-success">
+                <i class="bi bi-file-earmark-spreadsheet me-2"></i>Export to Excel
+            </a>
+        </div>
         <div class="table-responsive">
             <table class="table table-striped table-hover">
                 <thead class="table-dark">

@@ -1,5 +1,5 @@
 <?php
-function getReturnedBooksHistory($limit = 15, $offset = 0, $month = null) {
+function getReturnedBooksHistory($limit = 15, $offset = 0, $month = null, $year = null) {
     global $conn;
 
     $query = "
@@ -20,11 +20,22 @@ function getReturnedBooksHistory($limit = 15, $offset = 0, $month = null) {
 
     $params = [];
     $types = "";
+    $conditions = [];
 
     if ($month !== null) {
-        $query .= " WHERE MONTH(brh.actual_return_date) = ?";
+        $conditions[] = "MONTH(brh.actual_return_date) = ?";
         $params[] = $month;
         $types .= "i";
+    }
+
+    if ($year !== null) {
+        $conditions[] = "YEAR(brh.actual_return_date) = ?";
+        $params[] = $year;
+        $types .= "i";
+    }
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
     }
 
     $query .= " ORDER BY brh.actual_return_date DESC, brh.created_at DESC LIMIT ? OFFSET ?";
@@ -46,17 +57,28 @@ function getReturnedBooksHistory($limit = 15, $offset = 0, $month = null) {
     return $books;
 }
 
-function getReturnedBooksHistoryCount($month = null) {
+function getReturnedBooksHistoryCount($month = null, $year = null) {
     global $conn;
 
     $query = "SELECT COUNT(*) as total FROM book_return_history";
     $params = [];
     $types = "";
+    $conditions = [];
 
     if ($month !== null) {
-        $query .= " WHERE MONTH(actual_return_date) = ?";
+        $conditions[] = "MONTH(actual_return_date) = ?";
         $params[] = $month;
         $types .= "i";
+    }
+
+    if ($year !== null) {
+        $conditions[] = "YEAR(actual_return_date) = ?";
+        $params[] = $year;
+        $types .= "i";
+    }
+
+    if (!empty($conditions)) {
+        $query .= " WHERE " . implode(" AND ", $conditions);
     }
 
     $stmt = $conn->prepare($query);

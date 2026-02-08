@@ -77,5 +77,23 @@ function getFilteredBooks($search, $course, $publishYear, $limit = 20) {
     }
 }
 
+function getAllLibBooksForExport() {
+    global $conn;
+
+    $stmt = $conn->prepare("SELECT id, book_title, author, publish_date, created_at FROM lib_books ORDER BY created_at DESC");
+
+    if ($stmt->execute()) {
+        $result = $stmt->get_result();
+        $books = [];
+        while ($row = $result->fetch_assoc()) {
+            $books[] = $row;
+        }
+        $stmt->close();
+        return $books;
+    } else {
+        $stmt->close();
+        return [];
+    }
+}
 
 ?>

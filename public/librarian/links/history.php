@@ -6,14 +6,15 @@ include '../../back-end/read/returnedBookHistory.php';
 $currentPage = 'Returned Books History';
 
 $month = isset($_GET['month']) ? (int)$_GET['month'] : null;
+$year = isset($_GET['year']) ? (int)$_GET['year'] : null;
 $page = isset($_GET['p']) ? (int)$_GET['p'] : 1;
 $perPage = 15;
 
-$totalBooks = getReturnedBooksHistoryCount($month);
+$totalBooks = getReturnedBooksHistoryCount($month, $year);
 $totalPages = ceil($totalBooks / $perPage);
 $offset = ($page - 1) * $perPage;
 
-$returnedBooks = getReturnedBooksHistory($perPage, $offset, $month);
+$returnedBooks = getReturnedBooksHistory($perPage, $offset, $month, $year);
 ?>
 
 <link rel="stylesheet" href="../../src/css/phoneMediaQuery.css">
@@ -60,8 +61,22 @@ $returnedBooks = getReturnedBooksHistory($perPage, $offset, $month);
                     <option value="12" <?php echo ($month == 12) ? 'selected' : ''; ?>>December</option>
                 </select>
             </div>
-            <div class="col-md-2 d-flex align-items-end">
+            <div class="col-md-3">  
+                <label for="year" class="form-label">Filter by Year:</label>
+                <select name="year" id="year" class="form-select">
+                    <option value="">All</option>
+                    <?php
+                    $currentYear = date('Y');
+                    $maxYear = 2026;
+                    for ($y = $maxYear; $y >= $currentYear - 10; $y--) {
+                        echo '<option value="' . $y . '" ' . ($year == $y ? 'selected' : '') . '>' . $y . '</option>';
+                    }
+                    ?>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
                 <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="../../back-end/read/exportExcel.php?<?php echo http_build_query(['month' => $month, 'year' => $year]); ?>" class="btn btn-success" style="margin-left: 25px;"><i class="bi bi-file-earmark-spreadsheet"></i> Export to Excel</a>
             </div>
         </div>
     </form>
@@ -121,6 +136,9 @@ $returnedBooks = getReturnedBooksHistory($perPage, $offset, $month);
             $baseUrl = '?page=history&';
             if ($month) {
                 $baseUrl .= 'month=' . $month . '&';
+            }
+            if ($year) {
+                $baseUrl .= 'year=' . $year . '&';
             }
             ?>
             <li class="page-item <?php echo ($page <= 1) ? 'disabled' : ''; ?>">
