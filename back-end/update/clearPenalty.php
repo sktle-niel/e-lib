@@ -17,7 +17,7 @@ header('Content-Type: application/json');
 
 
 
-function generateUniqueReturnId() {
+function generateUniqueReturnId() { 
     global $conn;
     do {
         $returnId = rand(1000000, 9999999);
@@ -154,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['borrow_id'])) {
                 if (!$stmt2) {
                     throw new Exception('Failed to prepare penalty_clear_log insert: ' . $conn->error);
                 }
-                $stmt2->bind_param("iiidis", $borrowId, $bookId, $userId, $penaltyAmount, $daysOverdue, $notes);
+                $stmt2->bind_param("iiiiis", $borrowId, $bookId, $userId, $penaltyAmount, $daysOverdue, $notes);
             } else {
                 $stmt2 = $conn->prepare("
                     INSERT INTO penalty_clear_log
@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['borrow_id'])) {
                 if (!$stmt2) {
                     throw new Exception('Failed to prepare penalty_clear_log insert: ' . $conn->error);
                 }
-                $stmt2->bind_param("iiidiis", $borrowId, $bookId, $userId, $penaltyAmount, $daysOverdue, $clearedBy, $notes);
+                $stmt2->bind_param("iiiiisi", $borrowId, $bookId, $userId, $penaltyAmount, $daysOverdue, $clearedBy, $notes);
             }
 
             if (!$stmt2->execute()) {
